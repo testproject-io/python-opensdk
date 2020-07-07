@@ -1,0 +1,96 @@
+name: Python
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  build-test-publish:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # All history
+      - name: Set SDK version
+        run: |
+          SDK_VERSION=$(git describe --tags || echo v0.0.0-$(git rev-list --all --count)-g$(git rev-parse --short HEAD))
+          SDK_VERSION="${SDK_VERSION:1}"
+          echo "::set-env name=SDK_VERSION::$SDK_VERSION"   
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8
+          export TP_SDK_VERSION=$SDK_VERSION
+          python3 setup.py install
+      - name: Lint with flake8
+        run: |
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings.
+          flake8 . --count --exit-zero --statistics
+      - name: Install test dependecies
+        run: |
+          pip install pytest pytest-mock responses
+      - name: Run unit-tests with pytest
+        run: |
+          pytest tests/ci/unittests --doctest-modules --junitxml=build/reports/junit/unit-test-results-${{ matrix.python-version }}.xml
+      - name: Run TestProject Agent
+        if: matrix.python-version == '3.8'
+        env:
+          TP_API_KEY: ${{ secrets.TP_API_KEY }}
+        run: |
+          envsubst < .github/ci/docker-compose.yml > docker-compose.yml
+          docker-compose -f docker-compose.yml up -d
+      - name: Wait for Agent to Register
+        if: matrix.python-version == '3.8'
+        run: |
+          trap 'kill $(jobs -p)' EXIT
+
+          attempt_counter=0
+          max_attempts=45
+
+          mkdir -p build/reports/agent
+          docker-compose -f docker-compose.yml logs -f | tee build/reports/agent/log.txt&
+          until curl -s http://localhost:8585/api/status | jq '.registered' | grep true; do
+            if [ ${attempt_counter} -eq ${max_attempts} ]; then
+              echo "Agent failed to register. Terminating..."
+              exit 1
+            fi
+            attempt_counter=$(($attempt_counter+1))
+            sleep 1
+          done
+      - name: Run flow tests
+        if: matrix.python-version == '3.8'
+        env:
+          TP_DEV_TOKEN: ${{ secrets.TP_DEV_TOKEN }}
+          TP_AGENT_URL: http://localhost:8585
+        run: |
+          trap 'kill $(jobs -p)' EXIT
+          export TP_SDK_VERSION=$SDK_VERSION
+          docker-compose -f docker-compose.yml logs -f --tail=0 >> build/reports/agent/log.txt&
+          pytest tests/ci/headless --doctest-modules --junitxml=build/reports/junit/flow-test-results-${{ matrix.python-version }}.xml
+      - name: Publish to TestPyPI
+        if: matrix.python-version == '3.8' && startsWith(github.ref, 'refs/heads/master')
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.TWINE_TESTPYPI_PASSWORD }}
+        run: |
+          rm -rf dist
+          export TP_SDK_VERSION=$SDK_VERSION
+          python setup.py sdist bdist_wheel
+          python -m twine upload --non-interactive --repository testpypi dist/*
+      - name: Archive reports
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v1
+        with:
+          name: reports
+          path: build/reports
