@@ -1,0 +1,11 @@
+# Arrow up
+"\e[A":history-search-backward
+# Arrow down
+"\e[B":history-search-forward
+
+# Enable Ctrl+Arrows
+"\e[1;5D": backward-word ### Ctrl+Left
+"\e[1;5C": forward-word ### Ctrl+Right
+
+# Tab completion coloring
+set colored-stats on
