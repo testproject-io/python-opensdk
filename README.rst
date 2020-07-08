@@ -12,8 +12,8 @@ With one unified SDK available across multiple languages, developers and testers
 
 With this SDK, users save a bunch of time and enjoy the following benefits out of the box:
 
-* 100% open source and available as a [PyPI](https://pypi.org/project/testproject-python-sdk/) project.
-* 5-mins simple Selenium and Appium setup with a single [Agent](https://docs.testproject.io/testproject-agents) deployment.
+* 100% open source and available as a `PyPI <https://pypi.org/project/testproject-python-sdk/>`_ project.
+* 5-mins simple Selenium and Appium setup with a single `Agent <https://docs.testproject.io/testproject-agents>`_ deployment.
 * Automatic test reports in HTML/PDF format (including screenshots). 
 * Collaborative reporting dashboards with execution history and RESTful API support.
 * Always up-to-date with the latest and stable Selenium driver version.
