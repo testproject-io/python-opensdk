@@ -174,15 +174,17 @@ class CustomCommandExecutor(RemoteConnection):
     def report_test(self):
         """Sends a test report to the Agent if this option is not explicitly disabled
         """
-        if self._disable_reports:
-            # test reporting has been disabled by the user
-            logging.debug(f"Test [{self._latest_known_test_name}] - [Passed]")
-            return
+        if not self._latest_known_test_name == "Unnamed Test":
+            # only report those tests that have been identified as one when their names were inferred
+            if self._disable_reports:
+                # test reporting has been disabled by the user
+                logging.debug(f"Test [{self._latest_known_test_name}] - [Passed]")
+                return
 
-        custom_test_report = CustomTestReport(
-            name=self._latest_known_test_name, passed=True
-        )
-        self.agent_client.report_test(custom_test_report)
+            custom_test_report = CustomTestReport(
+                name=self._latest_known_test_name, passed=True
+            )
+            self.agent_client.report_test(custom_test_report)
 
     def _redact_command(self, command: str, params: dict):
         """Redacts sensitive contents (passwords) so they do not appear in the reports
