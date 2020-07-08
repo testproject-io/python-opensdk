@@ -62,7 +62,7 @@ class ReportHelper:
         if current_test_info is not None:
             # we're using pytest
             path_to_test_file = current_test_info.split(" ")[0].split("::")[0]
-            return path_to_test_file[0: path_to_test_file.rfind("/")].replace("/", ".")  # noqa: E203
+            return path_to_test_file[0 : path_to_test_file.rfind("/")].replace("/", ".")  # noqa: E203
         else:
             # Try finding the right entry in the call stack, assuming that unittest is used
             logging.debug("Attempting to infer project name using inspect.stack()")
@@ -109,7 +109,7 @@ class ReportHelper:
 
         if is_unittest:
             if element_to_find == ReportNamingElement.Test:
-                logging.info(f"Deriving test name for unittest")
+                logging.info("Deriving test name for unittest")
             for frame in inspect.stack().__reversed__():
                 if frame.function.startswith("test"):
                     if element_to_find == ReportNamingElement.Test:
@@ -152,7 +152,10 @@ class ReportHelper:
             bool: True if unittest was found in the call stack, False otherwise
         """
         for frame in inspect.stack().__reversed__():
-            if frame.function == "__init__" and str(frame.filename).find("unittest") > 0 and str(frame.filename).find(
-                    "main.py") > 0:
+            if (
+                frame.function == "__init__"
+                and str(frame.filename).find("unittest") > 0
+                and str(frame.filename).find("main.py") > 0
+            ):
                 return True
         return False
