@@ -20,12 +20,11 @@ jobs:
           fetch-depth: 0 # All history
       - name: Set SDK version
         run: |
-          GIT_REV_COUNT=$(git rev-list --all --count)
-          if [ -z "${GIT_REV_COUNT}" ]; then 
-            >&2 echo "Invalid ref count!"
-            exit 1; 
+          SDK_VERSION=$(git describe --exact-match --tags HEAD || true)
+          if [ -z "${SDK_VERSION}" ]; then
+            GIT_REV_COUNT=$(git rev-list --all --count)
+            SDK_VERSION=$(echo $(git describe --tags --abbrev=0)$(if [ "${GIT_REV_COUNT}" != "0" ]; then echo .dev${GIT_REV_COUNT}; fi))
           fi
-          SDK_VERSION=$(echo $(git describe --tags --abbrev=0)$(if [ "${GIT_REV_COUNT}" != "0" ]; then echo .dev${GIT_REV_COUNT}; fi))
           if [ "${SDK_VERSION:0:1}" != "v" ]; then
             >&2 echo "Git tag does not start with a 'v'!"
             exit 1;
