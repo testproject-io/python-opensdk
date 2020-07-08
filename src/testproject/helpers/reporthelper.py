@@ -62,7 +62,7 @@ class ReportHelper:
         if current_test_info is not None:
             # we're using pytest
             path_to_test_file = current_test_info.split(" ")[0].split("::")[0]
-            return path_to_test_file[0 : path_to_test_file.rfind("/")].replace("/", ".")  # noqa: E203
+            return path_to_test_file[0: path_to_test_file.rfind("/")].replace("/", ".")  # noqa: E203
         else:
             # Try finding the right entry in the call stack, assuming that unittest is used
             logging.debug("Attempting to infer project name using inspect.stack()")
@@ -105,21 +105,54 @@ class ReportHelper:
         Returns:
             str: the inferred report naming element value
         """
-        # stack is iterated over in reverse order for efficiency
+        is_unittest = cls.__detect_unittest()
+
+        if is_unittest:
+            if element_to_find == ReportNamingElement.Test:
+                logging.info(f"Deriving test name for unittest")
+            for frame in inspect.stack().__reversed__():
+                if frame.function.startswith("test"):
+                    if element_to_find == ReportNamingElement.Test:
+                        # return the current method name as the test name
+                        return frame.function
+                    elif element_to_find == ReportNamingElement.Project:
+                        path_elements = os.path.normpath(frame.filename).split(os.sep)
+                        # return the folder name containing the current test file as the project name
+                        return str(path_elements[-2])
+                    elif element_to_find == ReportNamingElement.Job:
+                        path_elements = os.path.normpath(frame.filename).split(os.sep)
+                        # return the current test file name minus the .py extension as the job name
+                        return str(path_elements[-1]).split(".py")[0]
+                    else:
+                        return None
+        else:
+            # we're using neither pytest nor unittest, so return sensible values
+            inside_module = False
+
+            for frame in inspect.stack().__reversed__():
+                if inside_module:
+                    if element_to_find == ReportNamingElement.Test:
+                        return frame.function
+                    elif element_to_find == ReportNamingElement.Project:
+                        # in this case we can't infer a project name because there's no data
+                        return None
+                    elif element_to_find == ReportNamingElement.Job:
+                        path_elements = os.path.normpath(frame.filename).split(os.sep)
+                        # return the current test file name minus the .py extension as the job name
+                        return str(path_elements[-1]).split(".py")[0]
+                if str(frame.function) == "<module>":
+                    # we're entering the module, the next frame contains the info we're looking for
+                    inside_module = True
+
+    @classmethod
+    def __detect_unittest(cls) -> bool:
+        """Unility method that traverses the call stack and checks if unittest was invoked
+
+        Returns:
+            bool: True if unittest was found in the call stack, False otherwise
+        """
         for frame in inspect.stack().__reversed__():
-            if frame.function.startswith("test"):
-                if element_to_find == ReportNamingElement.Test:
-                    # return the current method name as the test name
-                    return frame.function
-                elif element_to_find == ReportNamingElement.Project:
-                    path_elements = os.path.normpath(frame.filename).split(os.sep)
-                    # return the folder name containing the current test file as the project name
-                    return str(path_elements[-2])
-                elif element_to_find == ReportNamingElement.Job:
-                    path_elements = os.path.normpath(frame.filename).split(os.sep)
-                    # return the current test file name minus the .py extension as the job name
-                    return str(path_elements[-1]).split(".py")[0]
-                else:
-                    return None
-        # return None if no function starting with 'test' was found in the call stack
-        return None
+            if frame.function == "__init__" and str(frame.filename).find("unittest") > 0 and str(frame.filename).find(
+                    "main.py") > 0:
+                return True
+        return False
