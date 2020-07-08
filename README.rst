@@ -4,19 +4,23 @@ TestProject SDK For Python
 `TestProject <https://testproject.io/>`_ is a **Free** Test Automation platform for Web and Mobile.
 To get familiar with the TestProject, visit our main `documentation <https://docs.testproject.io/>`_ website.
 
-This SDK is a single, integrated interface to scripting with the most popular open source test automation frameworks. 
+This SDK is a single, integrated interface to scripting with the most popular open source test automation frameworks.
 
 From now on, you can effortlessly execute Selenium and Appium native tests using a single automation platform that already takes care of all the complex setup, maintenance and configs.
 
-With one unified SDK available across multiple languages, developers and testers receive a go-to toolset, solving some of the greatest challenges in open source test automation. 
+With one unified SDK available across multiple languages, developers and testers receive a go-to toolset, solving some of the greatest challenges in open source test automation.
 
-With this SDK, users save a bunch of time and enjoy the following benefits out of the box: 
+With this SDK, users save a bunch of time and enjoy the following benefits out of the box:
 
 * 100% open source and available as a [PyPI](https://pypi.org/project/testproject-python-sdk/) project.
-* Automatic test reports in HTML/PDF/Rest format (including screenshots!) and integration of test results on the fly to TestProject’s beautiful and collaborative reporting dashboards. 
-* A simplified, familiar syntax for both web and mobile applications with 100% Selenium and Appium compatibility.
-* Ability to store and execute tests locally in a code repository, without requirement to upload scripts to TestProject.
-* Docker support, in addition to existing Mac, Windows, and Linux support.
+* 5-mins simple Selenium and Appium setup with a single [Agent](https://docs.testproject.io/testproject-agents) deployment.
+* Automatic test reports in HTML/PDF format (including screenshots). 
+* Collaborative reporting dashboards with execution history and RESTful API support.
+* Always up-to-date with the latest and stable Selenium driver version.
+* A simplified, familiar syntax for both web and mobile applications.
+* Complete test runner capabilities for both local and remote executions, anywhere.
+* Cross platform support for Mac, Windows, Linux and Docker.
+* Ability to store and execute tests locally on any source control tool, such as Git.
 
 Getting started
 ---------------------------------
