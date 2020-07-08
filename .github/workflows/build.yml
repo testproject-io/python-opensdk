@@ -28,7 +28,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install flake8
+          pip install flake8 importlib-metadata
           export TP_SDK_VERSION=$SDK_VERSION
           python3 setup.py install
       - name: Lint with flake8
@@ -37,7 +37,7 @@ jobs:
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
           # exit-zero treats all errors as warnings.
           flake8 . --count --exit-zero --statistics
-      - name: Install test dependecies
+      - name: Install test dependencies
         run: |
           pip install pytest pytest-mock responses
       - name: Run unit-tests with pytest
