@@ -18,25 +18,35 @@ jobs:
           fetch-depth: 0 # All history
       - name: Set SDK version
         run: |
-          SDK_VERSION=$(git describe --tags || echo v0.0.0-$(git rev-list --all --count)-g$(git rev-parse --short HEAD))
+          GIT_REV_COUNT=$(git rev-list --all --count)
+          if [ -z "${GIT_REV_COUNT}" ]; then 
+            >&2 echo "Invalid ref count!"
+            exit 1; 
+          fi
+          SDK_VERSION=$(echo $(git describe --tags --abbrev=0)$(if [ "${GIT_REV_COUNT}" != "0" ]; then echo .dev${GIT_REV_COUNT}; fi))
+          if [ "${SDK_VERSION:0:1}" != "v" ]; then
+            >&2 echo "Git tag does not start with a 'v'!"
+            exit 1;
+          fi
           SDK_VERSION="${SDK_VERSION:1}"
-          echo "::set-env name=SDK_VERSION::$SDK_VERSION"   
+          echo "::set-env name=SDK_VERSION::$SDK_VERSION"
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
+      - name: Install build dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install flake8 importlib-metadata
-          export TP_SDK_VERSION=$SDK_VERSION
-          python3 setup.py install
+          pip install flake8 wheel importlib-metadata
       - name: Lint with flake8
         run: |
           # stop the build if there are Python syntax errors or undefined names
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          # exit-zero treats all errors as warnings.
-          flake8 . --count --exit-zero --statistics
+          flake8 . --count --statistics
+      - name: Build
+        run: |
+          export TP_SDK_VERSION=$SDK_VERSION
+          python3 setup.py install
       - name: Install test dependencies
         run: |
           pip install pytest pytest-mock responses
@@ -88,6 +98,16 @@ jobs:
           export TP_SDK_VERSION=$SDK_VERSION
           python setup.py sdist bdist_wheel
           python -m twine upload --non-interactive --repository testpypi dist/*
+      - name: Publish to PyPI
+        if: matrix.python-version == '3.8' && startsWith(github.ref, 'refs/tags/v')
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.TWINE_PYPI_PASSWORD }}
+        run: |
+          rm -rf dist
+          export TP_SDK_VERSION=$SDK_VERSION
+          python setup.py sdist bdist_wheel
+          python -m twine upload --non-interactive dist/*
       - name: Archive reports
         if: ${{ failure() }}
         uses: actions/upload-artifact@v1
