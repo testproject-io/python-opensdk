@@ -22,7 +22,7 @@ jobs:
         run: |
           SDK_VERSION=$(git describe --exact-match --tags HEAD || true)
           if [ -z "${SDK_VERSION}" ]; then
-            GIT_REV_COUNT=$(git rev-list --all --count)
+            GIT_REV_COUNT=$(git rev-list $(git describe --tags --abbrev=0)..HEAD --count)
             SDK_VERSION=$(echo $(git describe --tags --abbrev=0)$(if [ "${GIT_REV_COUNT}" != "0" ]; then echo .dev${GIT_REV_COUNT}; fi))
           fi
           if [ "${SDK_VERSION:0:1}" != "v" ]; then
