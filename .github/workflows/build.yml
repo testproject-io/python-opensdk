@@ -1,10 +1,12 @@
-name: Python
+name: Build
 
 on:
   push:
     branches: [master]
   pull_request:
     branches: [master]
+  release:
+    types: [published]
 
 jobs:
   build-test-publish:
