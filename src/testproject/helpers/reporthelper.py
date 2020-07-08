@@ -53,7 +53,9 @@ class ReportHelper:
             str: The inferred project name (typically the folder containing the test file)
         """
         # Did we set the project name using our decorator?
-        project_name_in_decorator = os.environ.get(EnvironmentVariable.TP_PROJECT_NAME.value)
+        project_name_in_decorator = os.environ.get(
+            EnvironmentVariable.TP_PROJECT_NAME.value
+        )
         if project_name_in_decorator is not None:
             return project_name_in_decorator
 
@@ -62,7 +64,9 @@ class ReportHelper:
         if current_test_info is not None:
             # we're using pytest
             path_to_test_file = current_test_info.split(" ")[0].split("::")[0]
-            return path_to_test_file[0 : path_to_test_file.rfind("/")].replace("/", ".")  # noqa: E203
+            return path_to_test_file[0:path_to_test_file.rfind("/")].replace(
+                "/", "."
+            )
         else:
             # Try finding the right entry in the call stack, assuming that unittest is used
             logging.debug("Attempting to infer project name using inspect.stack()")
@@ -108,23 +112,43 @@ class ReportHelper:
         is_unittest = cls.__detect_unittest()
 
         if is_unittest:
-            if element_to_find == ReportNamingElement.Test:
-                logging.info("Deriving test name for unittest")
-            for frame in inspect.stack().__reversed__():
-                if frame.function.startswith("test"):
-                    if element_to_find == ReportNamingElement.Test:
-                        # return the current method name as the test name
-                        return frame.function
-                    elif element_to_find == ReportNamingElement.Project:
-                        path_elements = os.path.normpath(frame.filename).split(os.sep)
-                        # return the folder name containing the current test file as the project name
-                        return str(path_elements[-2])
-                    elif element_to_find == ReportNamingElement.Job:
-                        path_elements = os.path.normpath(frame.filename).split(os.sep)
-                        # return the current test file name minus the .py extension as the job name
-                        return str(path_elements[-1]).split(".py")[0]
-                    else:
-                        return None
+            if element_to_find in [
+                ReportNamingElement.Project,
+                ReportNamingElement.Job,
+            ]:
+                # A driver can be initialized inside a test method, but also in a fixture method
+                # Therefore we want to look for all these methods when we try to infer project and job names
+                # (since project and job names are sent to the Agent upon driver creation)
+                for frame in inspect.stack().__reversed__():
+                    if frame.function.startswith("test") or frame.function in [
+                        "setUp",
+                        "tearDown",
+                        "setUpClass",
+                        "tearDownClass",
+                    ]:
+                        if element_to_find == ReportNamingElement.Project:
+                            path_elements = os.path.normpath(frame.filename).split(
+                                os.sep
+                            )
+                            # return the folder name containing the current test file as the project name
+                            return str(path_elements[-2])
+                        elif element_to_find == ReportNamingElement.Job:
+                            path_elements = os.path.normpath(frame.filename).split(
+                                os.sep
+                            )
+                            # return the current test file name minus the .py extension as the job name
+                            return str(path_elements[-1]).split(".py")[0]
+                        else:
+                            return None
+            else:
+                # When inferring test names, we are only interested in those methods whose name
+                # actually starts with 'test', not in fixture methods
+                for frame in inspect.stack().__reversed__():
+                    if frame.function.startswith("test"):
+                        if element_to_find == ReportNamingElement.Test:
+                            # return the current method name as the test name
+                            return frame.function
+
         else:
             # we're using neither pytest nor unittest, so return sensible values
             inside_module = False
