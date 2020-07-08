@@ -11,14 +11,32 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-
-# The version of the SDK
+from importlib_metadata import metadata, PackageNotFoundError
 import os
+import logging
+
+from src.testproject.sdk.exceptions import SdkException
 
 
 def get_sdk_version() -> str:
-    version = os.environ.get("TP_SDK_VERSION")
+
+    version = None
+
+    try:
+        sdk_metadata = metadata('testproject-python-sdk')
+        version = sdk_metadata['Version']
+    except PackageNotFoundError:
+        # This is OK, it just means that there's no previously installed version available
+        pass
+
+    logging.debug(f"Version read from package metadata: {version}")
+
     if version is None:
-        version = "0.0.1"
+        # we're not dealing with an installed package, build uses an environment variable
+        version = os.environ.get("TP_SDK_VERSION")
+        if version is None:
+            raise SdkException("No SDK version definition found in metadata or environment variable")
+
+        logging.debug(f"Version read from environment variable: {version}")
+
     return version

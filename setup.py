@@ -26,5 +26,6 @@ setuptools.setup(
         "Appium-Python-Client==1.0.1",
         "decorator>=4.4.2",
         "requests>=2.24.0",
+        "importlib-metadata>=1.7.0",
     ],
 )
