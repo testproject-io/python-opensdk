@@ -16,7 +16,6 @@ import logging
 from src.testproject.enums import EnvironmentVariable
 from src.testproject.helpers import ReportHelper, LoggingHelper, ConfigHelper
 from src.testproject.rest import ReportSettings
-from src.testproject.sdk.drivers.actions import WebActions
 from src.testproject.sdk.internal.agent import AgentClient
 from src.testproject.sdk.internal.helpers import CustomCommandExecutor
 from src.testproject.sdk.internal.reporter import Reporter
