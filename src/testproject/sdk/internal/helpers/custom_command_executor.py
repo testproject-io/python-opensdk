@@ -133,7 +133,8 @@ class CustomCommandExecutor(RemoteConnection):
             passed (bool): True if the command execution was successful, False otherwise
         """
         if command == Command.QUIT:
-            self.report_test()
+            if not self.disable_auto_test_reports:
+                self.report_test()
             return  # This ensures that the actual driver.quit() command is not included in the report
 
         if not self._disable_redaction:
@@ -168,7 +169,8 @@ class CustomCommandExecutor(RemoteConnection):
 
         if self._latest_known_test_name != current_test_name:
             # the name of the test method has changed, report a test
-            self.report_test()
+            if not self.disable_auto_test_reports:
+                self.report_test()
             self._latest_known_test_name = current_test_name
 
     def report_test(self):
