@@ -1,19 +1,20 @@
 TestProject SDK For Python
 --------------------------
 
-`TestProject <https://testproject.io/>`_ is a **Free** Test Automation platform for Web and Mobile.
+`TestProject <https://testproject.io/>`_ is a **Free** Test Automation platform for Web, Mobile is coming soon.
+
 To get familiar with the TestProject, visit our main `documentation <https://docs.testproject.io/>`_ website.
 
 TestProject SDK is a single, integrated interface to scripting with the most popular open source test automation frameworks.
 
-From now on, you can effortlessly execute Selenium and Appium native tests using a single automation platform that already takes care of all the complex setup, maintenance and configs.
+From now on, you can effortlessly execute Selenium and Appium (**coming soon**) native tests using a single automation platform that already takes care of all the complex setup, maintenance and configs.
 
 With one unified SDK available across multiple languages, developers and testers receive a go-to toolset, solving some of the greatest challenges in open source test automation.
 
 With TestProject SDK, users save a bunch of time and enjoy the following benefits out of the box:
 
 * 100% open source and available as a `PyPI <https://pypi.org/project/testproject-python-sdk/>`_ project.
-* 5-mins simple Selenium and Appium setup with a single `Agent <https://docs.testproject.io/testproject-agents>`_ deployment.
+* 5-mins simple Selenium and Appium (**coming soon**) setup with a single `Agent <https://docs.testproject.io/testproject-agents>`_ deployment.
 * Automatic test reports in HTML/PDF format (including screenshots). 
 * Collaborative reporting dashboards with execution history and RESTful API support.
 * Always up-to-date with the latest and stable Selenium driver version.
@@ -49,8 +50,8 @@ The examples shown in this document are based on Chrome. The SDK works in the sa
 * Safari
 * Edge
 * Internet Explorer
-* Android apps (using Appium)
-* iOS apps (using Appium)
+* Android apps (using Appium) (**coming soon**)
+* iOS apps (using Appium) (**coming soon**)
 
 Using a TestProject driver is identical to using a Selenium driver. Once you have added the SDK as a dependency to your project, changing the import statement is enough in most cases.
 
