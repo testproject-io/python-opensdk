@@ -11,22 +11,45 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import os
+
 import pytest
 
 from src.testproject.sdk.drivers import webdriver
-from selenium.webdriver import ChromeOptions
-
-from tests.pageobjects import LoginPage, ProfilePage
+from tests.pageobjects.web import LoginPage, ProfilePage
 
 
 @pytest.fixture
 def driver():
-    driver = webdriver.Chrome(chrome_options=ChromeOptions(), projectname="Examples", jobname=None)
+
+    emulator_id = os.environ.get("TP_ANDROID_DUT_UDID", None)
+
+    if emulator_id is None:
+        raise KeyError("TP_ANDROID_DUT_UDID variable was not set")
+
+    desired_capabilities = {
+        "udid": "emulator-5554",
+        "deviceName": "emulator-5554",
+        "browserName": "chrome",
+        "platformName": "Android",
+    }
+
+    driver = webdriver.Remote(desired_capabilities=desired_capabilities)
     yield driver
     driver.quit()
 
 
-def test_example_using_chrome(driver):
+def test_example_on_chrome_on_android(driver):
 
     LoginPage(driver).open().login_as("John Smith", "12345")
-    assert ProfilePage(driver).greetings_are_displayed() is True
+
+    profile_page = ProfilePage(driver)
+
+    profile_page.update_profile(
+        "United States",
+        "Street name and number",
+        "john.smith@somewhere.tld",
+        "+1 555 555 55",
+    )
+
+    assert profile_page.saved_message_is_displayed() is True

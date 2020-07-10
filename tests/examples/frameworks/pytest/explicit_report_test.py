@@ -13,7 +13,7 @@
 # limitations under the License.
 from src.testproject.decorator import report
 from src.testproject.sdk.drivers import webdriver
-from tests.pageobjects import LoginPage, ProfilePage
+from tests.pageobjects.web import LoginPage, ProfilePage
 
 
 @report(project="Examples", job="pytest example", test="Basic flow on TestProject demo app")

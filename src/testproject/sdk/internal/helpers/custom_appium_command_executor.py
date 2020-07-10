@@ -11,15 +11,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from selenium.webdriver.remote.remote_connection import RemoteConnection
+from appium.webdriver.appium_connection import AppiumConnection
+from selenium.webdriver.remote.command import Command
+
 from src.testproject.sdk.internal.agent import AgentClient
 from src.testproject.sdk.internal.helpers.reporting_command_executor import (
     ReportingCommandExecutor,
 )
 
 
-class CustomCommandExecutor(RemoteConnection, ReportingCommandExecutor):
-    """Extension of the Selenium RemoteConnection (command_executor) class
+class CustomAppiumCommandExecutor(AppiumConnection, ReportingCommandExecutor):
+    """Extension of the Appium AppiumConnection (command_executor) class
 
         Args:
             agent_client (AgentClient): Client used to communicate with the TestProject Agent
@@ -27,7 +29,7 @@ class CustomCommandExecutor(RemoteConnection, ReportingCommandExecutor):
     """
 
     def __init__(self, agent_client: AgentClient, remote_server_addr: str):
-        RemoteConnection.__init__(self, remote_server_addr=remote_server_addr)
+        AppiumConnection.__init__(self, remote_server_addr=remote_server_addr)
         ReportingCommandExecutor.__init__(
             self, agent_client=agent_client, command_executor=self
         )
@@ -35,7 +37,7 @@ class CustomCommandExecutor(RemoteConnection, ReportingCommandExecutor):
         self.w3c = agent_client.agent_session.dialect == "W3C"
 
     def execute(self, command: str, params: dict, skip_reporting: bool = False):
-        """Execute a Selenium command
+        """Execute an Appium command
 
         Args:
             command (str): A string specifying the command to execute
@@ -47,7 +49,11 @@ class CustomCommandExecutor(RemoteConnection, ReportingCommandExecutor):
         """
         self.update_known_test_name()
 
-        response = super().execute(command=command, params=params)
+        response = {}
+
+        # Preserve mobile sessions
+        if not command == Command.QUIT:
+            response = super().execute(command=command, params=params)
 
         result = response.get("value")
 

@@ -14,19 +14,19 @@
 import pytest
 
 from src.testproject.sdk.drivers import webdriver
-from selenium.webdriver.ie.options import Options
+from selenium.webdriver.edge.options import Options
 
-from tests.pageobjects import LoginPage, ProfilePage
+from tests.pageobjects.web import LoginPage, ProfilePage
 
 
 @pytest.fixture
 def driver():
-    driver = webdriver.Ie(ie_options=Options(), projectname="Examples", jobname=None)
+    driver = webdriver.Edge(edge_options=Options(), projectname="Examples", jobname=None)
     yield driver
     driver.quit()
 
 
-def test_example_using_internet_explorer(driver):
+def test_example_using_edge(driver):
 
     LoginPage(driver).open().login_as("John Smith", "12345")
     assert ProfilePage(driver).greetings_are_displayed() is True

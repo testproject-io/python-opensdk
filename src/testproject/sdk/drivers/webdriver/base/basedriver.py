@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 import logging
 
 from src.testproject.enums import EnvironmentVariable
@@ -20,7 +21,6 @@ from src.testproject.sdk.internal.agent import AgentClient
 from src.testproject.sdk.internal.helpers import CustomCommandExecutor
 from src.testproject.sdk.internal.reporter import Reporter
 from src.testproject.sdk.internal.session import AgentSession
-
 from selenium.webdriver.remote.webdriver import WebDriver as RemoteWebDriver
 
 
@@ -83,8 +83,8 @@ class BaseDriver(RemoteWebDriver):
 
     def start_session(self, capabilities, browser_profile=None):
         """Sets capabilities and sessionId obtained from the Agent when creating the original session."""
-        logging.info(f"Session ID is {self._agent_session.session_id}")
         self.session_id = self._agent_session.session_id
+        logging.info(f"Session ID is {self.session_id}")
 
     def report(self) -> Reporter:
         """Enables access to the TestProject reporting actions from the driver object"""

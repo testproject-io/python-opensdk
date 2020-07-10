@@ -15,7 +15,7 @@ import pytest
 
 from src.testproject.sdk.drivers import webdriver
 from selenium.webdriver import ChromeOptions
-from tests.pageobjects import LoginPage, ProfilePage
+from tests.pageobjects.web import LoginPage, ProfilePage
 
 
 @pytest.fixture

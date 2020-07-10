@@ -14,7 +14,7 @@
 import pytest
 
 from src.testproject.sdk.drivers import webdriver
-from tests.pageobjects import LoginPage, ProfilePage
+from tests.pageobjects.web import LoginPage, ProfilePage
 
 
 @pytest.fixture
