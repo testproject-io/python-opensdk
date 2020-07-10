@@ -195,7 +195,7 @@ class AgentClient:
         """
         endpoint = f"{self._remote_address}{Endpoint.ReportDriverCommand.value}"
 
-        queue_item = QueueItem(report_as_json=driver_command_report.to_json(), url=endpoint)
+        queue_item = QueueItem(report_as_json=driver_command_report.to_json(), url=endpoint, token=self._token)
 
         self._queue.put(queue_item, block=False)
 
@@ -207,7 +207,7 @@ class AgentClient:
         """
         endpoint = f"{self._remote_address}{Endpoint.ReportStep.value}"
 
-        queue_item = QueueItem(report_as_json=step_report.to_json(), url=endpoint)
+        queue_item = QueueItem(report_as_json=step_report.to_json(), url=endpoint, token=self._token)
 
         self._queue.put(queue_item, block=False)
 
@@ -219,7 +219,7 @@ class AgentClient:
         """
         endpoint = f"{self._remote_address}{Endpoint.ReportTest.value}"
 
-        queue_item = QueueItem(report_as_json=test_report.to_json(), url=endpoint)
+        queue_item = QueueItem(report_as_json=test_report.to_json(), url=endpoint, token=self._token)
 
         self._queue.put(queue_item, block=False)
 
@@ -230,7 +230,7 @@ class AgentClient:
 
         # Send a final, empty, report to the queue to ensure that
         # the 'running' condition is evaluated one last time
-        self._queue.put(QueueItem(report_as_json=None, url=None), block=False)
+        self._queue.put(QueueItem(report_as_json=None, url=None, token=self._token), block=False)
 
         # Wait until all items have been reported or timeout passes
         self._reporting_thread.join(timeout=self.REPORTS_QUEUE_TIMEOUT)
@@ -288,6 +288,7 @@ class QueueItem:
         Args:
             report_as_json (dict): JSON payload representing the item to be reported
             url (str): Agent endpoint the payload should be POSTed to
+            token (str): Token used to authenticate with the Agent
 
         Attributes:
             _report_as_json (dict): JSON payload representing the item to be reported
@@ -295,10 +296,10 @@ class QueueItem:
             _token (str): Token used to authenticate with the Agent
     """
 
-    def __init__(self, report_as_json: dict, url: str):
+    def __init__(self, report_as_json: dict, url: str, token: str):
         self._report_as_json = report_as_json
         self._url = url
-        self._token = ConfigHelper.get_developer_token()
+        self._token = token
 
     def send(self):
         """Send a report item to the Agent"""
