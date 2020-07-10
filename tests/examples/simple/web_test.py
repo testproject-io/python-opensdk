@@ -1,6 +1,7 @@
 from src.testproject.sdk.drivers import webdriver
 
-if __name__ == "__main__":
+
+def simple_test():
     driver = webdriver.Chrome()
 
     driver.get("https://example.testproject.io/web/")
@@ -14,3 +15,7 @@ if __name__ == "__main__":
     print("Test passed") if passed else print("Test failed")
 
     driver.quit()
+
+
+if __name__ == "__main__":
+    simple_test()
