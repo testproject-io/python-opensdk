@@ -28,8 +28,7 @@ def driver():
         raise KeyError("TP_ANDROID_DUT_UDID variable was not set")
 
     desired_capabilities = {
-        "udid": "emulator-5554",
-        "deviceName": "emulator-5554",
+        "udid": emulator_id,
         "browserName": "chrome",
         "platformName": "Android",
     }
