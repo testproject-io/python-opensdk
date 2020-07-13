@@ -19,6 +19,7 @@ from selenium.webdriver.remote.command import Command
 from src.testproject.helpers import ReportHelper
 from src.testproject.rest.messages import DriverCommandReport, CustomTestReport
 from src.testproject.sdk.internal.agent import AgentClient
+from src.testproject.sdk.internal.helpers.redact_helper import RedactHelper
 
 
 class ReportingCommandExecutor:
@@ -110,7 +111,7 @@ class ReportingCommandExecutor:
             return  # This ensures that the actual driver.quit() command is not included in the report
 
         if not self._disable_redaction:
-            params = self._redact_command(command, params)
+            params = RedactHelper(self).redact_command(command, params)
 
         driver_command_report = DriverCommandReport(command, params, result, passed)
 
@@ -160,34 +161,6 @@ class ReportingCommandExecutor:
                 name=self._latest_known_test_name, passed=True
             )
             self.agent_client.report_test(custom_test_report)
-
-    def _redact_command(self, command: str, params: dict):
-        """Redacts sensitive contents (passwords) so they do not appear in the reports
-
-        Args:
-            command (str): A string specifying the command to execute
-            params (dict): A dictionary of named parameters to send with the command as its JSON payload
-
-        Returns:
-            dict: A redacted version of the dictionary, where password values are replaced by '****'
-        """
-        if (
-            command == Command.SEND_KEYS_TO_ELEMENT
-            or command == Command.SEND_KEYS_TO_ACTIVE_ELEMENT
-        ):
-            element_id = params["id"]
-            get_attribute_params = {
-                "sessionId": self.agent_client.agent_session.session_id,
-                "id": element_id,
-                "name": "type",
-            }
-            get_attribute_response = self._command_executor.execute(
-                Command.GET_ELEMENT_ATTRIBUTE, get_attribute_params, True
-            )
-            if get_attribute_response["value"] == "password":
-                params["text"] = "***"
-                params["value"] = list("***")
-        return params
 
     def create_screenshot(self) -> str:
         """Creates a screenshot (PNG) and returns it as a base64 encoded string
