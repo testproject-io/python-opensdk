@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from src.testproject.sdk.drivers import webdriver
-from tests.pageobjects import LoginPage, ProfilePage
+from tests.pageobjects.web import LoginPage, ProfilePage
 
 
 def test_example_using_chrome():

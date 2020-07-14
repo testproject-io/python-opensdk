@@ -11,20 +11,21 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import pytest
 
-from src.testproject.sdk.drivers import webdriver
-from tests.pageobjects import LoginPage, ProfilePage
-
-
-@pytest.fixture
-def driver():
-    driver = webdriver.Safari(projectname="Examples", jobname=None)
-    yield driver
-    driver.quit()
+from selenium.webdriver.common.by import By
+from src.testproject.sdk.drivers.webdriver.base import BaseDriver
 
 
-def test_example_using_safari(driver):
+class LoginPage:
 
-    LoginPage(driver).open().login_as("John Smith", "12345")
-    assert ProfilePage(driver).greetings_are_displayed() is True
+    textfield_name = (By.ID, "name")
+    textfield_password = (By.ID, "password")
+    button_dologin = (By.ID, "login")
+
+    def __init__(self, driver: BaseDriver):
+        self._driver = driver
+
+    def login_as(self, username: str, password: str):
+        self._driver.find_element(*self.textfield_name).send_keys(username)
+        self._driver.find_element(*self.textfield_password).send_keys(password)
+        self._driver.find_element(*self.button_dologin).click()

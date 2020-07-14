@@ -11,29 +11,46 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import os
+
 import pytest
 
-from selenium.webdriver.common.by import By
 from src.testproject.sdk.drivers import webdriver
 from tests.pageobjects.web import LoginPage, ProfilePage
 
 
 @pytest.fixture
 def driver():
-    driver = webdriver.Chrome()
+
+    device_id = os.environ.get("TP_IOS_DUT_UDID", None)
+    device_name = os.environ.get("TP_IOS_DUT_NAME", None)
+
+    if not all([device_id, device_name]):
+        raise KeyError("Not all environment variables were set correctly.")
+
+    desired_capabilities = {
+        "udid": device_id,
+        "deviceName": device_name,
+        "browserName": "safari",
+        "platformName": "iOS",
+    }
+
+    driver = webdriver.Remote(desired_capabilities=desired_capabilities)
     yield driver
     driver.quit()
 
 
-def test_basic_flow_should_pass(driver):
+def test_example_on_safari_on_ios(driver):
 
     LoginPage(driver).open().login_as("John Smith", "12345")
-    assert ProfilePage(driver).greetings_are_displayed() is True
 
+    profile_page = ProfilePage(driver)
 
-def test_basic_flow_with_forced_exception_should_fail(driver):
+    profile_page.update_profile(
+        "United States",
+        "Street name and number",
+        "john.smith@somewhere.tld",
+        "+1 555 555 55",
+    )
 
-    LoginPage(driver).open().login_as("John Smith", "12345")
-    assert ProfilePage(driver).greetings_are_displayed() is True
-    # This element does not exist, so this action will force the test to fail
-    driver.find_element(By.CSS_SELECTOR, "#does_not_exist").click()
+    assert profile_page.saved_message_is_displayed() is True

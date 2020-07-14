@@ -15,20 +15,19 @@ import logging
 
 from src.testproject.helpers import ReportHelper
 from src.testproject.rest.messages import StepReport, CustomTestReport
-from src.testproject.sdk.internal.helpers import CustomCommandExecutor
 
 
 class Reporter:
     """Exposes reporting actions to the WebDriver object
 
         Args:
-            command_executor (CustomCommandExecutor): the HTTP command executor associated with the driver
+            command_executor: the command executor associated with the driver
 
         Attributes:
-            _command_executor (CustomCommandExecutor): the HTTP command executor associated with the driver
+            _command_executor: the command executor associated with the driver
     """
 
-    def __init__(self, command_executor: CustomCommandExecutor):
+    def __init__(self, command_executor):
         self._command_executor = command_executor
 
     def step(self, description: str, message: str, passed: bool, screenshot: bool = False):

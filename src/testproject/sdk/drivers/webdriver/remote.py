@@ -11,15 +11,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 import logging
 
 from appium.webdriver.webdriver import WebDriver as AppiumWebDriver
-
 from src.testproject.enums import EnvironmentVariable
 from src.testproject.helpers import ReportHelper, LoggingHelper, ConfigHelper
 from src.testproject.rest import ReportSettings
 from src.testproject.sdk.internal.agent import AgentClient
-from src.testproject.sdk.internal.helpers import CustomCommandExecutor
+from src.testproject.sdk.internal.helpers import CustomAppiumCommandExecutor
 from src.testproject.sdk.internal.reporter import Reporter
 from src.testproject.sdk.internal.session import AgentSession
 
@@ -29,6 +29,7 @@ class Remote(AppiumWebDriver):
 
         Args:
             desired_capabilities (dict): Automation session desired capabilities and options
+            token (str): Developer token to be used to communicate with the Agent
             projectname (str): Project name to report
             jobname (str): Job name to report
             disable_reports (bool): set to True to disable all reporting (no report will be created on TestProject)
@@ -37,7 +38,7 @@ class Remote(AppiumWebDriver):
             _desired_capabilities (dict): Automation session desired capabilities and options
             _agent_client (AgentClient): client responsible for communicating with the TestProject agent
             _agent_session (AgentSession): stores properties of the current agent session
-            command_executor (CustomCommandExecutor): the HTTP command executor used to send instructions to remote WebDriver
+            command_executor (CustomAppiumCommandExecutor): the HTTP command executor used to send commands
             w3c (bool): indicates whether or not the driver instance uses the W3C dialect
             session_id (str): contains the current session ID
     """
@@ -76,12 +77,12 @@ class Remote(AppiumWebDriver):
             self, command_executor=self._agent_session.remote_address, desired_capabilities=self._desired_capabilities,
         )
 
-        # Replace the standard command executor with our own to enable:
-        # - automatic logging capabilities
-        # - customized reporting settings
-        self.command_executor = CustomCommandExecutor(
+        self.command_executor = CustomAppiumCommandExecutor(
             agent_client=self._agent_client, remote_server_addr=self._agent_session.remote_address,
         )
+
+        # this ensures that mobile-specific commands are also available for our command executor
+        self._addCommands()
 
     def start_session(self, capabilities, browser_profile=None):
         """Sets capabilities and sessionId obtained from the Agent when creating the original session."""
@@ -94,6 +95,9 @@ class Remote(AppiumWebDriver):
 
     def quit(self):
         """Quits the driver and stops the session with the Agent, cleaning up after itself."""
+        # Report any left over driver command reports
+        self.command_executor.clear_stash()
+
         try:
             AppiumWebDriver.quit(self)
         except Exception:

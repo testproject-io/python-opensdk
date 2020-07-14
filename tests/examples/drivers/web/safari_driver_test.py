@@ -13,27 +13,18 @@
 # limitations under the License.
 import pytest
 
-from selenium.webdriver.common.by import By
 from src.testproject.sdk.drivers import webdriver
 from tests.pageobjects.web import LoginPage, ProfilePage
 
 
 @pytest.fixture
 def driver():
-    driver = webdriver.Chrome()
+    driver = webdriver.Safari(projectname="Examples", jobname=None)
     yield driver
     driver.quit()
 
 
-def test_basic_flow_should_pass(driver):
+def test_example_using_safari(driver):
 
     LoginPage(driver).open().login_as("John Smith", "12345")
     assert ProfilePage(driver).greetings_are_displayed() is True
-
-
-def test_basic_flow_with_forced_exception_should_fail(driver):
-
-    LoginPage(driver).open().login_as("John Smith", "12345")
-    assert ProfilePage(driver).greetings_are_displayed() is True
-    # This element does not exist, so this action will force the test to fail
-    driver.find_element(By.CSS_SELECTOR, "#does_not_exist").click()
