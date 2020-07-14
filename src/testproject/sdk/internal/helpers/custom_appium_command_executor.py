@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from appium.webdriver.appium_connection import AppiumConnection
 from selenium.webdriver.remote.command import Command
 
@@ -57,7 +58,9 @@ class CustomAppiumCommandExecutor(AppiumConnection, ReportingCommandExecutor):
 
         result = response.get("value")
 
-        passed = True if response.get("status") is None else False
+        # Both None and 0 response status values indicate command execution was OK
+        # 0 seems to be returned on some iOS commands
+        passed = True if response.get("status") in [None, 0] else False
 
         if not skip_reporting:
             self._report_command(command, params, result, passed)
