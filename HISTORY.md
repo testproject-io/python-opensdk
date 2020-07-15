@@ -6,6 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.63.13] - 2020-07-15
+
+### Added
+
+- Added support for mobile (Android and iOS) automation.
+
+### Changed
+
+- Improved redaction of iOS and Android secure elements.
+
 ## [0.63.12] - 2020-07-10
 
 ### Changed
