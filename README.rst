@@ -1,11 +1,11 @@
 TestProject SDK For Python
 ==========================
 
-`TestProject <https://testproject.io/>`_ is a **Free** Test Automation platform for Web, Mobile and API testing.
+`TestProject <https://testproject.io/>`__ is a **Free** Test Automation platform for Web, Mobile and API testing.
 
 > Support for mobile (Android and iOS) automation using Python SDK, is coming soon!
 
-To get familiar with the TestProject, visit our main `documentation <https://docs.testproject.io/>`_ website.
+To get familiar with the TestProject, visit our main `documentation <https://docs.testproject.io/>`__ website.
 
 TestProject SDK is a single, integrated interface to scripting with the most popular open source test automation frameworks.
 
@@ -15,8 +15,8 @@ With one unified SDK available across multiple languages, developers and testers
 
 With TestProject SDK, users save a bunch of time and enjoy the following benefits out of the box:
 
-* 100% open source and available as a `PyPI <https://pypi.org/project/testproject-python-sdk/>`_ project.
-* 5-minute simple Selenium and Appium (**coming soon**) setup with a single `Agent <https://docs.testproject.io/testproject-agents>`_ deployment.
+* 100% open source and available as a `PyPI <https://pypi.org/project/testproject-python-sdk/>`__ project.
+* 5-minute simple Selenium and Appium (**coming soon**) setup with a single `Agent <https://docs.testproject.io/testproject-agents>`__ deployment.
 * Automatic test reports in HTML/PDF format (including screenshots). 
 * Collaborative reporting dashboards with execution history and RESTful API support.
 * Always up-to-date with the latest and stable Selenium driver version.
@@ -29,14 +29,14 @@ Getting started
 ===============
 To get started, you need to complete the following prerequisites checklist:
 
-* Login to your account at https://app.testproject.io/ or `register <https://app.testproject.io/signup/>`_ a new one.
-* `Download <https://app.testproject.io/#/download>`_ and install an Agent for your operating system or pull a container from `Docker Hub <https://hub.docker.com/r/testproject/agent>`_.
-* Run the Agent and `register <https://docs.testproject.io/getting-started/installation-and-setup#register-the-agent>`_ it with your Account.
-* Get a development token from the `Integrations / SDK <https://app.testproject.io/#/integrations/sdk>`_ page.
+* Login to your account at https://app.testproject.io/ or `register a new one <https://app.testproject.io/signup/>`__.
+* `Download <https://app.testproject.io/#/download>`__ and install an Agent for your operating system or pull a container from `Docker Hub <https://hub.docker.com/r/testproject/agent>`__.
+* Run the Agent and `register it <https://docs.testproject.io/getting-started/installation-and-setup#register-the-agent>`__ with your Account.
+* Get a development token from the `Integrations / SDK <https://app.testproject.io/#/integrations/sdk>`__ page.
 
 Installation
 ------------
-The TestProject Python SDK is `available on PyPI <https://pypi.org/project/testproject-python-sdk/>`_. All you need to do is add it as a Python module using::
+The TestProject Python SDK is `available on PyPI <https://pypi.org/project/testproject-python-sdk/>`__. All you need to do is add it as a Python module using::
 
   pip install testproject-python-sdk
 
@@ -137,8 +137,8 @@ The SDK will attempt to infer Project and Job names when you use pytest or unitt
 
 Examples using inferred project and job names:
 
-* `pytest <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/frameworks/pytest/implicit_report_test.py>`_
-* `unittest <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/frameworks/unittest/implicit_report_test.py>`_
+* `pytest <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/frameworks/pytest/implicit_report_test.py>`__
+* `unittest <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/frameworks/unittest/implicit_report_test.py>`__
 
 Explicit project and job names
 ------------------------------
@@ -165,15 +165,15 @@ or using the ``@report`` decorator:
 
 Examples using explicitly specified project and job names:
 
-* `pytest <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/frameworks/pytest/explicit_report_test.py>`_
-* `unittest <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/frameworks/unittest/explicit_report_test.py>`_
+* `pytest <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/frameworks/pytest/explicit_report_test.py>`__
+* `unittest <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/frameworks/unittest/explicit_report_test.py>`__
 
 Test reports
 ------------
 Automatic test reporting
 ^^^^^^^^^^^^^^^^^^^^^^^^
 Tests are reported automatically when a test ends or when the ``quit()`` command is called on the driver.
-This behavior can be overridden or disabled (see the `Disabling Reports <#disabling-reports>`_ section below).
+This behavior can be overridden or disabled (see the `Disabling Reports <#disabling-reports>`__ section below).
 
 In order to determine whether a test has ended, the call stack is inspected, searching for the current test method.
 When the test name is different from the latest known test name, it is concluded that the execution of the previous test has ended.
@@ -191,7 +191,7 @@ To override the inferring of the test name and specify a custom test name instea
         # Your test code goes here
         driver.quit()
 
-Here is a complete example using `automatic reporting <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/reports/automatic_reporting_test.py>`_.
+Here is a complete example using `automatic reporting <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/reports/automatic_reporting_test.py>`__.
 
 Manual test reporting
 ^^^^^^^^^^^^^^^^^^^^^
@@ -218,7 +218,7 @@ If this feature is disabled, or you would like to add steps manually, you can us
         driver.report().step(description='My step description', message='An additional message', passed=False, screenshot=True)
         driver.quit()
 
-Here is a complete example using `manual test reporting of tests and steps <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/reports/manual_reporting_test.py>`_.
+Here is a complete example using `manual test reporting of tests and steps <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/reports/manual_reporting_test.py>`__.
 
 Disabling reports
 -----------------
@@ -289,7 +289,7 @@ Even more so than with regular Selenium- or Appium-based tests, it is important 
 
 Upon calling ``quit()``, the SDK will send all remaining report items to the Agent, ensuring that your report on the TestProject platform is complete.
 
-**Tip for pytest users**: use a `pytest fixture <https://docs.pytest.org/en/stable/fixture.html#fixtures-as-function-arguments>`_ to ensure that ``quit()`` is called at the end of the test, even when an error occurred during test execution:
+**Tip for pytest users**: use a `pytest fixture <https://docs.pytest.org/en/stable/fixture.html#fixtures-as-function-arguments>`__ to ensure that ``quit()`` is called at the end of the test, even when an error occurred during test execution:
 
 .. code-block:: python
 
@@ -304,7 +304,7 @@ Upon calling ``quit()``, the SDK will send all remaining report items to the Age
     def test_using_pytest_fixture(driver):
         driver.get("https://example.testproject.io/web")
 
-**Tip for unittest users**: use the ``setUp()`` and ``tearDown()`` `methods <https://docs.python.org/3/library/unittest.html#organizing-tests>`_ for driver creation and destroying:
+**Tip for unittest users**: use the ``setUp()`` and ``tearDown()`` `methods <https://docs.python.org/3/library/unittest.html#organizing-tests>`__ for driver creation and destroying:
 
 .. code-block:: python
 
@@ -330,10 +330,10 @@ The default logging level is ``INFO`` and the default logging format is ``%(asct
 
 If you wish, you can override the default log configuration:
 
-* For **pytest** users, it is recommended to provide alternative values `in your pytest.ini <https://docs.pytest.org/en/latest/reference.html#ini-options-ref>`_
+* For **pytest** users, it is recommended to provide alternative values `in your pytest.ini <https://docs.pytest.org/en/latest/reference.html#ini-options-ref>`__
 * Users of **unittest** can override the configuration by setting the ``TP_LOG_LEVEL`` and / or ``TP_LOG_FORMAT`` environment variables, respectively, to the desired values
 
-See `this page <https://docs.python.org/3/library/logging.html#logging-levels>`_ for a list of accepted logging levels and `look here <https://docs.python.org/3/howto/logging.html#changing-the-format-of-displayed-messages>`_ for more information on how to define a custom logging format.
+See `this page <https://docs.python.org/3/library/logging.html#logging-levels>`__ for a list of accepted logging levels and `look here <https://docs.python.org/3/howto/logging.html#changing-the-format-of-displayed-messages>`__ for more information on how to define a custom logging format.
 
 Examples
 --------
@@ -341,23 +341,23 @@ Here is a list of all examples for the different drivers that are supported by t
 
 *Web*
 
-* `Chrome test <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/drivers/web/chrome_driver_test.py>`_
-* `Firefox test <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/drivers/web/firefox_driver_test.py>`_
-* `Safari test <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/drivers/web/safari_driver_test.py>`_
-* `Edge test <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/drivers/web/edge_driver_test.py>`_
-* `Internet Explorer test <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/drivers/web/ie_driver_test.py>`_
+* `Chrome test <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/drivers/web/chrome_driver_test.py>`__
+* `Firefox test <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/drivers/web/firefox_driver_test.py>`__
+* `Safari test <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/drivers/web/safari_driver_test.py>`__
+* `Edge test <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/drivers/web/edge_driver_test.py>`__
+* `Internet Explorer test <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/drivers/web/ie_driver_test.py>`__
 
 *Android*
 
-* `Android native test <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/drivers/android/android_driver_test.py>`_
-* `Android native app <https://github.com/testproject-io/android-demo-app>`_
-* `Web test on mobile Chrome <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/drivers/android/android_driver_chrome_test.py>`_
+* `Android native test <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/drivers/android/android_driver_test.py>`__
+* `Android native app <https://github.com/testproject-io/android-demo-app>`__
+* `Web test on mobile Chrome <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/drivers/android/android_driver_chrome_test.py>`__
 
 *iOS*
 
-* `iOS native test <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/drivers/ios/ios_driver_test.py>`_
-* `iOS native app <https://github.com/testproject-io/ios-demo-app>`_
-* `Web test on mobile Safari <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/drivers/ios/ios_driver_safari_test.py>`_
+* `iOS native test <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/drivers/ios/ios_driver_test.py>`__
+* `iOS native app <https://github.com/testproject-io/ios-demo-app>`__
+* `Web test on mobile Safari <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/drivers/ios/ios_driver_safari_test.py>`__
 
 License
 -------
