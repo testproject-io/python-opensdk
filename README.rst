@@ -3,8 +3,6 @@ TestProject SDK For Python
 
 `TestProject <https://testproject.io/>`__ is a **Free** Test Automation platform for Web, Mobile and API testing.
 
-> Support for mobile (Android and iOS) automation using Python SDK, is coming soon!
-
 To get familiar with the TestProject, visit our main `documentation <https://docs.testproject.io/>`__ website.
 
 TestProject SDK is a single, integrated interface to scripting with the most popular open source test automation frameworks.
@@ -16,7 +14,7 @@ With one unified SDK available across multiple languages, developers and testers
 With TestProject SDK, users save a bunch of time and enjoy the following benefits out of the box:
 
 * 100% open source and available as a `PyPI <https://pypi.org/project/testproject-python-sdk/>`__ project.
-* 5-minute simple Selenium and Appium (**coming soon**) setup with a single `Agent <https://docs.testproject.io/testproject-agents>`__ deployment.
+* 5-minute simple Selenium and Appium setup with a single `Agent <https://docs.testproject.io/testproject-agents>`__ deployment.
 * Automatic test reports in HTML/PDF format (including screenshots). 
 * Collaborative reporting dashboards with execution history and RESTful API support.
 * Always up-to-date with the latest and stable Selenium driver version.
@@ -92,8 +90,8 @@ The examples shown in this document are based on Chrome. The SDK works in the sa
 * Safari
 * Edge
 * Internet Explorer
-* Android apps (using Appium) (**coming soon**)
-* iOS apps (using Appium) (**coming soon**)
+* Android apps (using Appium)
+* iOS apps (using Appium)
 
 Development token
 -----------------
