@@ -53,6 +53,11 @@ jobs:
       - name: Run unit-tests with pytest
         run: |
           pytest tests/ci/unittests --doctest-modules --junitxml=build/reports/junit/unit-test-results-${{ matrix.python-version }}.xml
+      - name: Check distribution package validity
+        if: matrix.python-version == '3.8'
+        run: |
+          pip install twine
+          python -m twine check dist/*
       - name: Run TestProject Agent
         if: matrix.python-version == '3.8'
         env:
@@ -97,8 +102,6 @@ jobs:
           rm -rf dist
           export TP_SDK_VERSION=$SDK_VERSION
           python setup.py sdist bdist_wheel
-          pip install twine
-          python -m twine check dist/*
           python -m twine upload --non-interactive --repository testpypi dist/*
       - name: Publish to PyPI
         if: matrix.python-version == '3.8' && startsWith(github.ref, 'refs/tags/v')
@@ -109,8 +112,6 @@ jobs:
           rm -rf dist
           export TP_SDK_VERSION=$SDK_VERSION
           python setup.py sdist bdist_wheel
-          pip install twine
-          python -m twine check dist/*
           python -m twine upload --non-interactive dist/*
       - name: Archive reports
         if: ${{ failure() }}
