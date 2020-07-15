@@ -16,17 +16,17 @@
 class DriverCommandReport:
     """Payload object sent to the Agent when reporting a driver command.
 
-        Args:
-            command (str): The name of the command that was executed
-            command_params (dict): Parameters associated with the command
-            result (dict): The result of the command that was executed
-            passed (bool): Indication whether or not command execution was performed successfully
+    Args:
+        command (str): The name of the command that was executed
+        command_params (dict): Parameters associated with the command
+        result (dict): The result of the command that was executed
+        passed (bool): Indication whether or not command execution was performed successfully
 
-        Attributes:
-            _command (str): The name of the command that was executed
-            _command_params (dict): Parameters associated with the command
-            _result (dict): The result of the command that was executed
-            _passed (bool): Indication whether or not command execution was performed successfully
+    Attributes:
+        _command (str): The name of the command that was executed
+        _command_params (dict): Parameters associated with the command
+        _result (dict): The result of the command that was executed
+        _passed (bool): Indication whether or not command execution was performed successfully
     """
 
     def __init__(self, command: str, command_params: dict, result: dict, passed: bool):

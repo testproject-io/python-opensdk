@@ -20,6 +20,8 @@ from src.testproject.sdk.exceptions import SdkException
 
 
 class SocketHelper:
+    """Contains helper methods for interacting with the Agent development socket"""
+
     @staticmethod
     def create_connection(socket_address: str, socket_port: int) -> socket:
         """Parses the agent service address and attempts to create a socket connection

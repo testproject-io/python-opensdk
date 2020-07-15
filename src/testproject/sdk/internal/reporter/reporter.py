@@ -21,11 +21,11 @@ from src.testproject.rest.messages import StepReport, CustomTestReport
 class Reporter:
     """Exposes reporting actions to the WebDriver object
 
-        Args:
-            command_executor: the command executor associated with the driver
+    Args:
+        command_executor: the command executor associated with the driver
 
-        Attributes:
-            _command_executor: the command executor associated with the driver
+    Attributes:
+        _command_executor: the command executor associated with the driver
     """
 
     def __init__(self, command_executor):

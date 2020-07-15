@@ -14,4 +14,5 @@
 
 
 class SdkException(Exception):
+    """Custom exception type for use in the SDK"""
     pass

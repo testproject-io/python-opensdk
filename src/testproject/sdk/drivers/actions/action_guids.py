@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Class containing all the GUIDs uniquely defining the testproject() actions"""
+
 actions = {"PAUSE_ID": "5ac5d621-7a53-45a6-94e5-a3348be3969e"}
 
 driver_actions = {

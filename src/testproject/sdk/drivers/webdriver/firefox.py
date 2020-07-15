@@ -19,12 +19,12 @@ from src.testproject.sdk.drivers.webdriver.base import BaseDriver
 class Firefox(BaseDriver):
     """Used to create a new Firefox browser instance
 
-        Args:
-            firefox_options (FirefoxOptions): Edge automation session desired capabilities and options
-            token (str): The developer token used to communicate with the agent
-            projectname (str): Project name to report
-            jobname (str): Job name to report
-            disable_reports (bool): set to True to disable all reporting (no report will be created on TestProject)
+    Args:
+        firefox_options (FirefoxOptions): Edge automation session desired capabilities and options
+        token (str): The developer token used to communicate with the agent
+        projectname (str): Project name to report
+        jobname (str): Job name to report
+        disable_reports (bool): set to True to disable all reporting (no report will be created on TestProject)
     """
 
     def __init__(

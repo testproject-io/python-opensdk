@@ -14,6 +14,21 @@
 
 
 class AgentSession:
+    """Object representing the current Agent session
+
+    Args:
+        remote_address (str): The Agent address
+        session_id (str): A unique identifier for the current Agent session
+        dialect (str): The WebDriver dialect associated with the session (W3C or OSS)
+        capabilities (str): driver-specific capabilities
+
+    Attributes:
+        _remote_address (str): The Agent address
+        _session_id (str): A unique identifier for the current Agent session
+        _dialect (str): The WebDriver dialect associated with the session (W3C or OSS)
+        _capabilities (str): driver-specific capabilities
+    """
+
     def __init__(self, remote_address: str, session_id: str, dialect: str, capabilities: dict):
         self._remote_address = remote_address
         self._session_id = session_id
@@ -22,16 +37,20 @@ class AgentSession:
 
     @property
     def remote_address(self) -> str:
+        """Getter for the Agent address"""
         return self._remote_address
 
     @property
     def session_id(self) -> str:
+        """Getter for the current session ID"""
         return self._session_id
 
     @property
     def dialect(self) -> str:
+        """Getter for the session dialect"""
         return self._dialect
 
     @property
     def capabilities(self) -> dict:
+        """Getter for the driver capabilities"""
         return self._capabilities

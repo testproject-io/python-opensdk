@@ -19,11 +19,14 @@ from enum import Enum, unique
 
 @unique
 class EnvironmentVariable(Enum):
+    """Enumeration of environment variable names used in the SDK"""
+
     TP_TEST_NAME = "TP_TEST_NAME"
     TP_PROJECT_NAME = "TP_PROJECT_NAME"
     TP_JOB_NAME = "TP_JOB_NAME"
 
     def remove(self):
+        """Try and remove the environment variable, proceed if the variable doesn't exist"""
         try:
             os.environ.pop(self.value)
         except KeyError:

@@ -20,6 +20,11 @@ from src.testproject.sdk.exceptions import SdkException
 
 
 def get_sdk_version() -> str:
+    """Returns the current SDK version
+
+    Returns:
+        str: The current SDK version read from package metadata or an environment variable
+    """
 
     version = None
 

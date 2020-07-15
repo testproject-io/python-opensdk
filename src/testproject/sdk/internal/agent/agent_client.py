@@ -40,19 +40,19 @@ from src.testproject.sdk.internal.session import AgentSession
 class AgentClient:
     """Client used to communicate with the TestProject Agent process
 
-        Args:
-            token (str): The development token used to communicate with the Agent
-            capabilities (dict): Additional options to be applied to the driver instance
-            reportsettings (ReportSettings): Settings (project name, job name) to be included in the report
+    Args:
+        token (str): The development token used to communicate with the Agent
+        capabilities (dict): Additional options to be applied to the driver instance
+        reportsettings (ReportSettings): Settings (project name, job name) to be included in the report
 
-        Attributes:
-            _remote_address (str): The Agent endpoint
-            _capabilities (dict): Additional options to be applied to the driver instance
-            _agent_session (AgentSession): stores properties of the current agent session
-            _token (str): The development token used to authenticate with the Agent
-            _reportsettings (ReportSettings): Settings (project name, job name) to be included in the report
-            _sock (socket.Socket): Socket used in communicating with the Agent
-            _queue (queue.Queue): queue holding reports to be sent to Agent in separate thread
+    Attributes:
+        _remote_address (str): The Agent endpoint
+        _capabilities (dict): Additional options to be applied to the driver instance
+        _agent_session (AgentSession): stores properties of the current agent session
+        _token (str): The development token used to authenticate with the Agent
+        _reportsettings (ReportSettings): Settings (project name, job name) to be included in the report
+        _sock (socket.Socket): Socket used in communicating with the Agent
+        _queue (queue.Queue): queue holding reports to be sent to Agent in separate thread
     """
 
     REPORTS_QUEUE_TIMEOUT = 10
@@ -80,8 +80,8 @@ class AgentClient:
     def __start_session(self) -> bool:
         """Starts a new development session with the Agent
 
-            Returns:
-                bool: True if the session started successfully, False otherwise
+        Returns:
+            bool: True if the session started successfully, False otherwise
         """
         sdk_version = ConfigHelper.get_sdk_version()
 
@@ -104,8 +104,8 @@ class AgentClient:
     def _request_session_from_agent(self) -> SessionResponse:
         """Creates and sends a session request object
 
-            Returns:
-                SessionResponse: object containing the response to the session request
+        Returns:
+            SessionResponse: object containing the response to the session request
         """
         session_request = SessionRequest(self._capabilities, self._reportsettings)
 
@@ -135,13 +135,13 @@ class AgentClient:
     def send_request(self, method, path, body) -> OperationResult:
         """Sends HTTP request to Agent
 
-            Args:
-                method (str): HTTP method (GET, POST, ...)
-                path (str): Relative API route path
-                body (dict): Request body
+        Args:
+            method (str): HTTP method (GET, POST, ...)
+            path (str): Relative API route path
+            body (dict): Request body
 
-            Returns:
-                OperationResult: contains result of the sent request
+        Returns:
+            OperationResult: contains result of the sent request
         """
         with requests.Session() as session:
             if method == "GET":
@@ -168,12 +168,12 @@ class AgentClient:
     def send_action_execution_request(self, codeblock_guid: str, body: dict) -> ActionExecutionResponse:
         """Sends HTTP request to Agent
 
-            Args:
-                codeblock_guid (str): The codeblock GUID to be executed
-                body (dict): Parameters to be passed to the Agent
+        Args:
+            codeblock_guid (str): The codeblock GUID to be executed
+            body (dict): Parameters to be passed to the Agent
 
-            Returns:
-                ActionExecutionResponse: contains result of the sent execution request
+        Returns:
+            ActionExecutionResponse: contains result of the sent execution request
         """
 
         response = self.send_request("POST", f"{self._remote_address}{Endpoint.ActionExecution.value}/{codeblock_guid}", body,)
@@ -285,15 +285,15 @@ class AgentClient:
 class QueueItem:
     """Helper class representing an item to be reported
 
-        Args:
-            report_as_json (dict): JSON payload representing the item to be reported
-            url (str): Agent endpoint the payload should be POSTed to
-            token (str): Token used to authenticate with the Agent
+    Args:
+        report_as_json (dict): JSON payload representing the item to be reported
+        url (str): Agent endpoint the payload should be POSTed to
+        token (str): Token used to authenticate with the Agent
 
-        Attributes:
-            _report_as_json (dict): JSON payload representing the item to be reported
-            _url (str): Agent endpoint the payload should be POSTed to
-            _token (str): Token used to authenticate with the Agent
+    Attributes:
+        _report_as_json (dict): JSON payload representing the item to be reported
+        _url (str): Agent endpoint the payload should be POSTed to
+        _token (str): Token used to authenticate with the Agent
     """
 
     def __init__(self, report_as_json: dict, url: str, token: str):

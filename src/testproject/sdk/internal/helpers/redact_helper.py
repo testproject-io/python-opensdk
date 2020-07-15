@@ -18,11 +18,11 @@ from selenium.webdriver.remote.command import Command
 class RedactHelper:
     """Class providing helper methods for command redaction
 
-        Args:
-            command_executor: The command executor used to send WebDriver commands (Selenium or Appium)
+    Args:
+        command_executor: The command executor used to send WebDriver commands (Selenium or Appium)
 
-        Attributes:
-            _command_executor: The command executor used to send WebDriver commands (Selenium or Appium)
+    Attributes:
+        _command_executor: The command executor used to send WebDriver commands (Selenium or Appium)
     """
 
     def __init__(self, command_executor):

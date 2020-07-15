@@ -17,8 +17,11 @@ import os
 
 
 class LoggingHelper:
+    """Contains helper methods for setting custom logging property values"""
+
     @staticmethod
     def configure_logging():
+        """Configures logging according to values set in dedicated environment variables"""
 
         logging_level = os.environ.get("TP_LOG_LEVEL", "INFO")
         logging_format = os.environ.get("TP_LOG_FORMAT", "%(asctime)s %(levelname)s %(message)s")
