@@ -1,6 +1,6 @@
 import pytest
-from selenium.webdriver.common.by import By
 
+from selenium.webdriver.common.by import By
 from src.testproject.enums import FindByType
 from src.testproject.helpers import SeleniumHelper
 from src.testproject.sdk.exceptions import SdkException

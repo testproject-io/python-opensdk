@@ -14,7 +14,6 @@
 
 from appium.webdriver.appium_connection import AppiumConnection
 from selenium.webdriver.remote.command import Command
-
 from src.testproject.sdk.internal.agent import AgentClient
 from src.testproject.sdk.internal.helpers.reporting_command_executor import (
     ReportingCommandExecutor,

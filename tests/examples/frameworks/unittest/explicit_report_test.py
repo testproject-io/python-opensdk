@@ -2,7 +2,7 @@ import unittest
 
 from src.testproject.decorator import report
 from src.testproject.sdk.drivers import webdriver
-from tests.pageobjects import LoginPage, ProfilePage
+from tests.pageobjects.web import LoginPage, ProfilePage
 
 
 class TestBasic(unittest.TestCase):

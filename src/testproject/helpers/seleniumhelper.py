@@ -11,11 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from selenium.webdriver.common.by import By
 
+from selenium.webdriver.common.by import By
 from src.testproject.classes import ElementSearchCriteria
 from src.testproject.enums import FindByType
-
 from src.testproject.sdk.exceptions import SdkException
 
 

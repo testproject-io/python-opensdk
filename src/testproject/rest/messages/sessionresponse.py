@@ -11,6 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+
 class SessionResponse:
     def __init__(
         self, dev_socket_port: int, server_address: str, session_id: str, dialect: str, capabilities: dict,

@@ -11,15 +11,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 import logging
 import socket
-from enum import Enum, unique
-
 import requests
 import threading
 import queue
-from requests import HTTPError
 
+from enum import Enum, unique
+from requests import HTTPError
 from src.testproject.classes import ActionExecutionResponse
 from src.testproject.enums import ExecutionResultType
 from src.testproject.executionresults import OperationResult

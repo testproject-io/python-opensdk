@@ -11,15 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+import logging
+import inspect
+
 from src.testproject.classes import ActionExecutionResponse
 from src.testproject.enums import ExecutionResultType
 from src.testproject.helpers import SeleniumHelper
 from src.testproject.sdk.internal.agent import AgentClient
 from selenium.webdriver.common.by import By
 from src.testproject.sdk.drivers.actions.action_guids import actions
-
-import logging
-import inspect
 
 
 class Actions:

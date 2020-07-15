@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from selenium.webdriver.remote.remote_connection import RemoteConnection
 from src.testproject.sdk.internal.agent import AgentClient
 from src.testproject.sdk.internal.helpers.reporting_command_executor import (
