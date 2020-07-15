@@ -98,6 +98,7 @@ jobs:
           export TP_SDK_VERSION=$SDK_VERSION
           python setup.py sdist bdist_wheel
           pip install twine
+          python -m twine check dist/*
           python -m twine upload --non-interactive --repository testpypi dist/*
       - name: Publish to PyPI
         if: matrix.python-version == '3.8' && startsWith(github.ref, 'refs/tags/v')
@@ -109,6 +110,7 @@ jobs:
           export TP_SDK_VERSION=$SDK_VERSION
           python setup.py sdist bdist_wheel
           pip install twine
+          python -m twine check dist/*
           python -m twine upload --non-interactive dist/*
       - name: Archive reports
         if: ${{ failure() }}
