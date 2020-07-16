@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from selenium.webdriver.remote.remote_connection import RemoteConnection
 from src.testproject.sdk.internal.agent import AgentClient
 from src.testproject.sdk.internal.helpers.reporting_command_executor import (
@@ -21,9 +22,9 @@ from src.testproject.sdk.internal.helpers.reporting_command_executor import (
 class CustomCommandExecutor(RemoteConnection, ReportingCommandExecutor):
     """Extension of the Selenium RemoteConnection (command_executor) class
 
-        Args:
-            agent_client (AgentClient): Client used to communicate with the TestProject Agent
-            remote_server_addr (str): Remote server (Agent) address
+    Args:
+        agent_client (AgentClient): Client used to communicate with the TestProject Agent
+        remote_server_addr (str): Remote server (Agent) address
     """
 
     def __init__(self, agent_client: AgentClient, remote_server_addr: str):

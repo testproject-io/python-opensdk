@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 import os
 import logging
 
@@ -19,13 +20,15 @@ from src.testproject.sdk.exceptions import SdkException
 
 
 class ConfigHelper:
+    """Contains helper methods for SDK configuration"""
+
     @staticmethod
     def get_agent_service_address() -> str:
         """Returns the Agent service address as defined in the TP_AGENT_URL environment variable.
             Defaults to http://127.0.0.1:8585 (localhost)
 
-            Returns:
-                str: the Agent service address
+        Returns:
+            str: the Agent service address
         """
         address = os.getenv("TP_AGENT_URL")
         if address is None:
@@ -43,8 +46,8 @@ class ConfigHelper:
     def get_developer_token() -> str:
         """Returns the TestProject developer token as defined in the TP_DEV_TOKEN environment variable
 
-            Returns:
-                str: the developer token
+        Returns:
+            str: the developer token
         """
         token = os.getenv("TP_DEV_TOKEN")
         if token is None:
@@ -55,4 +58,9 @@ class ConfigHelper:
 
     @staticmethod
     def get_sdk_version() -> str:
+        """Returns the SDK version as defined in the definitions module
+
+        Returns:
+            str: the current SDK version
+        """
         return definitions.get_sdk_version()

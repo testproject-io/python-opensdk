@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from src.testproject.helpers import ConfigHelper
 from src.testproject.rest import ReportSettings
 
@@ -18,16 +19,16 @@ from src.testproject.rest import ReportSettings
 class SessionRequest:
     """Represent a request message object to be sent to the Agent to initialize a new session
 
-        Args:
-            capabilities (dict): Desired session capabilities
-            reportsettings (ReportSettings): Settings to be used in the report
+    Args:
+        capabilities (dict): Desired session capabilities
+        reportsettings (ReportSettings): Settings to be used in the report
 
-        Attributes:
-            _capabilities (dict): Desired session capabilities
-            _sdk_version (str): Current Python SDK version
-            _language (str): Test code language (Python, obviously)
-            _projectname (str): Project name to report
-            _jobname (str): Job name to report
+    Attributes:
+        _capabilities (dict): Desired session capabilities
+        _sdk_version (str): Current Python SDK version
+        _language (str): Test code language (Python, obviously)
+        _projectname (str): Project name to report
+        _jobname (str): Job name to report
     """
 
     def __init__(self, capabilities: dict, reportsettings: ReportSettings):

@@ -11,17 +11,28 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from selenium.webdriver.common.by import By
 
+from selenium.webdriver.common.by import By
 from src.testproject.classes import ElementSearchCriteria
 from src.testproject.enums import FindByType
-
 from src.testproject.sdk.exceptions import SdkException
 
 
 class SeleniumHelper:
+    """Contains helper methods for Selenium actions, mostly locator-related"""
+
     @staticmethod
     def create_search_criteria(by: By, by_value: str):
+        """Translator method to create element search criteria to send to the Agent
+
+        Args:
+            by (By): The element locator strategy to be used
+            by_value (str): The associated element locator strategy value
+
+        Returns:
+            ElementSearchCriteria: object representing the element search criteria
+        """
+
         if by == By.ID:
             return ElementSearchCriteria(FindByType.ID, by_value)
         elif by == By.NAME:
@@ -43,6 +54,16 @@ class SeleniumHelper:
 
     @staticmethod
     def create_addon_locator(by: By, by_value: str):
+        """Creates and returns an locator used in an addon based on a locator strategy
+
+        Args:
+            by (By): The element locator strategy to be used
+            by_value (str): The associated element locator strategy value
+
+        Returns:
+            dict: object representing the element locator strategy to use in the addon
+        """
+
         if by == By.ID:
             return {"id": by_value}
         elif by == By.NAME:

@@ -11,6 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+import logging
+import inspect
+
 from src.testproject.classes import ActionExecutionResponse
 from src.testproject.enums import ExecutionResultType
 from src.testproject.helpers import SeleniumHelper
@@ -18,11 +22,18 @@ from src.testproject.sdk.internal.agent import AgentClient
 from selenium.webdriver.common.by import By
 from src.testproject.sdk.drivers.actions.action_guids import actions
 
-import logging
-import inspect
-
 
 class Actions:
+    """Offers method to execute all actions
+
+    Args:
+        agent_client (AgentClient): client to communicate with the Agent
+        timeout (int): timeout for action execution
+
+    Attributes:
+        _agent_client (AgentClient): client to communicate with the Agent
+        _timeout (int): timeout for action execution
+    """
     def __init__(self, agent_client: AgentClient, timeout: int):
         self._agent_client = agent_client
         self._timeout = timeout
@@ -60,6 +71,14 @@ class Actions:
         return response
 
     def pause(self, milliseconds: int) -> bool:
+        """Pause test execution for the specified duration
+
+        Args:
+            milliseconds (int): Number of milliseconds to pause test execution for
+
+        Returns:
+            bool: True if the action was performed successfully, False otherwise
+        """
         body = {"milliseconds": milliseconds}
         response = self.action_execute(actions["PAUSE_ID"], body)
         return response.executionresulttype == ExecutionResultType.Passed

@@ -11,13 +11,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 import logging
 import os
 
 
 class LoggingHelper:
+    """Contains helper methods for setting custom logging property values"""
+
     @staticmethod
     def configure_logging():
+        """Configures logging according to values set in dedicated environment variables"""
 
         logging_level = os.environ.get("TP_LOG_LEVEL", "INFO")
         logging_format = os.environ.get("TP_LOG_FORMAT", "%(asctime)s %(levelname)s %(message)s")

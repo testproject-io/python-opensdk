@@ -27,20 +27,20 @@ from src.testproject.sdk.internal.session import AgentSession
 class Remote(AppiumWebDriver):
     """Used to create a new Android driver instance
 
-        Args:
-            desired_capabilities (dict): Automation session desired capabilities and options
-            token (str): Developer token to be used to communicate with the Agent
-            projectname (str): Project name to report
-            jobname (str): Job name to report
-            disable_reports (bool): set to True to disable all reporting (no report will be created on TestProject)
+    Args:
+        desired_capabilities (dict): Automation session desired capabilities and options
+        token (str): Developer token to be used to communicate with the Agent
+        projectname (str): Project name to report
+        jobname (str): Job name to report
+        disable_reports (bool): set to True to disable all reporting (no report will be created on TestProject)
 
-        Attributes:
-            _desired_capabilities (dict): Automation session desired capabilities and options
-            _agent_client (AgentClient): client responsible for communicating with the TestProject agent
-            _agent_session (AgentSession): stores properties of the current agent session
-            command_executor (CustomAppiumCommandExecutor): the HTTP command executor used to send commands
-            w3c (bool): indicates whether or not the driver instance uses the W3C dialect
-            session_id (str): contains the current session ID
+    Attributes:
+        _desired_capabilities (dict): Automation session desired capabilities and options
+        _agent_client (AgentClient): client responsible for communicating with the TestProject agent
+        _agent_session (AgentSession): stores properties of the current agent session
+        command_executor (CustomAppiumCommandExecutor): the HTTP command executor used to send commands
+        w3c (bool): indicates whether or not the driver instance uses the W3C dialect
+        session_id (str): contains the current session ID
     """
 
     def __init__(

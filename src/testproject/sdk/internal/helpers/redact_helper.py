@@ -11,17 +11,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from selenium.webdriver.remote.command import Command
 
 
 class RedactHelper:
     """Class providing helper methods for command redaction
 
-        Args:
-            command_executor: The command executor used to send WebDriver commands (Selenium or Appium)
+    Args:
+        command_executor: The command executor used to send WebDriver commands (Selenium or Appium)
 
-        Attributes:
-            _command_executor: The command executor used to send WebDriver commands (Selenium or Appium)
+    Attributes:
+        _command_executor: The command executor used to send WebDriver commands (Selenium or Appium)
     """
 
     def __init__(self, command_executor):

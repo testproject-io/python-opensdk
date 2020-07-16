@@ -11,14 +11,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from importlib_metadata import metadata, PackageNotFoundError
+
 import os
 import logging
 
+from importlib_metadata import metadata, PackageNotFoundError
 from src.testproject.sdk.exceptions import SdkException
 
 
 def get_sdk_version() -> str:
+    """Returns the current SDK version
+
+    Returns:
+        str: The current SDK version read from package metadata or an environment variable
+    """
 
     version = None
 

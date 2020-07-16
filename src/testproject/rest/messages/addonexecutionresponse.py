@@ -11,16 +11,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from src.testproject.enums import ExecutionResultType
 
 
 class AddonExecutionResponse:
     """Object representing the response returned when execution a custom action
 
-        Attributes:
-            _executionresulttype (ExecutionResultType): The result of the action execution (Passed / Failed / ...)
-            _message (str): A message returned by the agent in response to the action execution
-            _fields (list): A potentially updated list of fields
+    Attributes:
+        _executionresulttype (ExecutionResultType): The result of the action execution (Passed / Failed / ...)
+        _message (str): A message returned by the agent in response to the action execution
+        _fields (list): A potentially updated list of fields
     """
 
     def __init__(self):

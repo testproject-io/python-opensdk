@@ -16,15 +16,15 @@
 class CustomTestReport:
     """Payload object sent to the Agent when reporting a test.
 
-        Args:
-            name (str): The test name
-            passed (bool): True if the test should be marked as passed, False otherwise
-            message (str): A message that goes with the test
+    Args:
+        name (str): The test name
+        passed (bool): True if the test should be marked as passed, False otherwise
+        message (str): A message that goes with the test
 
-        Attributes:
-            _name (str): The test name
-            _passed (bool): True if the test should be marked as passed, False otherwise
-            _message (str): A message that goes with the test
+    Attributes:
+        _name (str): The test name
+        _passed (bool): True if the test should be marked as passed, False otherwise
+        _message (str): A message that goes with the test
     """
 
     def __init__(self, name: str, passed: bool, message: str = None):

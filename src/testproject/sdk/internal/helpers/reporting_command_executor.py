@@ -25,20 +25,20 @@ from src.testproject.sdk.internal.helpers.redact_helper import RedactHelper
 class ReportingCommandExecutor:
     """Class responsible for executing commands and reporting them
 
-        Args:
-            agent_client (AgentClient): Client used to communicate with the TestProject Agent
-            command_executor: The command executor used to send WebDriver commands (Selenium or Appium)
+    Args:
+        agent_client (AgentClient): Client used to communicate with the TestProject Agent
+        command_executor: The command executor used to send WebDriver commands (Selenium or Appium)
 
-        Attributes:
-            _agent_client (AgentClient): Client used to communicate with the TestProject Agent
-            _command_executor: The command executor used to send WebDriver commands (Selenium or Appium)
-            _disable_reports (bool): True if all reporting is disabled, False otherwise
-            _disable_auto_test_reports (bool): True if automatic reporting of tests is disabled, False otherwise
-            _disable_command_reports (bool): True if driver command reporting is disabled, False otherwise
-            _disable_redaction (bool): True if reporting steps should be redacted, False otherwise
-            _stashed_command (DriverCommandReport): contains stashed driver command for preventing duplicates
-            inside WebDriverWait
-            _latest_known_test_name (str): contains latest known test name
+    Attributes:
+        _agent_client (AgentClient): Client used to communicate with the TestProject Agent
+        _command_executor: The command executor used to send WebDriver commands (Selenium or Appium)
+        _disable_reports (bool): True if all reporting is disabled, False otherwise
+        _disable_auto_test_reports (bool): True if automatic reporting of tests is disabled, False otherwise
+        _disable_command_reports (bool): True if driver command reporting is disabled, False otherwise
+        _disable_redaction (bool): True if reporting steps should be redacted, False otherwise
+        _stashed_command (DriverCommandReport): contains stashed driver command for preventing duplicates
+        inside WebDriverWait
+        _latest_known_test_name (str): contains latest known test name
     """
 
     def __init__(self, agent_client: AgentClient, command_executor):

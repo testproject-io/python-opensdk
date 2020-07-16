@@ -11,17 +11,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from src.testproject.sdk.drivers.webdriver.base import BaseDriver
 
 
 class Safari(BaseDriver):
     """Used to create a new Safari browser instance
 
-        Args:
-            token (str): The developer token used to communicate with the agent
-            projectname (str): Project name to report
-            jobname (str): Job name to report
-            disable_reports (bool): set to True to disable all reporting (no report will be created on TestProject)
+    Args:
+        token (str): The developer token used to communicate with the agent
+        projectname (str): Project name to report
+        jobname (str): Job name to report
+        disable_reports (bool): set to True to disable all reporting (no report will be created on TestProject)
     """
 
     def __init__(

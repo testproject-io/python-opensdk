@@ -27,21 +27,21 @@ from selenium.webdriver.remote.webdriver import WebDriver as RemoteWebDriver
 class BaseDriver(RemoteWebDriver):
     """Base class with common functions for all web browser types
 
-            Args:
-                capabilities (dict): Automation session desired capabilities and options
-                token (str): Developer token to be used to communicate with the Agent
-                projectname (str): Project name to report
-                jobname (str): Job name to report
-                disable_reports (bool): set to True to disable all reporting (no report will be created on TestProject)
+    Args:
+        capabilities (dict): Automation session desired capabilities and options
+        token (str): Developer token to be used to communicate with the Agent
+        projectname (str): Project name to report
+        jobname (str): Job name to report
+        disable_reports (bool): set to True to disable all reporting (no report will be created on TestProject)
 
-            Attributes:
-                _agent_client (AgentClient): client responsible for communicating with the TestProject agent
-                _agent_session (AgentSession): stores properties of the current agent session
-                command_executor (CustomCommandExecutor): the HTTP command executor used to send instructions
-                to remote WebDriver
-                w3c (bool): indicates whether or not the driver instance uses the W3C dialect
-                session_id (str): contains the current session ID
-        """
+    Attributes:
+        _agent_client (AgentClient): client responsible for communicating with the TestProject agent
+        _agent_session (AgentSession): stores properties of the current agent session
+        command_executor (CustomCommandExecutor): the HTTP command executor used to send instructions
+        to remote WebDriver
+        w3c (bool): indicates whether or not the driver instance uses the W3C dialect
+        session_id (str): contains the current session ID
+    """
 
     def __init__(
         self, capabilities: dict, token: str, projectname: str, jobname: str, disable_reports: bool,
@@ -87,7 +87,11 @@ class BaseDriver(RemoteWebDriver):
         logging.info(f"Session ID is {self.session_id}")
 
     def report(self) -> Reporter:
-        """Enables access to the TestProject reporting actions from the driver object"""
+        """Enables access to the TestProject reporting actions from the driver object
+
+        Returns:
+            Reporter: object giving access to reporting methods
+        """
         return Reporter(self.command_executor)
 
     def quit(self):

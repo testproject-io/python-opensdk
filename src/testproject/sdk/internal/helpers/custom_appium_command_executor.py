@@ -14,7 +14,6 @@
 
 from appium.webdriver.appium_connection import AppiumConnection
 from selenium.webdriver.remote.command import Command
-
 from src.testproject.sdk.internal.agent import AgentClient
 from src.testproject.sdk.internal.helpers.reporting_command_executor import (
     ReportingCommandExecutor,
@@ -24,9 +23,9 @@ from src.testproject.sdk.internal.helpers.reporting_command_executor import (
 class CustomAppiumCommandExecutor(AppiumConnection, ReportingCommandExecutor):
     """Extension of the Appium AppiumConnection (command_executor) class
 
-        Args:
-            agent_client (AgentClient): Client used to communicate with the TestProject Agent
-            remote_server_addr (str): Remote server (Agent) address
+    Args:
+        agent_client (AgentClient): Client used to communicate with the TestProject Agent
+        remote_server_addr (str): Remote server (Agent) address
     """
 
     def __init__(self, agent_client: AgentClient, remote_server_addr: str):

@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from selenium.webdriver.ie.options import Options
 from src.testproject.sdk.drivers.webdriver.base import BaseDriver
 
@@ -18,12 +19,12 @@ from src.testproject.sdk.drivers.webdriver.base import BaseDriver
 class Ie(BaseDriver):
     """Used to create a new Internet Explorer browser instance
 
-        Args:
-            ie_options (Options): IE automation session desired capabilities and options
-            token (str): The developer token used to communicate with the agent
-            projectname (str): Project name to report
-            jobname (str): Job name to report
-            disable_reports (bool): set to True to disable all reporting (no report will be created on TestProject)
+    Args:
+        ie_options (Options): IE automation session desired capabilities and options
+        token (str): The developer token used to communicate with the agent
+        projectname (str): Project name to report
+        jobname (str): Job name to report
+        disable_reports (bool): set to True to disable all reporting (no report will be created on TestProject)
     """
 
     def __init__(
