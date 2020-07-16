@@ -141,10 +141,15 @@ class ReportingCommandExecutor:
         """Infers the current test name and if different from the latest known test name, reports a test"""
         current_test_name = ReportHelper.infer_test_name()
 
-        if self._latest_known_test_name != current_test_name:
-            # the name of the test method has changed, report a test
+        # Actions inside a unittest tearDown or tearDownClass method should be reported as part of the test
+        in_unittest_teardown = ReportHelper.find_unittest_teardown()
+
+        if self._latest_known_test_name != current_test_name and not in_unittest_teardown:
+            # the name of the test method has changed and we're not inside a unittest teardown method,
+            # so we need to report a test
             if not self.disable_auto_test_reports:
                 self.report_test()
+            # update the latest known test name for future reports
             self._latest_known_test_name = current_test_name
 
     def report_test(self):
