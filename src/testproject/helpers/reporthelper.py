@@ -40,7 +40,7 @@ class ReportHelper:
             # we're using pytest
             return current_test_info.split(" ")[0].split("::")[1]
         else:
-            # Try finding the right entry in the call stack, assuming that unittest is used
+            # Try finding the right entry in the call stack (for unittest or when no testing framework is used)
             logging.debug("Attempting to infer test name using inspect.stack()")
             result = cls.__find_name_in_call_stack_for(ReportNamingElement.Test)
             logging.debug(f"Inferred test name '{result}' from inspect.stack()")
@@ -69,7 +69,7 @@ class ReportHelper:
                 "/", "."
             )
         else:
-            # Try finding the right entry in the call stack, assuming that unittest is used
+            # Try finding the right entry in the call stack (for unittest or when no testing framework is used)
             logging.debug("Attempting to infer project name using inspect.stack()")
             result = cls.__find_name_in_call_stack_for(ReportNamingElement.Project)
             logging.debug(f"Inferred project name '{result}' from inspect.stack()")
@@ -94,7 +94,7 @@ class ReportHelper:
             path_to_test_file = current_test_info.split(" ")[0].split("::")[0]
             return path_to_test_file.split("::")[0].split("/")[-1].split(".py")[0]
         else:
-            # Try finding the right entry in the call stack, assuming that unittest is used
+            # Try finding the right entry in the call stack (for unittest or when no testing framework is used)
             logging.debug("Attempting to infer job name using inspect.stack()")
             result = cls.__find_name_in_call_stack_for(ReportNamingElement.Job)
             logging.debug(f"Inferred job name '{result}' from inspect.stack()")
@@ -171,7 +171,7 @@ class ReportHelper:
 
     @classmethod
     def __detect_unittest(cls) -> bool:
-        """Unility method that traverses the call stack and checks if unittest was invoked
+        """Utility method that traverses the call stack and checks if unittest was invoked
 
         Returns:
             bool: True if unittest was found in the call stack, False otherwise
@@ -183,4 +183,19 @@ class ReportHelper:
                 and str(frame.filename).find("main.py") > 0
             ):
                 return True
+        return False
+
+    @classmethod
+    def find_unittest_teardown(cls) -> bool:
+        """Utility method that traverses the call stack and checks if unittest was invoked
+
+        Returns:
+            bool: True if unittest was found in the call stack, False otherwise
+        """
+        if not cls.__detect_unittest():
+            return False
+        else:
+            for frame in inspect.stack().__reversed__():
+                if frame.function in ["tearDown", "tearDownClass"]:
+                    return True
         return False
