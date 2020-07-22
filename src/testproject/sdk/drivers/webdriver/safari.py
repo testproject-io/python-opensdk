@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from selenium.webdriver import DesiredCapabilities
 
 from src.testproject.sdk.drivers.webdriver.base import BaseDriver
 
@@ -19,6 +20,7 @@ class Safari(BaseDriver):
     """Used to create a new Safari browser instance
 
     Args:
+        desired_capabilities (dict): Safari automation session desired capabilities and options
         token (str): The developer token used to communicate with the agent
         projectname (str): Project name to report
         jobname (str): Job name to report
@@ -26,8 +28,17 @@ class Safari(BaseDriver):
     """
 
     def __init__(
-        self, token: str = None, projectname: str = None, jobname: str = None, disable_reports: bool = False,
+        self,
+        desired_capabilities: dict = DesiredCapabilities.SAFARI,
+        token: str = None,
+        projectname: str = None,
+        jobname: str = None,
+        disable_reports: bool = False,
     ):
         super().__init__(
-            capabilities={}, token=token, projectname=projectname, jobname=jobname, disable_reports=disable_reports,
+            capabilities=desired_capabilities,
+            token=token,
+            projectname=projectname,
+            jobname=jobname,
+            disable_reports=disable_reports,
         )
