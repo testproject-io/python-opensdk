@@ -38,13 +38,16 @@ class ReportHelper:
 
         if current_test_info is not None:
             # we're using pytest
-            return current_test_info.split(" ")[0].split("::")[1]
+            result = cls.infer_name_from_pytest_info_for(
+                current_test_info, ReportNamingElement.Test
+            )
         else:
             # Try finding the right entry in the call stack (for unittest or when no testing framework is used)
             logging.debug("Attempting to infer test name using inspect.stack()")
             result = cls.__find_name_in_call_stack_for(ReportNamingElement.Test)
             logging.debug(f"Inferred test name '{result}' from inspect.stack()")
-            return result if result is not None else "Unnamed Test"
+
+        return result if result is not None else "Unnamed Test"
 
     @classmethod
     def infer_project_name(cls) -> str:
@@ -64,16 +67,16 @@ class ReportHelper:
 
         if current_test_info is not None:
             # we're using pytest
-            path_to_test_file = current_test_info.split(" ")[0].split("::")[0]
-            return path_to_test_file[0:path_to_test_file.rfind("/")].replace(
-                "/", "."
+            result = cls.infer_name_from_pytest_info_for(
+                current_test_info, ReportNamingElement.Project
             )
         else:
             # Try finding the right entry in the call stack (for unittest or when no testing framework is used)
             logging.debug("Attempting to infer project name using inspect.stack()")
             result = cls.__find_name_in_call_stack_for(ReportNamingElement.Project)
             logging.debug(f"Inferred project name '{result}' from inspect.stack()")
-            return result if result is not None else "Unnamed Project"
+
+        return result if result is not None else "Unnamed Project"
 
     @classmethod
     def infer_job_name(cls) -> str:
@@ -91,14 +94,39 @@ class ReportHelper:
 
         if current_test_info is not None:
             # we're using pytest
-            path_to_test_file = current_test_info.split(" ")[0].split("::")[0]
-            return path_to_test_file.split("::")[0].split("/")[-1].split(".py")[0]
+            result = cls.infer_name_from_pytest_info_for(
+                current_test_info, ReportNamingElement.Job
+            )
         else:
             # Try finding the right entry in the call stack (for unittest or when no testing framework is used)
             logging.debug("Attempting to infer job name using inspect.stack()")
             result = cls.__find_name_in_call_stack_for(ReportNamingElement.Job)
             logging.debug(f"Inferred job name '{result}' from inspect.stack()")
-            return result if result is not None else "Unnamed Job"
+
+        return result if result is not None else "Unnamed Job"
+
+    @classmethod
+    def infer_name_from_pytest_info_for(
+        cls, pytest_info: str, element_to_find: ReportNamingElement
+    ):
+        """Uses the test info stored by pytest to infer a project, job or test name
+
+        Args:
+            pytest_info (str): the test info as stored by pytest
+            element_to_find (ReportNamingElement): the report naming element that we're looking for
+
+        Returns:
+            str: the inferred report naming element value
+        """
+        if element_to_find == ReportNamingElement.Project:
+            path_to_test_file = pytest_info.split(" ")[0].split("::")[0]
+            return path_to_test_file[0 : path_to_test_file.rfind("/")].replace("/", ".")
+        elif element_to_find == ReportNamingElement.Job:
+            path_to_test_file = pytest_info.split(" ")[0].split("::")[0]
+            return path_to_test_file.split("::")[0].split("/")[-1].split(".py")[0]
+        elif element_to_find == ReportNamingElement.Test:
+            return pytest_info.rsplit(" ", maxsplit=1)[0].split("::")[1]
+        return None
 
     @classmethod
     def __find_name_in_call_stack_for(cls, element_to_find: ReportNamingElement) -> str:
