@@ -197,3 +197,15 @@ class ReportingCommandExecutor:
                 # report the stashed command and clear it
                 self.agent_client.report_driver_command(self._stashed_command)
                 self._stashed_command = None
+
+    def is_command_passed(self, response: dict) -> bool:
+        """Determine command result based on response using state and status.
+
+        Args:
+            response (dict): The response returned by the Selenium remote webdriver server
+
+        Returns:
+            bool: True if passed, otherwise False.
+        """
+        # Both None and 0 response status values indicate command execution was OK
+        return True if response.get("status") in [None, 0] else False

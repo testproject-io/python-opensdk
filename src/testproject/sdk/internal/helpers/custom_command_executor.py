@@ -52,7 +52,7 @@ class CustomCommandExecutor(RemoteConnection, ReportingCommandExecutor):
 
         result = response.get("value")
 
-        passed = True if response.get("status") is None else False
+        passed = self.is_command_passed(response=response)
 
         if not skip_reporting:
             self._report_command(command, params, result, passed)
