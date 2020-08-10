@@ -6,6 +6,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.63.14] - 2020-08-10
+
+### Added
+
+- Add a custom capability 'cloud:URL' usage documentation.
+
+### Changed
+
+- Ensure that only the `src` folder is included in a distribution.
+
+### Fixed
+
+- Fixed scenario when driver commands were not assigned to proper test.
+- Fixed issue with test names being truncated at first space when running pytest parameterized tests.
+- Fixed Safari driver initialization problem on macOS.
+
 ## [0.63.13] - 2020-07-15
 
 ### Added

@@ -57,9 +57,7 @@ class CustomAppiumCommandExecutor(AppiumConnection, ReportingCommandExecutor):
 
         result = response.get("value")
 
-        # Both None and 0 response status values indicate command execution was OK
-        # 0 seems to be returned on some iOS commands
-        passed = True if response.get("status") in [None, 0] else False
+        passed = self.is_command_passed(response=response)
 
         if not skip_reporting:
             self._report_command(command, params, result, passed)
