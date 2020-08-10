@@ -88,6 +88,7 @@ jobs:
         env:
           TP_DEV_TOKEN: ${{ secrets.TP_DEV_TOKEN }}
           TP_AGENT_URL: http://localhost:8585
+          TP_CLOUD_URL: ${{ secrets.TP_CLOUD_URL }}
         run: |
           trap 'kill $(jobs -p)' EXIT
           export TP_SDK_VERSION=$SDK_VERSION
