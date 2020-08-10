@@ -112,6 +112,23 @@ TestProject Agent
 By default, drivers communicate with the local Agent listening on http://localhost:8585.
 This value can be overridden by setting the ``TP_AGENT_URL`` environment variable to the correct Agent address.
 
+
+Remote (Cloud) Driver
+---------------------
+
+By default, TestProject Agent communicates with the local Selenium or Appium server.
+In order to initialize a remote driver for cloud providers such as SauceLabs or BrowserStack,
+a custom capability ``cloud:URL`` should be set, for example:
+
+.. code-block:: python
+
+    def driver():
+        chrome_options = ChromeOptions()
+        chrome_options.set_capability("cloud:URL", "https://{USERNAME}:{PASSWORD}@ondemand.us-west-1.saucelabs.com:443/wd/hub")
+        driver = webdriver.Chrome(chrome_options=chrome_options, projectname="Examples")
+        yield driver
+        driver.quit()
+
 Reports
 =======
 By default, the TestProject SDK reports all executed driver commands and their results to the TestProject Cloud.
