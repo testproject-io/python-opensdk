@@ -16,7 +16,7 @@ import logging
 import socket
 
 from urllib.parse import urlparse
-from src.testproject.sdk.exceptions import SdkException
+from src.testproject.sdk.exceptions import AgentConnectException
 
 
 class SocketHelper:
@@ -40,7 +40,7 @@ class SocketHelper:
         sock.connect((host, socket_port))
 
         if not SocketHelper.is_socket_connected(sock):
-            raise SdkException("Error occurred connecting to development socket")
+            raise AgentConnectException("Failed connecting to Agent socket")
 
         logging.info(f"Socket connection to {host}:{socket_port} established successfully")
 

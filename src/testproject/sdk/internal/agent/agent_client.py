@@ -32,7 +32,12 @@ from src.testproject.rest.messages import (
     StepReport,
     CustomTestReport,
 )
-from src.testproject.sdk.exceptions import SdkException
+from src.testproject.sdk.exceptions import (
+    SdkException,
+    AgentConnectException,
+    InvalidTokenException,
+    ObsoleteVersionException,
+)
 from src.testproject.helpers import SocketHelper
 from src.testproject.sdk.internal.session import AgentSession
 
@@ -66,7 +71,9 @@ class AgentClient:
         self._queue = queue.Queue()
 
         self._running = True
-        self._reporting_thread = threading.Thread(target=self.__report_worker, daemon=True)
+        self._reporting_thread = threading.Thread(
+            target=self.__report_worker, daemon=True
+        )
         self._reporting_thread.start()
 
         if not self.__start_session():
@@ -96,7 +103,9 @@ class AgentClient:
             start_session_response.capabilities,
         )
 
-        self._sock = SocketHelper.create_connection(self._remote_address, start_session_response.dev_socket_port)
+        self._sock = SocketHelper.create_connection(
+            self._remote_address, start_session_response.dev_socket_port
+        )
 
         logging.info("Development session started...")
         return True
@@ -113,12 +122,20 @@ class AgentClient:
 
         try:
             response = self.send_request(
-                "POST", f"{self._remote_address}{Endpoint.DevelopmentSession.value}", session_request.to_json(),
+                "POST",
+                f"{self._remote_address}{Endpoint.DevelopmentSession.value}",
+                session_request.to_json(),
             )
         except requests.exceptions.ConnectionError:
-            logging.error(f"Could not start new session on {self._remote_address}. Is your Agent running?")
-            logging.error("You can download the TestProject Agent from https://app.testproject.io/#/agents")
-            raise SdkException(f"Connection error trying to connect to Agent on {self._remote_address}")
+            logging.error(
+                f"Could not start new session on {self._remote_address}. Is your Agent running?"
+            )
+            logging.error(
+                "You can download the TestProject Agent from https://app.testproject.io/#/agents"
+            )
+            raise AgentConnectException(
+                f"Connection error trying to connect to Agent on {self._remote_address}"
+            )
 
         if not response.passed:
             self.__handle_new_session_error(response)
@@ -147,11 +164,15 @@ class AgentClient:
             if method == "GET":
                 response = session.get(path, headers={"Authorization": self._token})
             elif method == "POST":
-                response = session.post(path, headers={"Authorization": self._token}, json=body)
+                response = session.post(
+                    path, headers={"Authorization": self._token}, json=body
+                )
             elif method == "DELETE":
                 response = session.delete(path, headers={"Authorization": self._token})
             else:
-                raise SdkException(f"Unsupported HTTP method {method} in send_request()")
+                raise SdkException(
+                    f"Unsupported HTTP method {method} in send_request()"
+                )
 
         try:
             response.raise_for_status()
@@ -165,7 +186,9 @@ class AgentClient:
         except HTTPError as http_error:
             return OperationResult(False, response.status_code, str(http_error), None)
 
-    def send_action_execution_request(self, codeblock_guid: str, body: dict) -> ActionExecutionResponse:
+    def send_action_execution_request(
+        self, codeblock_guid: str, body: dict
+    ) -> ActionExecutionResponse:
         """Sends HTTP request to Agent
 
         Args:
@@ -176,12 +199,20 @@ class AgentClient:
             ActionExecutionResponse: contains result of the sent execution request
         """
 
-        response = self.send_request("POST", f"{self._remote_address}{Endpoint.ActionExecution.value}/{codeblock_guid}", body,)
+        response = self.send_request(
+            "POST",
+            f"{self._remote_address}{Endpoint.ActionExecution.value}/{codeblock_guid}",
+            body,
+        )
 
         if not response.passed:
             result = ExecutionResultType.Failed
         else:
-            result = ExecutionResultType.Passed if response.data["resultType"] == "Passed" else ExecutionResultType.Failed
+            result = (
+                ExecutionResultType.Passed
+                if response.data["resultType"] == "Passed"
+                else ExecutionResultType.Failed
+            )
 
         result_data = response.data["outputs"] if response.passed else None
 
@@ -195,7 +226,11 @@ class AgentClient:
         """
         endpoint = f"{self._remote_address}{Endpoint.ReportDriverCommand.value}"
 
-        queue_item = QueueItem(report_as_json=driver_command_report.to_json(), url=endpoint, token=self._token)
+        queue_item = QueueItem(
+            report_as_json=driver_command_report.to_json(),
+            url=endpoint,
+            token=self._token,
+        )
 
         self._queue.put(queue_item, block=False)
 
@@ -207,7 +242,9 @@ class AgentClient:
         """
         endpoint = f"{self._remote_address}{Endpoint.ReportStep.value}"
 
-        queue_item = QueueItem(report_as_json=step_report.to_json(), url=endpoint, token=self._token)
+        queue_item = QueueItem(
+            report_as_json=step_report.to_json(), url=endpoint, token=self._token
+        )
 
         self._queue.put(queue_item, block=False)
 
@@ -219,7 +256,9 @@ class AgentClient:
         """
         endpoint = f"{self._remote_address}{Endpoint.ReportTest.value}"
 
-        queue_item = QueueItem(report_as_json=test_report.to_json(), url=endpoint, token=self._token)
+        queue_item = QueueItem(
+            report_as_json=test_report.to_json(), url=endpoint, token=self._token
+        )
 
         self._queue.put(queue_item, block=False)
 
@@ -230,20 +269,28 @@ class AgentClient:
 
         # Send a final, empty, report to the queue to ensure that
         # the 'running' condition is evaluated one last time
-        self._queue.put(QueueItem(report_as_json=None, url=None, token=self._token), block=False)
+        self._queue.put(
+            QueueItem(report_as_json=None, url=None, token=self._token), block=False
+        )
 
         # Wait until all items have been reported or timeout passes
         self._reporting_thread.join(timeout=self.REPORTS_QUEUE_TIMEOUT)
         if self._reporting_thread.is_alive():
             # Thread is still alive, so there are unreported items
-            logging.warning(f"There are {self._queue.qsize()} unreported items in the queue")
+            logging.warning(
+                f"There are {self._queue.qsize()} unreported items in the queue"
+            )
 
         try:
             self._sock.shutdown(socket.SHUT_RDWR)
             self._sock.close()
-            logging.info(f"Connection to Agent at {self._remote_address} closed successfully")
+            logging.info(
+                f"Connection to Agent at {self._remote_address} closed successfully"
+            )
         except socket.error as msg:
-            logging.error(f"Failed to close socket connection to Agent at {self._remote_address}: {msg}")
+            logging.error(
+                f"Failed to close socket connection to Agent at {self._remote_address}: {msg}"
+            )
             pass
 
     @staticmethod
@@ -254,21 +301,22 @@ class AgentClient:
             response (OperationResult): response from the Agent
         """
         if response.status_code == 401:
-            logging.error("Invalid developer token supplied")
+            logging.error("Failed to initialize a session with the Agent - invalid developer token supplied")
             logging.error(
                 "Get your developer token from https://app.testproject.io/#/integrations/sdk?lang=Python"
                 " and set it in the TP_DEV_TOKEN environment variable"
             )
-            logging.error(f"Response from Agent: {response.message}")
-            raise SdkException("Invalid developer token supplied")
+            raise InvalidTokenException(response.message)
         elif response.status_code == 406:
-            logging.error(f"This SDK version ({ConfigHelper.get_sdk_version()}) is incompatible with your Agent version.")
-            logging.error(f"Response from Agent: {response.message}")
-            raise SdkException(f"Invalid SDK version {ConfigHelper.get_sdk_version()}")
+            logging.error(
+                f"Failed to initialize a session with the Agent - obsolete SDK version {ConfigHelper.get_sdk_version()}"
+            )
+            raise ObsoleteVersionException(response.message)
         else:
             logging.error("Failed to initialize a session with the Agent")
-            logging.error(f"Response from Agent: {response.message}")
-            raise SdkException("Failed to initialize a session with the Agent")
+            raise AgentConnectException(
+                f"Agent responded with HTTP status {response.status_code}: [{response.message}]"
+            )
 
     def __report_worker(self):
         """Worker method that is polling the queue for items to report"""
@@ -278,7 +326,9 @@ class AgentClient:
             if isinstance(item, QueueItem):
                 item.send()
             else:
-                logging.warning(f"Unknown object of type {type(item)} found on queue, ignoring it..")
+                logging.warning(
+                    f"Unknown object of type {type(item)} found on queue, ignoring it.."
+                )
             self._queue.task_done()
 
 
@@ -308,11 +358,17 @@ class QueueItem:
             return
 
         with requests.Session() as session:
-            response = session.post(self._url, headers={"Authorization": self._token}, json=self._report_as_json,)
+            response = session.post(
+                self._url,
+                headers={"Authorization": self._token},
+                json=self._report_as_json,
+            )
             try:
                 response.raise_for_status()
             except HTTPError:
-                logging.error(f"Reporting to TestProject returned an HTTP {response.status_code}")
+                logging.error(
+                    f"Reporting to TestProject returned an HTTP {response.status_code}"
+                )
                 logging.error(f"Response from Agent: {response.text}")
 
 
