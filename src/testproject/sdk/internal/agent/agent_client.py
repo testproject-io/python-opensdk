@@ -18,6 +18,7 @@ import requests
 import threading
 import queue
 
+from urllib.parse import urljoin
 from enum import Enum, unique
 from requests import HTTPError
 from src.testproject.classes import ActionExecutionResponse
@@ -123,7 +124,7 @@ class AgentClient:
         try:
             response = self.send_request(
                 "POST",
-                f"{self._remote_address}{Endpoint.DevelopmentSession.value}",
+                urljoin(self._remote_address, Endpoint.DevelopmentSession.value),
                 session_request.to_json(),
             )
         except requests.exceptions.ConnectionError:
@@ -201,7 +202,10 @@ class AgentClient:
 
         response = self.send_request(
             "POST",
-            f"{self._remote_address}{Endpoint.ActionExecution.value}/{codeblock_guid}",
+            urljoin(
+                urljoin(self._remote_address, Endpoint.ActionExecution.value),
+                codeblock_guid,
+            ),
             body,
         )
 
@@ -224,11 +228,10 @@ class AgentClient:
         Args:
             driver_command_report: object containing the driver command to be reported
         """
-        endpoint = f"{self._remote_address}{Endpoint.ReportDriverCommand.value}"
 
         queue_item = QueueItem(
             report_as_json=driver_command_report.to_json(),
-            url=endpoint,
+            url=urljoin(self._remote_address, Endpoint.ReportDriverCommand.value),
             token=self._token,
         )
 
@@ -240,10 +243,11 @@ class AgentClient:
         Args:
             step_report (StepReport): object containing the step to be reported
         """
-        endpoint = f"{self._remote_address}{Endpoint.ReportStep.value}"
 
         queue_item = QueueItem(
-            report_as_json=step_report.to_json(), url=endpoint, token=self._token
+            report_as_json=step_report.to_json(),
+            url=urljoin(self._remote_address, Endpoint.ReportStep.value),
+            token=self._token,
         )
 
         self._queue.put(queue_item, block=False)
@@ -254,10 +258,11 @@ class AgentClient:
         Args:
             test_report (CustomTestReport): object containing the test to be reported
         """
-        endpoint = f"{self._remote_address}{Endpoint.ReportTest.value}"
 
         queue_item = QueueItem(
-            report_as_json=test_report.to_json(), url=endpoint, token=self._token
+            report_as_json=test_report.to_json(),
+            url=urljoin(self._remote_address, Endpoint.ReportTest.value),
+            token=self._token,
         )
 
         self._queue.put(queue_item, block=False)
@@ -301,7 +306,9 @@ class AgentClient:
             response (OperationResult): response from the Agent
         """
         if response.status_code == 401:
-            logging.error("Failed to initialize a session with the Agent - invalid developer token supplied")
+            logging.error(
+                "Failed to initialize a session with the Agent - invalid developer token supplied"
+            )
             logging.error(
                 "Get your developer token from https://app.testproject.io/#/integrations/sdk?lang=Python"
                 " and set it in the TP_DEV_TOKEN environment variable"
