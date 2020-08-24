@@ -19,12 +19,33 @@ from src.testproject.rest.messages import DriverCommandReport
 
 @pytest.fixture
 def dcr():
-    return DriverCommandReport("command", {"param": "value"}, {"result": "value"}, True)
+    return DriverCommandReport(
+        command="command",
+        command_params={"param": "value"},
+        result={"result": "value"},
+        passed=True,
+    )
+
+
+@pytest.fixture
+def dcr_with_screenshot():
+    return DriverCommandReport(
+        command="command",
+        command_params={"param": "value"},
+        result={"result": "value"},
+        passed=False,
+        screenshot="base64_screenshot",
+    )
 
 
 def test_instances_with_same_arguments_are_considered_equal(dcr):
 
-    another_dcr = DriverCommandReport("command", {"param": "value"}, {"result": "value"}, True)
+    another_dcr = DriverCommandReport(
+        command="command",
+        command_params={"param": "value"},
+        result={"result": "value"},
+        passed=True,
+    )
 
     assert another_dcr is not dcr
     assert another_dcr == dcr
@@ -32,7 +53,12 @@ def test_instances_with_same_arguments_are_considered_equal(dcr):
 
 def test_instances_with_different_arguments_are_considered_not_equal(dcr):
 
-    another_dcr = DriverCommandReport("command", {"param": "value"}, {"result": "another_value"}, True)
+    another_dcr = DriverCommandReport(
+        command="command",
+        command_params={"param": "value"},
+        result={"result": "another_value"},
+        passed=True,
+    )
 
     assert another_dcr is not dcr
     assert another_dcr != dcr
@@ -44,4 +70,14 @@ def test_to_json(dcr):
         "commandParameters": {"param": "value"},
         "result": {"result": "value"},
         "passed": True,
+    }
+
+
+def test_to_json_with_screenshot(dcr_with_screenshot):
+    assert dcr_with_screenshot.to_json() == {
+        "commandName": "command",
+        "commandParameters": {"param": "value"},
+        "result": {"result": "value"},
+        "passed": False,
+        "screenshot": "base64_screenshot",
     }
