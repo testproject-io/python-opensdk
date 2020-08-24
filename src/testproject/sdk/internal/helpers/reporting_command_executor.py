@@ -128,9 +128,10 @@ class ReportingCommandExecutor:
             driver_command_report.screenshot = self.create_screenshot()
 
         if self._is_webdriverwait:
-            # Save the driver command to report it later once we're not in the wait loop anymore
-            self._stashed_command = driver_command_report
-            return
+            if not self._disable_reports and not self.disable_command_reports:
+                # Only stash the command for reporting later when driver command reporting is enabled
+                self._stashed_command = driver_command_report
+            return  # Do not report the command right away
 
         if not self._disable_reports and not self.disable_command_reports:
             if self._stashed_command is not None:
