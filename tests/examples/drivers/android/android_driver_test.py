@@ -35,6 +35,8 @@ def driver():
         "udid": emulator_id,
         "browserName": "",
         "platformName": "Android",
+        "unicodeKeyboard": "true",
+        "resetKeyboard": "true"
     }
 
     driver = webdriver.Remote(desired_capabilities=desired_capabilities)
