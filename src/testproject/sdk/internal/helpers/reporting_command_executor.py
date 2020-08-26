@@ -113,8 +113,6 @@ class ReportingCommandExecutor:
         if not self._disable_redaction:
             params = RedactHelper(self).redact_command(command, params)
 
-        driver_command_report = DriverCommandReport(command, params, result, passed)
-
         # If the command is executed as part of a wait loop, we don't want to report it every time
         self._is_webdriverwait = False
 
@@ -123,6 +121,11 @@ class ReportingCommandExecutor:
             if str(frame.filename).find("wait.py") > 0:
                 self._is_webdriverwait = True
                 break
+
+        driver_command_report = DriverCommandReport(command, params, result, passed)
+
+        if not passed:
+            driver_command_report.screenshot = self.create_screenshot()
 
         if self._is_webdriverwait:
             # Save the driver command to report it later once we're not in the wait loop anymore
@@ -144,7 +147,10 @@ class ReportingCommandExecutor:
         # Actions inside a unittest tearDown or tearDownClass method should be reported as part of the test
         in_unittest_teardown = ReportHelper.find_unittest_teardown()
 
-        if self._latest_known_test_name != current_test_name and not in_unittest_teardown:
+        if (
+            self._latest_known_test_name != current_test_name
+            and not in_unittest_teardown
+        ):
             # the name of the test method has changed and we're not inside a unittest teardown method,
             # so we need to report a test
             if not self.disable_auto_test_reports:

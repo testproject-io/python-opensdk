@@ -21,19 +21,29 @@ class DriverCommandReport:
         command_params (dict): Parameters associated with the command
         result (dict): The result of the command that was executed
         passed (bool): Indication whether or not command execution was performed successfully
+        screenshot (str): Screenshot as base64 encoded string
 
     Attributes:
         _command (str): The name of the command that was executed
         _command_params (dict): Parameters associated with the command
         _result (dict): The result of the command that was executed
         _passed (bool): Indication whether or not command execution was performed successfully
+        _screenshot (str): Screenshot as base64 encoded string
     """
 
-    def __init__(self, command: str, command_params: dict, result: dict, passed: bool):
+    def __init__(
+        self,
+        command: str,
+        command_params: dict,
+        result: dict,
+        passed: bool,
+        screenshot: str = None,
+    ):
         self._command = command
         self._command_params = command_params
         self._result = result
         self._passed = passed
+        self._screenshot = screenshot
 
     @property
     def command(self) -> str:
@@ -55,18 +65,34 @@ class DriverCommandReport:
         """Getter for the passed property"""
         return self._passed
 
+    @property
+    def screenshot(self) -> str:
+        """Getter for the screenshot property"""
+        return self._screenshot
+
+    @screenshot.setter
+    def screenshot(self, value: str):
+        """Setter for the screenshot property"""
+        self._screenshot = value
+
     def to_json(self):
         """Creates a JSON representation of the current DriverCommandReport instance
 
             Returns:
                 dict: JSON representation of the current instance
         """
-        return {
+        payload = {
             "commandName": self._command,
             "commandParameters": self._command_params,
             "result": self._result,
             "passed": self._passed,
         }
+
+        # Add screenshot to report if it is provided
+        if self._screenshot is not None:
+            payload["screenshot"] = self._screenshot
+
+        return payload
 
     def __eq__(self, other):
         """Custom equality function, used in report stashing"""
@@ -82,4 +108,12 @@ class DriverCommandReport:
 
     def __hash__(self):
         """Implement hash to allow objects to be used in sets and dicts"""
-        return hash((self.command, self.command_params, self.result, self.passed))
+        return hash(
+            (
+                self.command,
+                self.command_params,
+                self.result,
+                self.passed,
+                self.screenshot,
+            )
+        )
