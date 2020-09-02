@@ -177,6 +177,7 @@ class ReportHelper:
                         if element_to_find == ReportNamingElement.Test:
                             # return the current method name as the test name
                             return frame.function
+                return None
 
         else:
             # we're using neither pytest nor unittest, so return sensible values
