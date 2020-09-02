@@ -17,6 +17,7 @@ import logging
 from src.testproject.enums import EnvironmentVariable
 from src.testproject.helpers import ReportHelper, LoggingHelper, ConfigHelper
 from src.testproject.rest import ReportSettings
+from src.testproject.sdk.exceptions import SdkException
 from src.testproject.sdk.internal.agent import AgentClient
 from src.testproject.sdk.internal.helpers import CustomCommandExecutor
 from src.testproject.sdk.internal.reporter import Reporter
@@ -43,9 +44,19 @@ class BaseDriver(RemoteWebDriver):
         session_id (str): contains the current session ID
     """
 
+    __instance = None
+
     def __init__(
-        self, capabilities: dict, token: str, projectname: str, jobname: str, disable_reports: bool,
+        self,
+        capabilities: dict,
+        token: str,
+        projectname: str,
+        jobname: str,
+        disable_reports: bool,
     ):
+
+        if BaseDriver.__instance is not None:
+            raise SdkException("A driver session already exists")
 
         LoggingHelper.configure_logging()
 
@@ -59,11 +70,19 @@ class BaseDriver(RemoteWebDriver):
             self._projectname = ""
             self._jobname = ""
         else:
-            self._projectname = projectname if projectname is not None else ReportHelper.infer_project_name()
-            self._jobname = jobname if jobname is not None else ReportHelper.infer_job_name()
+            self._projectname = (
+                projectname
+                if projectname is not None
+                else ReportHelper.infer_project_name()
+            )
+            self._jobname = (
+                jobname if jobname is not None else ReportHelper.infer_job_name()
+            )
 
         self._agent_client: AgentClient = AgentClient(
-            token=self._token, capabilities=capabilities, reportsettings=ReportSettings(self._projectname, self._jobname),
+            token=self._token,
+            capabilities=capabilities,
+            reportsettings=ReportSettings(self._projectname, self._jobname),
         )
         self._agent_session: AgentSession = self._agent_client.agent_session
         self.w3c = True if self._agent_session.dialect == "W3C" else False
@@ -72,14 +91,24 @@ class BaseDriver(RemoteWebDriver):
         # - automatic logging capabilities
         # - customized reporting settings
         self.command_executor = CustomCommandExecutor(
-            agent_client=self._agent_client, remote_server_addr=self._agent_session.remote_address,
+            agent_client=self._agent_client,
+            remote_server_addr=self._agent_session.remote_address,
         )
 
         self.command_executor.disable_reports = disable_reports
 
         RemoteWebDriver.__init__(
-            self, command_executor=self.command_executor, desired_capabilities=self._agent_session.capabilities,
+            self,
+            command_executor=self.command_executor,
+            desired_capabilities=self._agent_session.capabilities,
         )
+
+        BaseDriver.__instance = self
+
+    @classmethod
+    def instance(cls):
+        """Returns the singleton instance of the driver object"""
+        return cls.__instance
 
     def start_session(self, capabilities, browser_profile=None):
         """Sets capabilities and sessionId obtained from the Agent when creating the original session."""
@@ -98,6 +127,9 @@ class BaseDriver(RemoteWebDriver):
         """Quits the driver and stops the session with the Agent, cleaning up after itself"""
         # Report any left over driver command reports
         self.command_executor.clear_stash()
+
+        # Make instance available again
+        BaseDriver.__instance = None
 
         try:
             RemoteWebDriver.quit(self)
