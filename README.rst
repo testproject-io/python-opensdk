@@ -183,6 +183,26 @@ Examples using explicitly specified project and job names:
 * `pytest <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/frameworks/pytest/explicit_report_test.py>`__
 * `unittest <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/frameworks/unittest/explicit_report_test.py>`__
 
+Reporting extensions
+--------------------
+Reporting extensions extend the TestProject SDK reporting capabilities by intercepting unit testing framework assertion errors and reporting them as failed steps.
+
+This functionality can be added by decorating your test method with the ``@report_assertion_errors`` decorator:
+
+.. code-block:: python
+
+    from src.testproject.decorator import report_assertion_errors
+
+    @report_assertion_errors
+    def test_automatically_report_assertion_error():
+        driver = webdriver.Chrome()
+        assert 1 == 2  # This assertion will be reported automatically as a failed step
+        driver.quit()
+
+Here is a working example for `pytest <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/reports/report_failed_pytest_assertion_test.py>`__, and here is one for `unittest <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/reports/report_failed_unittest_assertion_test.py>`__.
+
+Please make sure to follow the advice given `here <#the-importance-of-using-quit>`__ to ensure correct test name reporting.
+
 Test reports
 ------------
 Automatic test reporting
