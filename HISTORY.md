@@ -6,6 +6,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.63.15] - 2020-09-17
+
+### Added
+
+- Automatically capture a screenshot whenever a WebDriver command fails
+- Add `@report_assertion_errors` decorator that enables automatic reporting of failed assertions (supports pytest and unittest)
+
+### Fixed
+
+- Fixed issue with driver commands executed inside `WebDriverWait` loops being reported even when driver command reporting is disabled
+
 ## [0.63.14] - 2020-08-10
 
 ### Added
