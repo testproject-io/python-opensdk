@@ -18,6 +18,7 @@ from appium.webdriver.webdriver import WebDriver as AppiumWebDriver
 from src.testproject.enums import EnvironmentVariable
 from src.testproject.helpers import ReportHelper, LoggingHelper, ConfigHelper
 from src.testproject.rest import ReportSettings
+from src.testproject.sdk.exceptions import SdkException
 from src.testproject.sdk.internal.agent import AgentClient
 from src.testproject.sdk.internal.helpers import CustomAppiumCommandExecutor
 from src.testproject.sdk.internal.reporter import Reporter
@@ -43,6 +44,8 @@ class Remote(AppiumWebDriver):
         session_id (str): contains the current session ID
     """
 
+    __instance = None
+
     def __init__(
         self,
         desired_capabilities: dict = None,
@@ -51,6 +54,9 @@ class Remote(AppiumWebDriver):
         jobname: str = None,
         disable_reports: bool = False,
     ):
+        if Remote.__instance is not None:
+            raise SdkException("A driver session already exists")
+
         LoggingHelper.configure_logging()
 
         self._desired_capabilities = desired_capabilities
@@ -62,27 +68,45 @@ class Remote(AppiumWebDriver):
             self._projectname = ""
             self._jobname = ""
         else:
-            self._projectname = projectname if projectname is not None else ReportHelper.infer_project_name()
-            self._jobname = jobname if jobname is not None else ReportHelper.infer_job_name()
+            self._projectname = (
+                projectname
+                if projectname is not None
+                else ReportHelper.infer_project_name()
+            )
+            self._jobname = (
+                jobname if jobname is not None else ReportHelper.infer_job_name()
+            )
 
         reportsettings = ReportSettings(self._projectname, self._jobname)
 
         self._agent_client: AgentClient = AgentClient(
-            token=self._token, capabilities=self._desired_capabilities, reportsettings=reportsettings,
+            token=self._token,
+            capabilities=self._desired_capabilities,
+            reportsettings=reportsettings,
         )
         self._agent_session: AgentSession = self._agent_client.agent_session
         self.w3c = True if self._agent_session.dialect == "W3C" else False
 
         AppiumWebDriver.__init__(
-            self, command_executor=self._agent_session.remote_address, desired_capabilities=self._desired_capabilities,
+            self,
+            command_executor=self._agent_session.remote_address,
+            desired_capabilities=self._desired_capabilities,
         )
 
         self.command_executor = CustomAppiumCommandExecutor(
-            agent_client=self._agent_client, remote_server_addr=self._agent_session.remote_address,
+            agent_client=self._agent_client,
+            remote_server_addr=self._agent_session.remote_address,
         )
 
         # this ensures that mobile-specific commands are also available for our command executor
         self._addCommands()
+
+        Remote.__instance = self
+
+    @classmethod
+    def instance(cls):
+        """Returns the singleton instance of the driver object"""
+        return Remote.__instance
 
     def start_session(self, capabilities, browser_profile=None):
         """Sets capabilities and sessionId obtained from the Agent when creating the original session."""
@@ -97,6 +121,9 @@ class Remote(AppiumWebDriver):
         """Quits the driver and stops the session with the Agent, cleaning up after itself."""
         # Report any left over driver command reports
         self.command_executor.clear_stash()
+
+        # Make instance available again
+        Remote.__instance = None
 
         try:
             AppiumWebDriver.quit(self)

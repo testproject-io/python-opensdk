@@ -149,7 +149,7 @@ class ReportingCommandExecutor:
         in_unittest_teardown = ReportHelper.find_unittest_teardown()
 
         if (
-            self._latest_known_test_name != current_test_name
+            current_test_name not in [self._latest_known_test_name, "Unnamed Test"]
             and not in_unittest_teardown
         ):
             # the name of the test method has changed and we're not inside a unittest teardown method,
@@ -162,6 +162,7 @@ class ReportingCommandExecutor:
     def report_test(self):
         """Sends a test report to the Agent if this option is not explicitly disabled
         """
+
         if not self._latest_known_test_name == "Unnamed Test":
             # only report those tests that have been identified as one when their names were inferred
             if self._disable_reports:
