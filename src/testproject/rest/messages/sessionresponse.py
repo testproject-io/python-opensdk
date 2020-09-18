@@ -22,6 +22,7 @@ class SessionResponse:
         session_id (str): Unique identifier for the current development session
         dialect (str): Indicates the WebDriver dialect (W3C or OSS)
         capabilities (dict): Desired session capabilities
+        agent_version (str): Agent version, required to check backwards compatibility
 
     Attributes:
         _dev_socket_port (int): The developer socket port
@@ -29,16 +30,24 @@ class SessionResponse:
         _session_id (str): Unique identifier for the current development session
         _dialect (str): Indicates the WebDriver dialect (W3C or OSS)
         _capabilities (dict): Desired session capabilities
+        _agent_version (str): Agent version, required to check backwards compatibility
     """
 
     def __init__(
-        self, dev_socket_port: int, server_address: str, session_id: str, dialect: str, capabilities: dict,
+        self,
+        dev_socket_port: int,
+        server_address: str,
+        session_id: str,
+        dialect: str,
+        capabilities: dict,
+        agent_version: str,
     ):
         self._dev_socket_port = dev_socket_port
         self._server_address = server_address
         self._session_id = session_id
         self._dialect = dialect
         self._capabilities = capabilities
+        self._agent_version = agent_version
 
     @property
     def dev_socket_port(self) -> int:
@@ -64,3 +73,8 @@ class SessionResponse:
     def capabilities(self) -> dict:
         """Getter for the driver session capabilities"""
         return self._capabilities
+
+    @property
+    def agent_version(self) -> str:
+        """Getter for the Agent version"""
+        return self._agent_version
