@@ -20,7 +20,7 @@ setuptools.setup(
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
     ],
-    python_requires=">=3.4",
+    python_requires=">=3.6",
     install_requires=[
         "selenium==3.141.0",
         "Appium-Python-Client==1.0.1",
