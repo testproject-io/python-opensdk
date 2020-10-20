@@ -36,9 +36,11 @@ Installation
 ------------
 The TestProject Python SDK is `available on PyPI <https://pypi.org/project/testproject-python-sdk/>`__. All you need to do is add it as a Python module using::
 
-  pip install testproject-python-sdk
+  pip3 install testproject-python-sdk
 
 and you're good to go.
+
+    Minimum Python version required is 3.6
 
 Test Development
 ================
