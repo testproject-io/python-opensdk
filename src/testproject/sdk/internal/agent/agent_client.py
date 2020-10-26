@@ -17,6 +17,7 @@ import socket
 import requests
 import threading
 import queue
+import uuid
 
 from urllib.parse import urljoin
 from enum import Enum, unique
@@ -142,12 +143,28 @@ class AgentClient:
         if not response.passed:
             self.__handle_new_session_error(response)
 
+        # The generic driver returns a partial response, so we have to create some fields ourselves
+        try:
+            session_id = response.data["sessionId"]
+        except KeyError:
+            session_id = uuid.uuid4()
+
+        try:
+            dialect = response.data["dialect"]
+        except KeyError:
+            dialect = None
+
+        try:
+            capabilities = response.data["capabilities"]
+        except KeyError:
+            capabilities = {}
+
         start_session_response = SessionResponse(
             dev_socket_port=response.data["devSocketPort"],
             server_address=response.data["serverAddress"],
-            session_id=response.data["sessionId"],
-            dialect=response.data["dialect"],
-            capabilities=response.data["capabilities"],
+            session_id=session_id,
+            dialect=dialect,
+            capabilities=capabilities,
         )
         return start_session_response
 
@@ -235,7 +252,12 @@ class AgentClient:
         """
 
         with requests.Session() as session:
-            response = session.get(urljoin(ConfigHelper.get_agent_service_address(), Endpoint.GetStatus.value), headers={"Authorization": token})
+            response = session.get(
+                urljoin(
+                    ConfigHelper.get_agent_service_address(), Endpoint.GetStatus.value
+                ),
+                headers={"Authorization": token},
+            )
 
         try:
             response.raise_for_status()
@@ -251,7 +273,9 @@ class AgentClient:
                     "Could not parse Agent status response: element 'tag' not found in JSON response body"
                 )
         except HTTPError:
-            raise AgentConnectException(f"Agent returned HTTP {response.status_code} when trying to retrieve Agent status")
+            raise AgentConnectException(
+                f"Agent returned HTTP {response.status_code} when trying to retrieve Agent status"
+            )
 
         return AgentStatusResponse(agent_version)
 
