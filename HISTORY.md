@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.63.17] - 2020-10-28
+
+### Added
+
+- Added a generic driver for reporting results for non-UI tests to TestProject
+
 ## [0.63.15] - 2020-09-17
 
 ### Added
