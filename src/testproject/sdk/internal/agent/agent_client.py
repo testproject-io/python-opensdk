@@ -17,6 +17,7 @@ import socket
 import requests
 import threading
 import queue
+import uuid
 
 from urllib.parse import urljoin
 from enum import Enum, unique
@@ -33,6 +34,7 @@ from src.testproject.rest.messages import (
     StepReport,
     CustomTestReport,
 )
+from src.testproject.rest.messages.agentstatusresponse import AgentStatusResponse
 from src.testproject.sdk.exceptions import (
     SdkException,
     AgentConnectException,
@@ -141,16 +143,32 @@ class AgentClient:
         if not response.passed:
             self.__handle_new_session_error(response)
 
+        # The generic driver returns a partial response, so we have to create some fields ourselves
+        try:
+            session_id = response.data["sessionId"]
+        except KeyError:
+            session_id = uuid.uuid4()
+
+        try:
+            dialect = response.data["dialect"]
+        except KeyError:
+            dialect = None
+
+        try:
+            capabilities = response.data["capabilities"]
+        except KeyError:
+            capabilities = {}
+
         start_session_response = SessionResponse(
             dev_socket_port=response.data["devSocketPort"],
             server_address=response.data["serverAddress"],
-            session_id=response.data["sessionId"],
-            dialect=response.data["dialect"],
-            capabilities=response.data["capabilities"],
+            session_id=session_id,
+            dialect=dialect,
+            capabilities=capabilities,
         )
         return start_session_response
 
-    def send_request(self, method, path, body) -> OperationResult:
+    def send_request(self, method, path, body=None) -> OperationResult:
         """Sends HTTP request to Agent
 
         Args:
@@ -221,6 +239,45 @@ class AgentClient:
         result_data = response.data["outputs"] if response.passed else None
 
         return ActionExecutionResponse(result, response.message, result_data)
+
+    @staticmethod
+    def get_agent_version(token: str):
+        """Requests the current Agent status
+
+        Args:
+            token (str): The developer token used to communicate with the Agent
+
+        Returns:
+            AgentStatusResponse: contains the response to the sent Agent status request
+        """
+
+        with requests.Session() as session:
+            response = session.get(
+                urljoin(
+                    ConfigHelper.get_agent_service_address(), Endpoint.GetStatus.value
+                ),
+                headers={"Authorization": token},
+            )
+
+        try:
+            response.raise_for_status()
+            try:
+                response_json = response.json()
+                agent_version = response_json["tag"]
+            except ValueError:
+                raise SdkException(
+                    "Could not parse Agent status response: no JSON response body present"
+                )
+            except KeyError:
+                raise SdkException(
+                    "Could not parse Agent status response: element 'tag' not found in JSON response body"
+                )
+        except HTTPError:
+            raise AgentConnectException(
+                f"Agent returned HTTP {response.status_code} when trying to retrieve Agent status"
+            )
+
+        return AgentStatusResponse(agent_version)
 
     def report_driver_command(self, driver_command_report: DriverCommandReport):
         """Sends command report to the Agent
@@ -387,3 +444,4 @@ class Endpoint(Enum):
     ReportStep = "/api/development/report/step"
     ReportTest = "/api/development/report/test"
     AddonExecution = "/api/addons/executions"
+    GetStatus = "/api/status"

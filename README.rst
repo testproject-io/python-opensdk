@@ -94,6 +94,7 @@ The examples shown in this document are based on Chrome. The SDK works in the sa
 * Internet Explorer
 * Android apps (using Appium)
 * iOS apps (using Appium)
+* Generic driver (for non-UI tests)
 
 Development token
 -----------------
