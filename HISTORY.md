@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.63.18] - 2020-11-03
+
+### Fixed
+
+- Fixed issue with the `packaging` dependency package not being installed when installing the SDK
+
 ## [0.63.17] - 2020-10-28
 
 ### Added
