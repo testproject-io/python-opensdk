@@ -17,6 +17,10 @@ import os
 import sys
 import traceback
 
+from src.testproject.sdk.exceptions import SdkException
+
+from src.testproject.sdk.drivers.webdriver import Remote, Generic
+
 from src.testproject.sdk.drivers.webdriver.base import BaseDriver
 
 
@@ -35,10 +39,14 @@ def report_assertion_errors(func):
             line_index = -1 if os.getenv("PYTEST_CURRENT_TEST") is not None else -2
 
             # Depending on the unit testing framework we format the reported error differently
-            description = ae.__repr__() if os.getenv("PYTEST_CURRENT_TEST") is not None else str(ae)
+            description = (
+                ae.__repr__()
+                if os.getenv("PYTEST_CURRENT_TEST") is not None
+                else str(ae)
+            )
 
             _, line, function, text = tb_info[line_index]
-            driver = BaseDriver.instance()
+            driver = __get_active_driver_instance()
             driver.report().step(
                 description=description,
                 message=f"Assertion failed on line {line} in {function}",
@@ -49,3 +57,18 @@ def report_assertion_errors(func):
             raise ae
 
     return wrapper
+
+
+def __get_active_driver_instance():
+    """Get the current driver instance in use (BaseDriver, Remote or Generic) """
+    driver = BaseDriver.instance()
+    if driver is None:
+        driver = Remote.instance()
+        if driver is None:
+            driver = Generic.instance()
+            if driver is None:
+                raise SdkException(
+                    "No active driver instance found, so cannot report failed assertion"
+                )
+
+    return driver
