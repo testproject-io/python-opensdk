@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import logging
+import os
 
 from src.testproject.helpers import ReportHelper
 from src.testproject.rest.messages import StepReport, CustomTestReport
@@ -31,7 +32,9 @@ class Reporter:
     def __init__(self, command_executor):
         self._command_executor = command_executor
 
-    def step(self, description: str, message: str, passed: bool, screenshot: bool = False):
+    def step(
+        self, description: str, message: str, passed: bool, screenshot: bool = False
+    ):
         """Sends a step report to the Agent Client
 
         Args:
@@ -47,7 +50,10 @@ class Reporter:
         if not self._command_executor.disable_reports:
 
             step_report = StepReport(
-                description, message, passed, self._command_executor.create_screenshot() if screenshot else None,
+                description,
+                message,
+                passed,
+                self._command_executor.create_screenshot() if screenshot else None,
             )
             self._command_executor.agent_client.report_step(step_report)
         else:
@@ -66,10 +72,11 @@ class Reporter:
                 name = ReportHelper.infer_test_name()
 
             if not self._command_executor.disable_auto_test_reports:
-                logging.warning(
-                    "Automatic reporting is enabled, disable this using disable_reports flag "
-                    "when creating a driver instance to avoid duplicates in the report"
-                )
+                if os.getenv("RFW_SUPPRESS_WARNINGS", "false").casefold() != "true":
+                    logging.warning(
+                        "Automatic reporting is enabled, disable this using disable_reports flag "
+                        "when creating a driver instance to avoid duplicates in the report"
+                    )
 
             test_report = CustomTestReport(name=name, passed=passed, message=message,)
 
