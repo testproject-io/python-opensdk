@@ -30,7 +30,8 @@ jobs:
             exit 1;
           fi
           SDK_VERSION="${SDK_VERSION:1}"
-          echo "::set-env name=SDK_VERSION::$SDK_VERSION"
+          echo "SDK_VERSION=${SDK_VERSION}"
+          echo "TP_SDK_VERSION=${SDK_VERSION}" >> $GITHUB_ENV
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
@@ -45,7 +46,6 @@ jobs:
           flake8 . --count --statistics
       - name: Build
         run: |
-          export TP_SDK_VERSION=$SDK_VERSION
           python3 setup.py install
       - name: Install test dependencies
         run: |
@@ -91,7 +91,6 @@ jobs:
           TP_CLOUD_URL: ${{ secrets.TP_CLOUD_URL }}
         run: |
           trap 'kill $(jobs -p)' EXIT
-          export TP_SDK_VERSION=$SDK_VERSION
           docker-compose -f docker-compose.yml logs -f --tail=0 >> build/reports/agent/log.txt&
           pytest tests/ci/headless --doctest-modules --junitxml=build/reports/junit/flow-test-results-${{ matrix.python-version }}.xml
       - name: Publish to TestPyPI
@@ -101,7 +100,6 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.TWINE_TESTPYPI_PASSWORD }}
         run: |
           rm -rf dist
-          export TP_SDK_VERSION=$SDK_VERSION
           python setup.py clean sdist bdist_wheel
           python -m twine upload --non-interactive --repository testpypi dist/*
       - name: Publish to PyPI
@@ -111,7 +109,6 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.TWINE_PYPI_PASSWORD }}
         run: |
           rm -rf dist
-          export TP_SDK_VERSION=$SDK_VERSION
           python setup.py clean sdist bdist_wheel
           python -m twine upload --non-interactive dist/*
       - name: Archive reports
