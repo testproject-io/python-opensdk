@@ -21,6 +21,7 @@ class Firefox(BaseDriver):
 
     Args:
         firefox_options (FirefoxOptions): Edge automation session desired capabilities and options
+        desired_capabilities (dict): Dictionary object containing desired capabilities for Firefox automation session
         token (str): The developer token used to communicate with the agent
         projectname (str): Project name to report
         jobname (str): Job name to report
@@ -29,14 +30,22 @@ class Firefox(BaseDriver):
 
     def __init__(
         self,
-        firefox_options: FirefoxOptions = FirefoxOptions(),
+        firefox_options: FirefoxOptions = None,
+        desired_capabilities: dict = None,
         token: str = None,
         projectname: str = None,
         jobname: str = None,
         disable_reports: bool = False,
     ):
+        # Specified FirefoxOptions take precedence over desired capabilities but either can be used
+        caps = (
+            firefox_options.to_capabilities()
+            if firefox_options is not None
+            else desired_capabilities
+        )
+
         super().__init__(
-            capabilities=firefox_options.to_capabilities(),
+            capabilities=caps,
             token=token,
             projectname=projectname,
             jobname=jobname,

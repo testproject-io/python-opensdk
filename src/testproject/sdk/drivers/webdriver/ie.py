@@ -21,6 +21,7 @@ class Ie(BaseDriver):
 
     Args:
         ie_options (Options): IE automation session desired capabilities and options
+        desired_capabilities (dict): Dictionary object containing desired capabilities for IE automation session
         token (str): The developer token used to communicate with the agent
         projectname (str): Project name to report
         jobname (str): Job name to report
@@ -29,14 +30,22 @@ class Ie(BaseDriver):
 
     def __init__(
         self,
-        ie_options: Options = Options(),
+        ie_options: Options = None,
+        desired_capabilities: dict = None,
         token: str = None,
         projectname: str = None,
         jobname: str = None,
         disable_reports: bool = False,
     ):
+        # Specified IE Options take precedence over desired capabilities but either can be used
+        caps = (
+            ie_options.to_capabilities()
+            if ie_options is not None
+            else desired_capabilities
+        )
+
         super().__init__(
-            capabilities=ie_options.to_capabilities(),
+            capabilities=caps,
             token=token,
             projectname=projectname,
             jobname=jobname,
