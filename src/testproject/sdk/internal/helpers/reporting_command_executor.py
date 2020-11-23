@@ -39,6 +39,7 @@ class ReportingCommandExecutor:
         _stashed_command (DriverCommandReport): contains stashed driver command for preventing duplicates
         inside WebDriverWait
         _latest_known_test_name (str): contains latest known test name
+        _excluded_test_names (list): contains a list of test names that should not be reported
     """
 
     def __init__(self, agent_client: AgentClient, command_executor):
@@ -50,6 +51,7 @@ class ReportingCommandExecutor:
         self._disable_redaction = False
         self._stashed_command = None
         self._latest_known_test_name = ReportHelper.infer_test_name()
+        self._excluded_test_names = list()
 
     @property
     def disable_reports(self) -> bool:
@@ -90,6 +92,16 @@ class ReportingCommandExecutor:
     def disable_redaction(self, value: bool):
         """Setter for the disable_redaction flag"""
         self._disable_redaction = value
+
+    @property
+    def excluded_test_names(self) -> list:
+        """Getter for the list of excluded test names"""
+        return self._excluded_test_names
+
+    @excluded_test_names.setter
+    def excluded_test_names(self, value: list):
+        """Setter for the list of excluded test names"""
+        self._excluded_test_names = value
 
     @property
     def agent_client(self):
@@ -164,10 +176,18 @@ class ReportingCommandExecutor:
         """
 
         if not self._latest_known_test_name == "Unnamed Test":
+
             # only report those tests that have been identified as one when their names were inferred
             if self._disable_reports:
                 # test reporting has been disabled by the user
                 logging.debug(f"Test [{self._latest_known_test_name}] - [Passed]")
+                return
+
+            if self._latest_known_test_name in self._excluded_test_names:
+                # test has been marked as 'to be excluded, so do not report it
+                logging.debug(
+                    f"Test [{self._latest_known_test_name}] - Reporting skipped (marked as 'To be excluded')"
+                )
                 return
 
             custom_test_report = CustomTestReport(
