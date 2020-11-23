@@ -116,3 +116,11 @@ class Reporter:
             disabled (bool): Set to True to disable driver command report redaction.
         """
         self._command_executor.disable_redaction = disabled
+
+    def exclude_test_names(self, excluded_test_names: list):
+        """Excludes a list of test names (as strings) from being reported
+
+        Args:
+            excluded_test_names: list of strings containing tests that should not be reported.
+        """
+        self._command_executor.excluded_test_names = excluded_test_names
