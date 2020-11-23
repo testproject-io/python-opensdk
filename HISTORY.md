@@ -6,6 +6,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.63.19] - 2020-11-23
+
+### Added
+
+- Added the option to pass desired capabilities to drivers directly as a dictionary
+- Added a method that allows users to specify test names that should be skipped when reporting tests
+
+### Fixed
+
+- Fixed a bug where it was impossible to report assertions when using the generic driver 
+- Allow for latest version of Python-Appium-Client (1.0.2) to be installed
+- Improved error handling and logging in cases where a browser is requested that is not installed on the system running the tests
+
 ## [0.63.18] - 2020-11-03
 
 ### Added
