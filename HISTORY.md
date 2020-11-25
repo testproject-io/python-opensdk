@@ -6,6 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.64.0] - 2020-11-25
+
+### Added
+
+- Added a feature that reports tests with the same report settings (i.e., project and job name) to the same job
+
+### Fixed
+
+- Fixed a bug where specifying neither options nor capabilities when creating a browser session led to the session request being rejected by the Agent 
+
 ## [0.63.19] - 2020-11-23
 
 ### Added
