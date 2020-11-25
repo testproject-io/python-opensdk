@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import logging
-import socket
 import requests
 import threading
 import queue
@@ -22,6 +21,7 @@ import uuid
 from urllib.parse import urljoin
 from enum import Enum, unique
 from requests import HTTPError
+from packaging import version
 from src.testproject.classes import ActionExecutionResponse
 from src.testproject.enums import ExecutionResultType
 from src.testproject.executionresults import OperationResult
@@ -42,8 +42,8 @@ from src.testproject.sdk.exceptions import (
     ObsoleteVersionException,
     MissingBrowserException,
 )
-from src.testproject.helpers import SocketHelper
 from src.testproject.sdk.internal.session import AgentSession
+from src.testproject.tcp import SocketManager
 
 
 class AgentClient:
@@ -60,11 +60,16 @@ class AgentClient:
         _agent_session (AgentSession): stores properties of the current agent session
         _token (str): The development token used to authenticate with the Agent
         _reportsettings (ReportSettings): Settings (project name, job name) to be included in the report
-        _sock (socket.Socket): Socket used in communicating with the Agent
         _queue (queue.Queue): queue holding reports to be sent to Agent in separate thread
     """
 
     REPORTS_QUEUE_TIMEOUT = 10
+
+    # Minimum Agent version number that supports session reuse
+    MIN_SESSION_REUSE_CAPABLE_VERSION = "0.64.20"
+
+    # Class variable containing the current known Agent version
+    __agent_version: str = None
 
     def __init__(self, token: str, capabilities: dict, reportsettings: ReportSettings):
         self._remote_address = ConfigHelper.get_agent_service_address()
@@ -100,6 +105,8 @@ class AgentClient:
 
         start_session_response = self._request_session_from_agent()
 
+        AgentClient.__agent_version = start_session_response.agent_version
+
         self._agent_session = AgentSession(
             start_session_response.server_address,
             start_session_response.session_id,
@@ -107,12 +114,26 @@ class AgentClient:
             start_session_response.capabilities,
         )
 
-        self._sock = SocketHelper.create_connection(
+        SocketManager.instance().open_socket(
             self._remote_address, start_session_response.dev_socket_port
         )
 
         logging.info("Development session started...")
         return True
+
+    @staticmethod
+    def can_reuse_session() -> bool:
+        """Determine whether the current Agent version supports session reuse
+
+        Returns:
+             bool: True if Agent supports session reuse, False otherwise
+        """
+        if AgentClient.__agent_version is None:
+            return False
+
+        return version.parse(
+            AgentClient.__agent_version
+        ) >= version.parse(AgentClient.MIN_SESSION_REUSE_CAPABLE_VERSION)
 
     def _request_session_from_agent(self) -> SessionResponse:
         """Creates and sends a session request object
@@ -160,12 +181,18 @@ class AgentClient:
         except KeyError:
             capabilities = {}
 
+        try:
+            agent_version = response.data["version"]
+        except KeyError:
+            agent_version = None
+
         start_session_response = SessionResponse(
             dev_socket_port=response.data["devSocketPort"],
             server_address=response.data["serverAddress"],
             session_id=session_id,
             dialect=dialect,
             capabilities=capabilities,
+            agent_version=agent_version,
         )
         return start_session_response
 
@@ -344,17 +371,8 @@ class AgentClient:
                 f"There are {self._queue.qsize()} unreported items in the queue"
             )
 
-        try:
-            self._sock.shutdown(socket.SHUT_RDWR)
-            self._sock.close()
-            logging.info(
-                f"Connection to Agent at {self._remote_address} closed successfully"
-            )
-        except socket.error as msg:
-            logging.error(
-                f"Failed to close socket connection to Agent at {self._remote_address}: {msg}"
-            )
-            pass
+        if not AgentClient.can_reuse_session():
+            SocketManager.instance().close_socket()
 
     def __handle_new_session_error(self, response: OperationResult):
         """ Handles errors occurring on creation of a new session with the Agent

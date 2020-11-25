@@ -38,3 +38,16 @@ class ReportSettings:
     def jobname(self):
         """Getter for the job name"""
         return self._jobname
+
+    def __eq__(self, other):
+        """Custom equality function"""
+        if not isinstance(other, ReportSettings):
+            return NotImplemented
+
+        return (
+            self._projectname == other._projectname and self._jobname == other._jobname
+        )
+
+    def __hash__(self):
+        """Implement hash to allow objects to be used in sets and dicts"""
+        return hash((self._projectname, self._jobname))
