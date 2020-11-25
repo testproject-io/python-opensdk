@@ -37,12 +37,16 @@ class Firefox(BaseDriver):
         jobname: str = None,
         disable_reports: bool = False,
     ):
-        # Specified FirefoxOptions take precedence over desired capabilities but either can be used
-        caps = (
-            firefox_options.to_capabilities()
-            if firefox_options is not None
-            else desired_capabilities
-        )
+        # If no options or capabilities are specified at all, use default FirefoxOptions
+        if firefox_options is None and desired_capabilities is None:
+            caps = FirefoxOptions().to_capabilities()
+        else:
+            # Specified FirefoxOptions take precedence over desired capabilities but either can be used
+            caps = (
+                firefox_options.to_capabilities()
+                if firefox_options is not None
+                else desired_capabilities
+            )
 
         super().__init__(
             capabilities=caps,

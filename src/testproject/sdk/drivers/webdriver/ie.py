@@ -37,12 +37,16 @@ class Ie(BaseDriver):
         jobname: str = None,
         disable_reports: bool = False,
     ):
-        # Specified IE Options take precedence over desired capabilities but either can be used
-        caps = (
-            ie_options.to_capabilities()
-            if ie_options is not None
-            else desired_capabilities
-        )
+        # If no options or capabilities are specified at all, use default Options
+        if ie_options is None and desired_capabilities is None:
+            caps = Options().to_capabilities()
+        else:
+            # Specified IE Options take precedence over desired capabilities but either can be used
+            caps = (
+                ie_options.to_capabilities()
+                if ie_options is not None
+                else desired_capabilities
+            )
 
         super().__init__(
             capabilities=caps,

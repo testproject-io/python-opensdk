@@ -37,12 +37,16 @@ class Chrome(BaseDriver):
         jobname: str = None,
         disable_reports: bool = False,
     ):
-        # Specified ChromeOptions take precedence over desired capabilities but either can be used
-        caps = (
-            chrome_options.to_capabilities()
-            if chrome_options is not None
-            else desired_capabilities
-        )
+        # If no options or capabilities are specified at all, use default ChromeOptions
+        if chrome_options is None and desired_capabilities is None:
+            caps = ChromeOptions().to_capabilities()
+        else:
+            # Specified ChromeOptions take precedence over desired capabilities but either can be used
+            caps = (
+                chrome_options.to_capabilities()
+                if chrome_options is not None
+                else desired_capabilities
+            )
 
         super().__init__(
             capabilities=caps,
