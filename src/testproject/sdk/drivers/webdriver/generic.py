@@ -16,7 +16,7 @@ import logging
 
 from packaging import version
 from src.testproject.enums import EnvironmentVariable
-from src.testproject.helpers import ReportHelper, LoggingHelper, ConfigHelper
+from src.testproject.helpers import ReportHelper, LoggingHelper, ConfigHelper, AddonHelper
 from src.testproject.rest import ReportSettings
 from src.testproject.rest.messages.agentstatusresponse import AgentStatusResponse
 from src.testproject.sdk.exceptions import SdkException, AgentConnectException
@@ -112,6 +112,14 @@ class Generic:
     def report(self) -> Reporter:
         """Enables access to the TestProject reporting actions from the driver object"""
         return Reporter(self.command_executor)
+
+    def addons(self) -> AddonHelper:
+        """Enables access to the TestProject addon execution actions from the driver object
+
+        Returns:
+            AddonHelper: object giving access to addon proxy methods
+        """
+        return AddonHelper(self._agent_client)
 
     def quit(self):
         """Quits the driver and stops the session with the Agent, cleaning up after itself."""

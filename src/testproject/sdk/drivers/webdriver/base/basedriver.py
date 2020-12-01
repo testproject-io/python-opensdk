@@ -15,7 +15,7 @@
 import logging
 
 from src.testproject.enums import EnvironmentVariable
-from src.testproject.helpers import ReportHelper, LoggingHelper, ConfigHelper
+from src.testproject.helpers import ReportHelper, LoggingHelper, ConfigHelper, AddonHelper
 from src.testproject.rest import ReportSettings
 from src.testproject.sdk.exceptions import SdkException
 from src.testproject.sdk.internal.agent import AgentClient
@@ -122,6 +122,14 @@ class BaseDriver(RemoteWebDriver):
             Reporter: object giving access to reporting methods
         """
         return Reporter(self.command_executor)
+
+    def addons(self) -> AddonHelper:
+        """Enables access to the TestProject addon execution actions from the driver object
+
+        Returns:
+            AddonHelper: object giving access to addon proxy methods
+        """
+        return AddonHelper(self._agent_client)
 
     def quit(self):
         """Quits the driver and stops the session with the Agent, cleaning up after itself"""
