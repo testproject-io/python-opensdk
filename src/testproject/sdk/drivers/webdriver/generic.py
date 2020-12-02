@@ -88,7 +88,7 @@ class Generic:
 
         reportsettings = ReportSettings(self._projectname, self._jobname)
 
-        capabilities = {"platform": "ANY"}
+        capabilities = {"platformName": "ANY"}
 
         self._agent_client: AgentClient = AgentClient(
             token=self._token, capabilities=capabilities, reportsettings=reportsettings,
