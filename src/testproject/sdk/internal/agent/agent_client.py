@@ -23,9 +23,10 @@ from enum import Enum, unique
 from requests import HTTPError
 from packaging import version
 from src.testproject.classes import ActionExecutionResponse
+from src.testproject.classes.resultfield import ResultField
 from src.testproject.enums import ExecutionResultType
 from src.testproject.executionresults import OperationResult
-from src.testproject.helpers import ConfigHelper
+from src.testproject.helpers import ConfigHelper, SeleniumHelper
 from src.testproject.rest import ReportSettings
 from src.testproject.rest.messages import (
     SessionRequest,
@@ -33,8 +34,9 @@ from src.testproject.rest.messages import (
     DriverCommandReport,
     StepReport,
     CustomTestReport,
-)
+    AddonExecutionResponse)
 from src.testproject.rest.messages.agentstatusresponse import AgentStatusResponse
+from src.testproject.sdk.addons import ActionProxy
 from src.testproject.sdk.exceptions import (
     SdkException,
     AgentConnectException,
@@ -42,6 +44,7 @@ from src.testproject.sdk.exceptions import (
     ObsoleteVersionException,
     MissingBrowserException,
 )
+from src.testproject.sdk.exceptions.addonnotinstalled import AddonNotInstalledException
 from src.testproject.sdk.internal.session import AgentSession
 from src.testproject.tcp import SocketManager
 
@@ -373,6 +376,63 @@ class AgentClient:
 
         if not AgentClient.can_reuse_session():
             SocketManager.instance().close_socket()
+
+    def execute_proxy(self, action: ActionProxy) -> AddonExecutionResponse:
+        """Sends a custom action to the Agent
+        Args:
+            action (ActionProxy): The custom action to be executed
+        Returns:
+            AddonExecutionResponse: object containing the result of the action execution
+        """
+        operation_result = self.send_request(
+            "POST",
+            urljoin(self._remote_address, Endpoint.AddonExecution.value),
+            self._create_action_proxy_payload(action),
+        )
+
+        if operation_result.status_code == 404:
+            logging.error(f'Action [{action.proxydescriptor.classname}] in addon [{action.proxydescriptor.guid}]'
+                          f' is not installed in your account.')
+            raise AddonNotInstalledException
+
+        response = AddonExecutionResponse()
+        response.executionresulttype = (
+            ExecutionResultType.Passed
+            if operation_result.data["resultType"] == "Passed"
+            else ExecutionResultType.Failed
+        )
+        response.message = operation_result.data["message"]
+        response.fields = []
+
+        fields_in_operation_result = operation_result.data['fields']
+
+        for field in fields_in_operation_result:
+            result_field = ResultField()
+            result_field.name = field['name']
+            result_field.value = field['value']
+            result_field.is_output = field['output']
+            response.fields.append(result_field)
+
+        return response
+
+    @staticmethod
+    def _create_action_proxy_payload(action: ActionProxy) -> dict:
+        """Creates a payload dictionary that will be transformed to a action JSON request body
+            Args:
+                action (ActionProxy): The action for which a payload should be created
+            Returns:
+                dict: the payload dictionary used to request execution of an action
+        """
+        payload = {
+            "guid": action.proxydescriptor.guid,
+            "className": action.proxydescriptor.classname,
+            "parameters": action.proxydescriptor.parameters,
+        }
+        if action.proxydescriptor.by is not None:
+            payload["by"] = SeleniumHelper.create_addon_locator(
+                action.proxydescriptor.by, action.proxydescriptor.by_value
+            )
+        return payload
 
     def __handle_new_session_error(self, response: OperationResult):
         """ Handles errors occurring on creation of a new session with the Agent

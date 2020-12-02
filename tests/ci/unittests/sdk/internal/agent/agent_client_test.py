@@ -15,6 +15,9 @@
 import pytest
 import responses
 
+from selenium.webdriver.common.by import By
+from src.testproject.classes import ProxyDescriptor
+from src.testproject.sdk.addons import ActionProxy
 from src.testproject.rest.messages.agentstatusresponse import AgentStatusResponse
 from src.testproject.sdk.exceptions import SdkException, AgentConnectException
 from src.testproject.sdk.internal.agent import AgentClient
@@ -95,3 +98,24 @@ def test_get_agent_status_response_with_tag_element_creates_agentstatusresponse(
         token="1234"
     )
     assert agent_status_response.tag == "1.2.3"
+
+
+def test_action_proxy_payload_is_correctly_formatted():
+    # Arrange - Create a custom proxy descriptor
+    proxy_descriptor = ProxyDescriptor("my_guid", "my_classname")
+    proxy_descriptor.by = By.CSS_SELECTOR
+    proxy_descriptor.by_value = "my_css_selector"
+    proxy_descriptor.parameters = {"key": "value"}
+
+    # Arrange - Create an action proxy object
+    action_proxy = ActionProxy()
+    action_proxy.proxydescriptor = proxy_descriptor
+
+    # Act - Create the payload that will be sent to the Agent to execute this action
+    payload = AgentClient._create_action_proxy_payload(action_proxy)
+
+    # Assert - Check that the payload contains the expected keys and associated values
+    assert payload["by"] == {"cssSelector": "my_css_selector"}
+    assert payload["className"] == "my_classname"
+    assert payload["guid"] == "my_guid"
+    assert payload["parameters"] == {"key": "value"}
