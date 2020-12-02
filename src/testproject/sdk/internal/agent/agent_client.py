@@ -177,9 +177,12 @@ class AgentClient:
 
         agent_version = response.data.get("version")
 
+        # If driver is Generic, supply None as the server address.
+        server_address = response.data.get("serverAddress")
+
         start_session_response = SessionResponse(
             dev_socket_port=response.data["devSocketPort"],
-            server_address=response.data["serverAddress"],
+            server_address=server_address,
             session_id=session_id,
             dialect=dialect,
             capabilities=capabilities,
