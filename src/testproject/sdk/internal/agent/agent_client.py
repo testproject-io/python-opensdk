@@ -44,6 +44,7 @@ from src.testproject.sdk.exceptions import (
     ObsoleteVersionException,
     MissingBrowserException,
 )
+from src.testproject.sdk.exceptions.addonnotinstalled import AddonNotInstalledException
 from src.testproject.sdk.internal.session import AgentSession
 from src.testproject.tcp import SocketManager
 
@@ -388,6 +389,11 @@ class AgentClient:
             urljoin(self._remote_address, Endpoint.AddonExecution.value),
             self._create_action_proxy_payload(action),
         )
+
+        if operation_result.status_code == 404:
+            logging.error(f'Action [{action.proxydescriptor.classname}] in addon [{action.proxydescriptor.guid}]'
+                          f' is not installed in your account.')
+            raise AddonNotInstalledException
 
         response = AddonExecutionResponse()
         response.executionresulttype = (
