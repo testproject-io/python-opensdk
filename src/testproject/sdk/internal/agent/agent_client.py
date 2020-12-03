@@ -169,29 +169,20 @@ class AgentClient:
             self.__handle_new_session_error(response)
 
         # The generic driver returns a partial response, so we have to create some fields ourselves
-        try:
-            session_id = response.data["sessionId"]
-        except KeyError:
-            session_id = uuid.uuid4()
+        session_id = response.data.get("sessionId", uuid.uuid4())
 
-        try:
-            dialect = response.data["dialect"]
-        except KeyError:
-            dialect = None
+        dialect = response.data.get("dialect")
 
-        try:
-            capabilities = response.data["capabilities"]
-        except KeyError:
-            capabilities = {}
+        capabilities = response.data.get("capabilities", {})
 
-        try:
-            agent_version = response.data["version"]
-        except KeyError:
-            agent_version = None
+        agent_version = response.data.get("version")
+
+        # If driver is Generic, supply None as the server address.
+        server_address = response.data.get("serverAddress")
 
         start_session_response = SessionResponse(
             dev_socket_port=response.data["devSocketPort"],
-            server_address=response.data["serverAddress"],
+            server_address=server_address,
             session_id=session_id,
             dialect=dialect,
             capabilities=capabilities,
