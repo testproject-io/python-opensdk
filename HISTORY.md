@@ -6,6 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.64.1] - 2020-12-03
+
+### Added
+
+- Execution of addon proxies.
+
+### Fixed
+
+- Fixed Generic driver incompatibility with latest Agent.
+
 ## [0.64.0] - 2020-11-25
 
 ### Added
