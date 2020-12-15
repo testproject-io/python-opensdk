@@ -13,6 +13,8 @@
 # limitations under the License.
 
 from selenium.webdriver.remote.remote_connection import RemoteConnection
+
+from src.testproject.helpers.step_helper import StepHelper
 from src.testproject.sdk.internal.agent import AgentClient
 from src.testproject.sdk.internal.helpers.reporting_command_executor import (
     ReportingCommandExecutor,
@@ -32,8 +34,8 @@ class CustomCommandExecutor(RemoteConnection, ReportingCommandExecutor):
         ReportingCommandExecutor.__init__(
             self, agent_client=agent_client, command_executor=self
         )
-
         self.w3c = agent_client.agent_session.dialect == "W3C"
+        self.step_helper = StepHelper(super(), self.w3c)
 
     def execute(self, command: str, params: dict, skip_reporting: bool = False):
         """Execute a Selenium command
@@ -48,7 +50,15 @@ class CustomCommandExecutor(RemoteConnection, ReportingCommandExecutor):
         """
         self.update_known_test_name()
 
+        self.step_helper.handle_timeout(self.settings.timeout, self.agent_client.agent_session.session_id)
+
+        # Handling sleep before execution
+        self.step_helper.handle_sleep(self.settings.sleep_timing_type, self.settings.sleep_time, command)
+
         response = super().execute(command=command, params=params)
+
+        # Handling sleep after execution
+        self.step_helper.handle_sleep(self.settings.sleep_timing_type, self.settings.sleep_time, command, True)
 
         result = response.get("value")
 
