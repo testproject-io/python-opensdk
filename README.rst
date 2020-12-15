@@ -258,6 +258,43 @@ If this feature is disabled, or you would like to add steps manually, you can us
 
 Here is a complete example using `manual test reporting of tests and steps <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/reports/manual_reporting_test.py>`__.
 
+Step settings
+^^^^^^^^^^^^^
+Step settings allow controlling driver default execution and reporting behavior such as:
+
+* Default timeout.
+* Sleep duration Before/After step execution.
+* Screenshot capturing logic.
+* Execution result inversion.
+* Execution failure behavior.
+
+Here is an example on how to take a screenshot upon any driver command executed:
+.. code-block:: python
+
+    def test_use_step_settings():
+        driver = webdriver.Chrome()
+        # Using StepSettings for the whole test.
+        driver.step_settings = StepSettings(screenshot_condition=TakeScreenshotConditionType.Always)
+        # Your test code goes here - all driver commands will use the defined step_settings
+        driver.quit()
+
+Single step settings override
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+For convenience we can also use the StepSettings inside a 'with' compound statement called DriverStepSettings.
+
+Here is an example on how a single step can be used with different step settings.
+By default, screenshots are taken on step failures only, the following example demonstrates how to override this
+behavior and take a screenshot when a step passes:
+.. code-block:: python
+
+    def test_use_single_step_settings():
+        driver = webdriver.Chrome()
+        # A single step we want to run with an overriding StepSettings.
+        with DriverStepSettings(driver, StepSettings(screenshot_condition=TakeScreenshotConditionType.Success)):
+        driver.get("https://example.testproject.io/web/")  # Screenshot will be taken only if step passes.
+        
+        driver.get("https://example.testproject.io/web/")  # Screenshot will be taken only if step fails (default).
+
 Disabling reports
 -----------------
 If reports were not disabled when the driver was created, they can be disabled or enabled later.
