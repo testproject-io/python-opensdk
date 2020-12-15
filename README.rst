@@ -269,6 +269,7 @@ Step settings allow controlling driver default execution and reporting behavior 
 * Execution failure behavior.
 
 Here is an example on how to take a screenshot upon any driver command executed:
+
 .. code-block:: python
 
     def test_use_step_settings():
@@ -285,6 +286,7 @@ For convenience we can also use the StepSettings inside a 'with' compound statem
 Here is an example on how a single step can be used with different step settings.
 By default, screenshots are taken on step failures only, the following example demonstrates how to override this
 behavior and take a screenshot when a step passes:
+
 .. code-block:: python
 
     def test_use_single_step_settings():
