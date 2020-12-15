@@ -16,6 +16,8 @@ import logging
 import inspect
 
 from selenium.webdriver.remote.command import Command
+
+from src.testproject.classes import StepSettings
 from src.testproject.helpers import ReportHelper
 from src.testproject.rest.messages import DriverCommandReport, CustomTestReport
 from src.testproject.sdk.internal.agent import AgentClient
@@ -52,6 +54,7 @@ class ReportingCommandExecutor:
         self._stashed_command = None
         self._latest_known_test_name = ReportHelper.infer_test_name()
         self._excluded_test_names = list()
+        self._settings = StepSettings()
 
     @property
     def disable_reports(self) -> bool:
@@ -107,6 +110,15 @@ class ReportingCommandExecutor:
     def agent_client(self):
         """Getter for the Agent client associated with this connection"""
         return self._agent_client
+
+    @property
+    def report_settings(self):
+        """Getter for the settings for auto step reporting defined by the user."""
+        return self._settings
+
+    @report_settings.setter
+    def report_settings(self, value: StepSettings):
+        self._settings = value
 
     def _report_command(self, command: str, params: dict, result: dict, passed: bool):
         """Reports a driver command to the TestProject platform
