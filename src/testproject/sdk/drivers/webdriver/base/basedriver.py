@@ -14,6 +14,7 @@
 
 import logging
 
+from src.testproject.classes import StepSettings
 from src.testproject.enums import EnvironmentVariable
 from src.testproject.helpers import ReportHelper, LoggingHelper, ConfigHelper, AddonHelper
 from src.testproject.rest import ReportSettings
@@ -109,6 +110,14 @@ class BaseDriver(RemoteWebDriver):
     def instance(cls):
         """Returns the singleton instance of the driver object"""
         return cls.__instance
+
+    @property
+    def step_settings(self):
+        return self.command_executor.settings
+
+    @step_settings.setter
+    def step_settings(self, step_settings: StepSettings):
+        self.command_executor.settings = step_settings
 
     def start_session(self, capabilities, browser_profile=None):
         """Sets capabilities and sessionId obtained from the Agent when creating the original session."""
