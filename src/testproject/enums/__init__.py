@@ -5,7 +5,6 @@ from .reportnamingelement import ReportNamingElement
 from .environmentvariable import EnvironmentVariable
 from .sleep_timing_type import SleepTimingType
 from .screenshot_condition_type import TakeScreenshotConditionType
-from .failure_behavior_type import FailureBehaviorType
 
 __all__ = [
     "ExecutionResultType",
@@ -14,6 +13,5 @@ __all__ = [
     "ReportNamingElement",
     "EnvironmentVariable",
     "SleepTimingType",
-    "TakeScreenshotConditionType",
-    "FailureBehaviorType"
+    "TakeScreenshotConditionType"
 ]

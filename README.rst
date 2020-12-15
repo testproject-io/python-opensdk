@@ -266,7 +266,6 @@ Step settings allow controlling driver default execution and reporting behavior 
 * Sleep duration Before/After step execution.
 * Screenshot capturing logic.
 * Execution result inversion.
-* Execution failure behavior.
 
 Here is an example on how to take a screenshot upon any driver command executed:
 

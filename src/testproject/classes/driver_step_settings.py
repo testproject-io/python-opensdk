@@ -15,7 +15,6 @@ from typing import Union
 
 from src.testproject.classes import StepSettings
 from src.testproject.enums import SleepTimingType, TakeScreenshotConditionType
-from src.testproject.enums import FailureBehaviorType
 from src.testproject.sdk.drivers.webdriver import Remote
 from src.testproject.sdk.drivers.webdriver.base import BaseDriver
 
@@ -36,9 +35,6 @@ class DriverStepSettings:
         if step_settings.screenshot_condition \
                 and step_settings.screenshot_condition is TakeScreenshotConditionType.Inherit:
             step_settings.screenshot_condition = self.previous_settings.screenshot_condition
-        if step_settings.failure_behavior \
-                and step_settings.failure_behavior is FailureBehaviorType.Inherit:
-            step_settings.failure_behavior = self.previous_settings.failure_behavior
         self.step_settings = step_settings
 
     def __enter__(self):
