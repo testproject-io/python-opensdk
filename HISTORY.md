@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- StepSettings - Controls driver timeout, step sleep (before/after) and screenshot behavior.
+- StepSettings - Controls driver timeout, sleep before/after step execution and screenshot behavior.
 - DriverStepSetting - Implementation of the python 'with' (compound) statement to override step settings. 
 
 ## [0.64.1] - 2020-12-03
