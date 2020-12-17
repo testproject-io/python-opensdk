@@ -11,12 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Union
 
 from src.testproject.classes import StepSettings
 from src.testproject.enums import SleepTimingType, TakeScreenshotConditionType
-from src.testproject.sdk.drivers.webdriver import Remote
-from src.testproject.sdk.drivers.webdriver.base import BaseDriver
 
 
 class DriverStepSettings:
@@ -25,7 +22,7 @@ class DriverStepSettings:
     If driver auto step reports is enabled, all the driver commands within this compound statement will be reported
     according to the given StepSettings.
     """
-    def __init__(self, driver: Union[BaseDriver, Remote], step_settings: StepSettings):
+    def __init__(self, driver, step_settings: StepSettings):
         """Initializes the 'with' statement."""
         self.previous_settings = driver.command_executor.settings
         self.driver = driver

@@ -6,12 +6,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.64.4] - 2020-12-17
+
+### Fixed
+
+- DriverStepSettings - Removed typing for 'driver' on the constructor (caused errors with circular imports).
+
 ## [0.64.3] - 2020-12-16
 
 ### Added
 
 - StepSettings - Controls driver timeout, sleep before/after step execution and screenshot behavior.
-- DriverStepSetting - Implementation of the python 'with' (compound) statement to override step settings. 
+- DriverStepSettings - Implementation of the python 'with' (compound) statement to override step settings. 
 
 ## [0.64.1] - 2020-12-03
 
