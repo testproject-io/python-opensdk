@@ -14,6 +14,7 @@
 
 import functools
 import os
+import re
 import sys
 import traceback
 
@@ -47,6 +48,8 @@ def report_assertion_errors(func):
 
             _, line, function, text = tb_info[line_index]
             driver = __get_active_driver_instance()
+            message = f"Assertion failed on line {line} in {function}"
+            description, message = __handle_step_report_details(description, message)
             driver.report().step(
                 description=description,
                 message=f"Assertion failed on line {line} in {function}",
@@ -72,3 +75,20 @@ def __get_active_driver_instance():
                 )
 
     return driver
+
+
+def __handle_step_report_details(description, message):
+    """Handles the assertions description.
+
+    AssertionError from pytest can contain multiple lines separated with '\n + ' between each line.
+    The first line of the AssertionError will be the description, any additional lines will be added to the message.
+    """
+    inner_description = re.search(r"AssertionError\('(.*)'\)", description)
+    if inner_description:
+        inner_description = inner_description.group(1).replace('\\n', os.linesep).split(' + ')
+        description = 'Assertion failed {{' + inner_description[0] + '}}'
+        if len(inner_description) > 1:
+            message += os.linesep
+            for line in inner_description[1:]:
+                message += line
+    return description, message
