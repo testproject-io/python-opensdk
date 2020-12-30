@@ -29,9 +29,8 @@ class GenericCommandExecutor(ReportingCommandExecutor):
     """
 
     def __init__(self, agent_client: AgentClient):
-        ReportingCommandExecutor.__init__(
-            self, agent_client=agent_client, command_executor=self
-        )
+        ReportingCommandExecutor.__init__(self, agent_client=agent_client, command_executor=self,
+                                          remote_connection=None)
 
     def execute(self, command: str, params: dict, skip_reporting: bool = False):
         """Not implemented for generic driver objects
