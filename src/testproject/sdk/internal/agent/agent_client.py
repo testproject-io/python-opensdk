@@ -13,15 +13,17 @@
 # limitations under the License.
 
 import logging
-import requests
-import threading
 import queue
+import threading
 import uuid
-
-from urllib.parse import urljoin
 from enum import Enum, unique
-from requests import HTTPError
+from http import HTTPStatus
+from urllib.parse import urljoin
+
+import requests
 from packaging import version
+from requests import HTTPError
+
 from src.testproject.classes import ActionExecutionResponse
 from src.testproject.classes.resultfield import ResultField
 from src.testproject.enums import ExecutionResultType
