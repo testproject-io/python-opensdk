@@ -44,7 +44,6 @@ from src.testproject.sdk.exceptions import (
     AgentConnectException,
     InvalidTokenException,
     ObsoleteVersionException,
-    MissingBrowserException,
 )
 from src.testproject.sdk.exceptions.addonnotinstalled import AddonNotInstalledException
 from src.testproject.sdk.internal.session import AgentSession
@@ -438,7 +437,7 @@ class AgentClient:
         Args:
             response (OperationResult): response from the Agent
         """
-        if response.status_code == 401:
+        if response.status_code == HTTPStatus.UNAUTHORIZED:
             logging.error(
                 "Failed to initialize a session with the Agent - invalid developer token supplied"
             )
@@ -447,14 +446,10 @@ class AgentClient:
                 " and set it in the TP_DEV_TOKEN environment variable"
             )
             raise InvalidTokenException(response.message)
-        elif response.status_code == 404:
-            try:
-                error_message = f"Requested browser '{self._capabilities['browserName']}' could not be found on your system"
-            except KeyError:
-                error_message = "Requested browser could not be found on your system"
-            logging.error(error_message)
-            raise MissingBrowserException(error_message)
-        elif response.status_code == 406:
+        elif response.status_code == HTTPStatus.NOT_FOUND:
+            error_message = response.message if response.message else "Failed to start a new session!"
+            raise SdkException(error_message)
+        elif response.status_code == HTTPStatus.NOT_ACCEPTABLE:
             logging.error(
                 f"Failed to initialize a session with the Agent - obsolete SDK version {ConfigHelper.get_sdk_version()}"
             )
