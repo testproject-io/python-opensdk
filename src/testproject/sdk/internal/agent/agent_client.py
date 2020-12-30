@@ -13,15 +13,17 @@
 # limitations under the License.
 
 import logging
-import requests
-import threading
 import queue
+import threading
 import uuid
-
-from urllib.parse import urljoin
 from enum import Enum, unique
-from requests import HTTPError
+from http import HTTPStatus
+from urllib.parse import urljoin
+
+import requests
 from packaging import version
+from requests import HTTPError
+
 from src.testproject.classes import ActionExecutionResponse
 from src.testproject.classes.resultfield import ResultField
 from src.testproject.enums import ExecutionResultType
@@ -42,7 +44,6 @@ from src.testproject.sdk.exceptions import (
     AgentConnectException,
     InvalidTokenException,
     ObsoleteVersionException,
-    MissingBrowserException,
 )
 from src.testproject.sdk.exceptions.addonnotinstalled import AddonNotInstalledException
 from src.testproject.sdk.internal.session import AgentSession
@@ -215,17 +216,22 @@ class AgentClient:
                     f"Unsupported HTTP method {method} in send_request()"
                 )
 
+        response_json = {}
+        # For some successful calls, the response body will be empty
+        # Parsing it results in a ValueError, so we should handle this
+        try:
+            response_json = response.json()
+        except ValueError:
+            pass
+
+        # Handling any HTTPError exceptions.
         try:
             response.raise_for_status()
-            try:
-                # For some successful calls, the response body will be empty
-                # Parsing it results in a ValueError, so we should handle this
-                response_json = response.json()
-            except ValueError:
-                response_json = {}
             return OperationResult(True, response.status_code, "", response_json)
         except HTTPError as http_error:
-            return OperationResult(False, response.status_code, str(http_error), None)
+            return OperationResult(False, response.status_code,
+                                   response_json.get('message', str(http_error)),
+                                   response_json if response_json else None)
 
     def send_action_execution_request(
         self, codeblock_guid: str, body: dict
@@ -431,7 +437,7 @@ class AgentClient:
         Args:
             response (OperationResult): response from the Agent
         """
-        if response.status_code == 401:
+        if response.status_code == HTTPStatus.UNAUTHORIZED:
             logging.error(
                 "Failed to initialize a session with the Agent - invalid developer token supplied"
             )
@@ -440,14 +446,10 @@ class AgentClient:
                 " and set it in the TP_DEV_TOKEN environment variable"
             )
             raise InvalidTokenException(response.message)
-        elif response.status_code == 404:
-            try:
-                error_message = f"Requested browser '{self._capabilities['browserName']}' could not be found on your system"
-            except KeyError:
-                error_message = "Requested browser could not be found on your system"
-            logging.error(error_message)
-            raise MissingBrowserException(error_message)
-        elif response.status_code == 406:
+        elif response.status_code == HTTPStatus.NOT_FOUND:
+            error_message = response.message if response.message else "Failed to start a new session!"
+            raise SdkException(error_message)
+        elif response.status_code == HTTPStatus.NOT_ACCEPTABLE:
             logging.error(
                 f"Failed to initialize a session with the Agent - obsolete SDK version {ConfigHelper.get_sdk_version()}"
             )
