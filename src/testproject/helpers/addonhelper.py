@@ -40,7 +40,8 @@ class AddonHelper:
             if param not in ["_proxydescriptor"]:
                 action.proxydescriptor.parameters[param] = action.__dict__[param]
 
-        response: AddonExecutionResponse = self._agent_client.execute_proxy(action)
+        response: AddonExecutionResponse = self._agent_client.execute_proxy(action, self._command_executor.step_helper,
+                                                                            self._command_executor.settings)
         if response.executionresulttype != ExecutionResultType.Passed:
             raise SdkException(f"Error occurred during addon action execution: {response.message}")
 
