@@ -121,6 +121,16 @@ class ReportingCommandExecutor:
     def settings(self, value: StepSettings):
         self._settings = value
 
+    @property
+    def test_name(self) -> str:
+        """Getter for the latest known test name"""
+        return self._latest_known_test_name
+
+    @test_name.setter
+    def test_name(self, new_name: str):
+        """Setter for the latest known test name"""
+        self._latest_known_test_name = new_name
+
     def _report_command(self, command: str, params: dict, result: dict, passed: bool):
         """Reports a driver command to the TestProject platform
 
