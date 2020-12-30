@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from typing import Optional
 
 
 class OperationResult:
@@ -20,16 +21,16 @@ class OperationResult:
         passed (bool): True if the operation was executed successfully, False otherwise
         status_code (int): The HTTP status code of the Agent response
         message (str): A message returned by the Agent after the operation execution
-        data (str): Output data for the operation performed
+        data (Optional[dict]): Output data for the operation performed
 
     Attributes:
         _passed (bool): True if the operation was executed successfully, False otherwise
         _status_code (int): The HTTP status code of the Agent response
         _message (str): A message returned by the Agent after the operation execution
-        _data (str): Output data for the operation performed
+        _data (Optional[dict]): Output data for the operation performed
 
     """
-    def __init__(self, passed: bool = False, status_code: int = 500, message: str = "", data=None):
+    def __init__(self, passed: bool = False, status_code: int = 500, message: str = "", data: Optional[dict] = None):
         self._passed = passed
         self._status_code = status_code
         self._message = message
