@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import logging
+import ntpath
 import os
 import inspect
 
@@ -118,12 +119,14 @@ class ReportHelper:
         Returns:
             str: the inferred report naming element value
         """
+        path_to_test_file = pytest_info.split(" ")[0].split("::")[0]
         if element_to_find == ReportNamingElement.Project:
-            path_to_test_file = pytest_info.split(" ")[0].split("::")[0]
-            return path_to_test_file[0 : path_to_test_file.rfind("/")].replace("/", ".")
+            # Return the path without base file name parsed as "package".s
+            return path_to_test_file[0: path_to_test_file.rfind("/")].replace("/", ".")
         elif element_to_find == ReportNamingElement.Job:
-            path_to_test_file = pytest_info.split(" ")[0].split("::")[0]
-            return path_to_test_file.split("::")[0].split("/")[-1].split(".py")[0]
+            # Return the base file name without '.py' extension.
+            head, tail = ntpath.split(path_to_test_file)
+            return (tail or ntpath.basename(head)).split(".py")[0]
         elif element_to_find == ReportNamingElement.Test:
             return pytest_info.rsplit(" ", maxsplit=1)[0].split("::")[1]
         return None

@@ -17,37 +17,45 @@ class ReportSettings:
     """Contains settings to be used in the report.
 
         Args:
-            projectname (str): Project name to report
-            jobname (str): Job name to report
+            project_name (str): Project name to report
+            job_name (str): Job name to report
 
         Attributes:
-            _projectname (str): Project name to report
-            _jobname (str): Job name to report
+            _project_name (str): Project name to report
+            _job_name (str): Job name to report
     """
 
-    def __init__(self, projectname: str, jobname: str):
-        self._projectname = projectname
-        self._jobname = jobname
+    def __init__(self, project_name: str, job_name: str):
+        self._project_name = project_name
+        self._job_name = job_name
 
     @property
-    def projectname(self):
+    def project_name(self) -> str:
         """Getter for the project name"""
-        return self._projectname
+        return self._project_name
+
+    @project_name.setter
+    def project_name(self, new_name: str):
+        """Setter for the project name"""
+        self._project_name = new_name
 
     @property
-    def jobname(self):
+    def job_name(self) -> str:
         """Getter for the job name"""
-        return self._jobname
+        return self._job_name
+
+    @job_name.setter
+    def job_name(self, new_name: str):
+        """Setter for the job name"""
+        self._job_name = new_name
 
     def __eq__(self, other):
         """Custom equality function"""
         if not isinstance(other, ReportSettings):
             return NotImplemented
 
-        return (
-            self._projectname == other._projectname and self._jobname == other._jobname
-        )
+        return self._project_name == other._project_name and self._job_name == other._job_name
 
     def __hash__(self):
         """Implement hash to allow objects to be used in sets and dicts"""
-        return hash((self._projectname, self._jobname))
+        return hash((self._project_name, self._job_name))

@@ -21,28 +21,28 @@ class SessionRequest:
 
     Args:
         capabilities (dict): Desired session capabilities
-        reportsettings (ReportSettings): Settings to be used in the report
+        report_settings (ReportSettings): Settings to be used in the report
 
     Attributes:
         _capabilities (dict): Desired session capabilities
         _sdk_version (str): Current Python SDK version
         _language (str): Test code language (Python, obviously)
-        _projectname (str): Project name to report
-        _jobname (str): Job name to report
+        _project_name (str): Project name to report
+        _job_name (str): Job name to report
     """
 
-    def __init__(self, capabilities: dict, reportsettings: ReportSettings):
+    def __init__(self, capabilities: dict, report_settings: ReportSettings):
         self._capabilities: dict = capabilities
         self._sdk_version = ConfigHelper.get_sdk_version()
         self._language = "Python"
-        self._projectname = reportsettings.projectname
-        self._jobname = reportsettings.jobname
+        self._project_name = report_settings.project_name
+        self._job_name = report_settings.job_name
 
     def to_json(self):
         """Returns a JSON representation of the current SessionRequest instance"""
         return {
-            "projectName": self._projectname,
-            "jobName": self._jobname,
+            "projectName": self._project_name,
+            "jobName": self._job_name,
             "capabilities": self._capabilities,
             "sdkVersion": self._sdk_version,
             "language": self._language,

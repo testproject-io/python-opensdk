@@ -56,14 +56,14 @@ class AgentClient:
     Args:
         token (str): The development token used to communicate with the Agent
         capabilities (dict): Additional options to be applied to the driver instance
-        reportsettings (ReportSettings): Settings (project name, job name) to be included in the report
+        report_settings (ReportSettings): Settings (project name, job name) to be included in the report
 
     Attributes:
         _remote_address (str): The Agent endpoint
         _capabilities (dict): Additional options to be applied to the driver instance
         _agent_session (AgentSession): stores properties of the current agent session
         _token (str): The development token used to authenticate with the Agent
-        _reportsettings (ReportSettings): Settings (project name, job name) to be included in the report
+        _report_settings (ReportSettings): Settings (project name, job name) to be included in the report
         _queue (queue.Queue): queue holding reports to be sent to Agent in separate thread
     """
 
@@ -75,12 +75,12 @@ class AgentClient:
     # Class variable containing the current known Agent version
     __agent_version: str = None
 
-    def __init__(self, token: str, capabilities: dict, reportsettings: ReportSettings):
+    def __init__(self, token: str, capabilities: dict, report_settings: ReportSettings):
         self._remote_address = ConfigHelper.get_agent_service_address()
         self._capabilities = capabilities
         self._agent_session = None
         self._token = token
-        self._reportsettings = reportsettings
+        self._report_settings = report_settings
         self._queue = queue.Queue()
 
         self._running = True
@@ -96,6 +96,11 @@ class AgentClient:
     def agent_session(self):
         """Getter for the Agent session object"""
         return self._agent_session
+
+    @property
+    def report_settings(self) -> ReportSettings:
+        """Getter for the Report settings object."""
+        return self._report_settings
 
     def __start_session(self) -> bool:
         """Starts a new development session with the Agent
@@ -145,7 +150,7 @@ class AgentClient:
         Returns:
             SessionResponse: object containing the response to the session request
         """
-        session_request = SessionRequest(self._capabilities, self._reportsettings)
+        session_request = SessionRequest(self._capabilities, self._report_settings)
 
         logging.info(f"Session request: {session_request.to_json()}")
 
