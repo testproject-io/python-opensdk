@@ -20,15 +20,15 @@ from src.testproject.rest.messages import AddonExecutionResponse
 from src.testproject.sdk.addons import ActionProxy
 from src.testproject.sdk.exceptions import SdkException
 from src.testproject.sdk.internal.agent import AgentClient
+from src.testproject.sdk.internal.helpers import ReportingCommandExecutor
 
 
 class AddonHelper:
-    def __init__(self, agent_client: AgentClient):
+    def __init__(self, agent_client: AgentClient, command_executor: ReportingCommandExecutor):
         self._agent_client = agent_client
+        self._command_executor = command_executor
 
-    def execute(
-        self, action: ActionProxy, by: By = None, by_value: str = None
-    ) -> ActionProxy:
+    def execute(self, action: ActionProxy, by: By = None, by_value: str = None) -> ActionProxy:
 
         # Set the locator properties
         action.proxydescriptor.by = by
@@ -42,9 +42,7 @@ class AddonHelper:
 
         response: AddonExecutionResponse = self._agent_client.execute_proxy(action)
         if response.executionresulttype != ExecutionResultType.Passed:
-            raise SdkException(
-                f"Error occurred during addon action execution: {response.message}"
-            )
+            raise SdkException(f"Error occurred during addon action execution: {response.message}")
 
         for field in response.fields:
 
@@ -54,9 +52,7 @@ class AddonHelper:
 
             # check if action has an attribute with the name of the field
             if not hasattr(action, field.name):
-                logging.warning(
-                    f"Action '{action.proxydescriptor.guid}' does not have a field named '{field.name}'"
-                )
+                logging.warning(f"Action '{action.proxydescriptor.guid}' does not have a field named '{field.name}'")
                 continue
 
             # update the attribute value with the value from the response
