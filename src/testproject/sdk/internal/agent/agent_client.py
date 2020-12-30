@@ -97,6 +97,11 @@ class AgentClient:
         """Getter for the Agent session object"""
         return self._agent_session
 
+    @property
+    def report_settings(self) -> ReportSettings:
+        """Getter for the Report settings object."""
+        return self._report_settings
+
     def __start_session(self) -> bool:
         """Starts a new development session with the Agent
 
