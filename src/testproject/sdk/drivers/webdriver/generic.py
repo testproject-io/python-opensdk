@@ -31,8 +31,8 @@ class Generic:
 
     Args:
         token (str): The developer token used to communicate with the agent
-        projectname (str): Project name to report
-        jobname (str): Job name to report
+        project_name (str): Project name to report
+        job_name (str): Job name to report
         disable_reports (bool): set to True to disable all reporting (no report will be created on TestProject)
     """
 
@@ -43,8 +43,8 @@ class Generic:
     def __init__(
         self,
         token: str = None,
-        projectname: str = None,
-        jobname: str = None,
+        project_name: str = None,
+        job_name: str = None,
         disable_reports: bool = False,
     ):
         if Generic.__instance is not None:
@@ -74,25 +74,25 @@ class Generic:
 
         if disable_reports:
             # Setting the project and job name to empty strings will cause the Agent to not initialize a report
-            self._projectname = ""
-            self._jobname = ""
+            self._project_name = ""
+            self._job_name = ""
         else:
-            self._projectname = (
-                projectname
-                if projectname is not None
+            self._project_name = (
+                project_name
+                if project_name is not None
                 else ReportHelper.infer_project_name()
             )
-            self._jobname = (
-                jobname if jobname is not None else ReportHelper.infer_job_name()
+            self._job_name = (
+                job_name if job_name is not None else ReportHelper.infer_job_name()
             )
 
-        reportsettings = ReportSettings(self._projectname, self._jobname)
+        report_settings = ReportSettings(self._project_name, self._job_name)
 
         capabilities = {"platformName": "ANY"}
 
-        self._agent_client: AgentClient = AgentClient(
-            token=self._token, capabilities=capabilities, report_settings=reportsettings,
-        )
+        self._agent_client: AgentClient = AgentClient(token=self._token, capabilities=capabilities,
+                                                      report_settings=report_settings)
+
         self._agent_session: AgentSession = self._agent_client.agent_session
 
         self.command_executor = GenericCommandExecutor(agent_client=self._agent_client)
