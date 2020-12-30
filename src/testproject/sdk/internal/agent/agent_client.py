@@ -217,17 +217,22 @@ class AgentClient:
                     f"Unsupported HTTP method {method} in send_request()"
                 )
 
+        response_json = {}
+        # For some successful calls, the response body will be empty
+        # Parsing it results in a ValueError, so we should handle this
+        try:
+            response_json = response.json()
+        except ValueError:
+            pass
+
+        # Handling any HTTPError exceptions.
         try:
             response.raise_for_status()
-            try:
-                # For some successful calls, the response body will be empty
-                # Parsing it results in a ValueError, so we should handle this
-                response_json = response.json()
-            except ValueError:
-                response_json = {}
             return OperationResult(True, response.status_code, "", response_json)
         except HTTPError as http_error:
-            return OperationResult(False, response.status_code, str(http_error), None)
+            return OperationResult(False, response.status_code,
+                                   response_json.get('message', str(http_error)),
+                                   response_json if response_json else None)
 
     def send_action_execution_request(
         self, codeblock_guid: str, body: dict
