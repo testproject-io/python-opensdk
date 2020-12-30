@@ -91,7 +91,7 @@ class Generic:
         capabilities = {"platformName": "ANY"}
 
         self._agent_client: AgentClient = AgentClient(
-            token=self._token, capabilities=capabilities, reportsettings=reportsettings,
+            token=self._token, capabilities=capabilities, report_settings=reportsettings,
         )
         self._agent_session: AgentSession = self._agent_client.agent_session
 

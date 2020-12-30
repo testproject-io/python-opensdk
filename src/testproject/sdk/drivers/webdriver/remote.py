@@ -33,8 +33,8 @@ class Remote(AppiumWebDriver):
     Args:
         desired_capabilities (dict): Automation session desired capabilities and options
         token (str): Developer token to be used to communicate with the Agent
-        projectname (str): Project name to report
-        jobname (str): Job name to report
+        project_name (str): Project name to report
+        job_name (str): Job name to report
         disable_reports (bool): set to True to disable all reporting (no report will be created on TestProject)
 
     Attributes:
@@ -52,8 +52,8 @@ class Remote(AppiumWebDriver):
         self,
         desired_capabilities: dict = None,
         token: str = None,
-        projectname: str = None,
-        jobname: str = None,
+        project_name: str = None,
+        job_name: str = None,
         disable_reports: bool = False,
     ):
         if Remote.__instance is not None:
@@ -67,24 +67,24 @@ class Remote(AppiumWebDriver):
 
         if disable_reports:
             # Setting the project and job name to empty strings will cause the Agent to not initialize a report
-            self._projectname = ""
-            self._jobname = ""
+            self._project_name = ""
+            self._job_name = ""
         else:
-            self._projectname = (
-                projectname
-                if projectname is not None
+            self._project_name = (
+                project_name
+                if project_name is not None
                 else ReportHelper.infer_project_name()
             )
-            self._jobname = (
-                jobname if jobname is not None else ReportHelper.infer_job_name()
+            self._job_name = (
+                job_name if job_name is not None else ReportHelper.infer_job_name()
             )
 
-        reportsettings = ReportSettings(self._projectname, self._jobname)
+        report_settings = ReportSettings(self._project_name, self._job_name)
 
         self._agent_client: AgentClient = AgentClient(
             token=self._token,
             capabilities=self._desired_capabilities,
-            reportsettings=reportsettings,
+            report_settings=report_settings,
         )
         self._agent_session: AgentSession = self._agent_client.agent_session
         self.w3c = True if self._agent_session.dialect == "W3C" else False

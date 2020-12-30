@@ -83,7 +83,7 @@ class BaseDriver(RemoteWebDriver):
         self._agent_client: AgentClient = AgentClient(
             token=self._token,
             capabilities=capabilities,
-            reportsettings=ReportSettings(self._projectname, self._jobname),
+            report_settings=ReportSettings(self._projectname, self._jobname),
         )
         self._agent_session: AgentSession = self._agent_client.agent_session
         self.w3c = True if self._agent_session.dialect == "W3C" else False
