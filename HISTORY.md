@@ -6,6 +6,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.65.0] - 2021-01-06
+
+### Fixed
+
+- ([#68](https://github.com/testproject-io/python-sdk/issues/68)) - Un-sanitized assertions in test reports.
+- ([#48](https://github.com/testproject-io/python-sdk/issues/48)) - Minor changes to the 'report' decorator.
+- ([#89](https://github.com/testproject-io/python-sdk/issues/89)) - Fixing incorrect error messages.
+
+### Added
+
+- Screenshot behavior attribute to the report_assertion_errors decorator.
+
 ## [0.64.4] - 2020-12-17
 
 ### Fixed
