@@ -13,13 +13,9 @@
 # limitations under the License.
 
 import functools
-import logging
 import os
-from typing import Union
 
 from src.testproject.enums import EnvironmentVariable
-from src.testproject.sdk.drivers.webdriver import Remote
-from src.testproject.sdk.drivers.webdriver.base import BaseDriver
 
 
 def report(project: str = None, job: str = None, test: str = None):
@@ -35,24 +31,12 @@ def report(project: str = None, job: str = None, test: str = None):
     def report_decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            driver: Union[Remote, BaseDriver] = kwargs.get('driver')
-            if project:
+            if project is not None:
                 os.environ[EnvironmentVariable.TP_PROJECT_NAME.value] = project
-            if job:
+            if job is not None:
                 os.environ[EnvironmentVariable.TP_JOB_NAME.value] = job
-            if test:
+            if test is not None:
                 os.environ[EnvironmentVariable.TP_TEST_NAME.value] = test
-            # Setting the report settings directly to the driver.
-            if driver:
-                try:
-                    if project:
-                        driver.command_executor.agent_client.report_settings.project_name = project
-                    if job:
-                        driver.command_executor.agent_client.report_settings.job_name = job
-                    if test:
-                        driver.command_executor.test_name = test
-                except AttributeError as e:
-                    logging.error("Failed to update report settings.", exc_info=e)
             return func(*args, **kwargs)
 
         return wrapper
