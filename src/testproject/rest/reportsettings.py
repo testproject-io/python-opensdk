@@ -34,20 +34,10 @@ class ReportSettings:
         """Getter for the project name"""
         return self._project_name
 
-    @project_name.setter
-    def project_name(self, new_name: str):
-        """Setter for the project name"""
-        self._project_name = new_name
-
     @property
     def job_name(self) -> str:
         """Getter for the job name"""
         return self._job_name
-
-    @job_name.setter
-    def job_name(self, new_name: str):
-        """Setter for the job name"""
-        self._job_name = new_name
 
     def __eq__(self, other):
         """Custom equality function"""
