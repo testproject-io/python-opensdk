@@ -19,7 +19,7 @@ from src.testproject.sdk.drivers import webdriver
 
 @pytest.fixture()
 def driver():
-    driver = webdriver.Generic(projectname="Examples", jobname=None)
+    driver = webdriver.Generic(project_name="Examples", job_name=None)
     yield driver
     driver.quit()
 

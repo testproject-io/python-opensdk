@@ -14,7 +14,6 @@
 
 from selenium.webdriver.remote.remote_connection import RemoteConnection
 
-from src.testproject.helpers.step_helper import StepHelper
 from src.testproject.sdk.internal.agent import AgentClient
 from src.testproject.sdk.internal.helpers.reporting_command_executor import (
     ReportingCommandExecutor,
@@ -31,11 +30,8 @@ class CustomCommandExecutor(RemoteConnection, ReportingCommandExecutor):
 
     def __init__(self, agent_client: AgentClient, remote_server_addr: str):
         RemoteConnection.__init__(self, remote_server_addr=remote_server_addr)
-        ReportingCommandExecutor.__init__(
-            self, agent_client=agent_client, command_executor=self
-        )
-        self.w3c = agent_client.agent_session.dialect == "W3C"
-        self.step_helper = StepHelper(super(), self.w3c)
+        ReportingCommandExecutor.__init__(self, agent_client=agent_client, command_executor=self,
+                                          remote_connection=super())
 
     def execute(self, command: str, params: dict, skip_reporting: bool = False):
         """Execute a Selenium command

@@ -133,7 +133,7 @@ class Remote(AppiumWebDriver):
         Returns:
             AddonHelper: object giving access to addon proxy methods
         """
-        return AddonHelper(self._agent_client)
+        return AddonHelper(self._agent_client, self.command_executor)
 
     def quit(self):
         """Quits the driver and stops the session with the Agent, cleaning up after itself."""

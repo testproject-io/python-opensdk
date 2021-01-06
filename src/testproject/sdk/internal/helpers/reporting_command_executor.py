@@ -20,6 +20,7 @@ from selenium.webdriver.remote.command import Command
 from src.testproject.classes import StepSettings
 from src.testproject.enums import TakeScreenshotConditionType
 from src.testproject.helpers import ReportHelper
+from src.testproject.helpers.step_helper import StepHelper
 from src.testproject.rest.messages import DriverCommandReport, CustomTestReport
 from src.testproject.sdk.internal.agent import AgentClient
 from src.testproject.sdk.internal.helpers.redact_helper import RedactHelper
@@ -45,7 +46,7 @@ class ReportingCommandExecutor:
         _excluded_test_names (list): contains a list of test names that should not be reported
     """
 
-    def __init__(self, agent_client: AgentClient, command_executor):
+    def __init__(self, agent_client: AgentClient, command_executor, remote_connection):
         self._agent_client = agent_client
         self._command_executor = command_executor
         self._disable_reports = False
@@ -55,6 +56,7 @@ class ReportingCommandExecutor:
         self._stashed_command = None
         self._latest_known_test_name = ReportHelper.infer_test_name()
         self._excluded_test_names = list()
+        self._step_helper = StepHelper(remote_connection, agent_client.agent_session.dialect == "W3C")
         self._settings = StepSettings()
 
     @property
@@ -119,7 +121,13 @@ class ReportingCommandExecutor:
 
     @settings.setter
     def settings(self, value: StepSettings):
+        """Setter for the settings object."""
         self._settings = value
+
+    @property
+    def step_helper(self):
+        """Getter for the StepHelper object."""
+        return self._step_helper
 
     @property
     def test_name(self) -> str:
