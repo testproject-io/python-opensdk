@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import logging
+import os
 
 from selenium.webdriver.common.by import By
 
@@ -40,9 +41,21 @@ class AddonHelper:
             if param not in ["_proxydescriptor"]:
                 action.proxydescriptor.parameters[param] = action.__dict__[param]
 
-        response: AddonExecutionResponse = self._agent_client.execute_proxy(action, self._command_executor.step_helper,
-                                                                            self._command_executor.settings)
-        if response.executionresulttype != ExecutionResultType.Passed:
+        # Objects for handling any StepSettings
+        settings = self._command_executor.settings
+        step_helper = self._command_executor.step_helper
+
+        # Handling driver timeout
+        step_helper.handle_timeout(settings.timeout, self._agent_client.agent_session.session_id)
+        # Handling sleep before execution
+        step_helper.handle_sleep(settings.sleep_timing_type, settings.sleep_time, None)
+
+        response: AddonExecutionResponse = self._agent_client.execute_proxy(action)
+
+        # Handling sleep after execution
+        step_helper.handle_sleep(settings.sleep_timing_type, settings.sleep_time, None, True)
+
+        if response.execution_result_type != ExecutionResultType.Passed and not settings.invert_result:
             raise SdkException(f"Error occurred during addon action execution: {response.message}")
 
         for field in response.fields:
@@ -58,5 +71,15 @@ class AddonHelper:
 
             # update the attribute value with the value from the response
             setattr(action, field.name, field.value)
+
+        # Handle invert result
+        if settings.invert_result:
+            # Add invert result to message.
+            response.message = (f'{response.message}{os.linesep}Step result inverted.'
+                                if response.message else 'Step result inverted.')
+            # If not passed, invert to passed, else invert to Failed.
+            response.execution_result_type = (ExecutionResultType.Passed
+                                              if response.execution_result_type is not ExecutionResultType.Passed
+                                              else ExecutionResultType.Failed)
 
         return action
