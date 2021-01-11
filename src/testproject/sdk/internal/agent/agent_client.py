@@ -24,12 +24,11 @@ import requests
 from packaging import version
 from requests import HTTPError
 
-from src.testproject.classes import ActionExecutionResponse, StepSettings
+from src.testproject.classes import ActionExecutionResponse
 from src.testproject.classes.resultfield import ResultField
 from src.testproject.enums import ExecutionResultType
 from src.testproject.executionresults import OperationResult
 from src.testproject.helpers import ConfigHelper, SeleniumHelper
-from src.testproject.helpers.step_helper import StepHelper
 from src.testproject.rest import ReportSettings
 from src.testproject.rest.messages import (
     SessionRequest,
@@ -375,56 +374,31 @@ class AgentClient:
         if not AgentClient.can_reuse_session():
             SocketManager.instance().close_socket()
 
-    def execute_proxy(self, action: ActionProxy, step_helper: StepHelper,
-                      settings: StepSettings) -> AddonExecutionResponse:
+    def execute_proxy(self, action: ActionProxy) -> AddonExecutionResponse:
         """Sends a custom action to the Agent
         Args:
             action (ActionProxy): The custom action to be executed
-            step_helper (StepHelper): StepHelper object that helps with the given StepSettings.
-            settings (StepSettings): StepSettings object is the execution settings of this step.
         Returns:
             AddonExecutionResponse: object containing the result of the action execution
         """
 
-        # Handling driver timeout
-        step_helper.handle_timeout(settings.timeout, self.agent_session.session_id)
-        # Handling sleep before execution
-        step_helper.handle_sleep(settings.sleep_timing_type, settings.sleep_time, None)
         # Sending proxy request...
         operation_result = self.send_request(
             "POST",
             urljoin(self._remote_address, Endpoint.AddonExecution.value),
             self._create_action_proxy_payload(action),
         )
-        # Handling sleep after execution
-        step_helper.handle_sleep(settings.sleep_timing_type, settings.sleep_time, None, True)
 
         if operation_result.status_code == HTTPStatus.NOT_FOUND:
             logging.error(f'Action [{action.proxydescriptor.classname}] in addon [{action.proxydescriptor.guid}]'
                           f' is not installed in your account.')
             raise AddonNotInstalledException
 
-        # Getting resultType
-        passed = operation_result.data["resultType"] == "Passed"
-
-        # Invert result is set?
-        passed = not passed if settings.invert_result else passed
-
-        response = AddonExecutionResponse()
-        response.executionresulttype = ExecutionResultType.Passed if passed else ExecutionResultType.Failed
-        response.message = operation_result.data["message"]
-        response.fields = []
-
-        fields_in_operation_result = operation_result.data['fields']
-
-        for field in fields_in_operation_result:
-            result_field = ResultField()
-            result_field.name = field['name']
-            result_field.value = field['value']
-            result_field.is_output = field['output']
-            response.fields.append(result_field)
-
-        return response
+        return AddonExecutionResponse(execution_result_type=(ExecutionResultType.Passed
+                                                             if operation_result.data["resultType"] == "Passed"
+                                                             else ExecutionResultType.Failed),
+                                      message=operation_result.data["message"],
+                                      fields=[ResultField(**field) for field in operation_result.data['fields']])
 
     @staticmethod
     def _create_action_proxy_payload(action: ActionProxy) -> dict:

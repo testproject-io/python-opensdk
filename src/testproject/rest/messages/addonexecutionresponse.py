@@ -19,25 +19,25 @@ class AddonExecutionResponse:
     """Object representing the response returned when execution a custom action
 
     Attributes:
-        _executionresulttype (ExecutionResultType): The result of the action execution (Passed / Failed / ...)
+        _execution_result_type (ExecutionResultType): The result of the action execution (Passed / Failed / ...)
         _message (str): A message returned by the agent in response to the action execution
         _fields (list): A potentially updated list of fields
     """
 
-    def __init__(self):
-        self._executionresulttype = None
-        self._message = None
-        self._fields = None
+    def __init__(self, execution_result_type: ExecutionResultType = None, message: str = None, fields: list = None):
+        self._execution_result_type = execution_result_type
+        self._message = message
+        self._fields = fields
 
     @property
-    def executionresulttype(self) -> ExecutionResultType:
+    def execution_result_type(self) -> ExecutionResultType:
         """Getter for the execution result type"""
-        return self._executionresulttype
+        return self._execution_result_type
 
-    @executionresulttype.setter
-    def executionresulttype(self, value: ExecutionResultType):
+    @execution_result_type.setter
+    def execution_result_type(self, value: ExecutionResultType):
         """Setter for the execution result type"""
-        self._executionresulttype = value
+        self._execution_result_type = value
 
     @property
     def message(self) -> str:

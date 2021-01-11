@@ -22,10 +22,10 @@ class ResultField:
             _is_output (bool): True if the field is an output field, False otherwise
     """
 
-    def __init__(self):
-        self._name = None
-        self._value = None
-        self._is_output = None
+    def __init__(self, name: str = None, value=None, output: bool = None):
+        self._name = name
+        self._value = value
+        self._is_output = output
 
     @property
     def name(self) -> str:
