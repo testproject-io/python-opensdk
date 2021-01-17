@@ -22,19 +22,23 @@ from src.testproject.enums import SleepTimingType
 
 class StepHelper:
 
-    def __init__(self, executor: RemoteConnection, w3c: bool):
+    def __init__(self, executor: RemoteConnection, w3c: bool, session_id: str):
         self.executor = executor
         self.w3c = w3c
+        self.session_id = session_id
 
-    def handle_timeout(self, timeout, session_id):
+    def handle_timeout(self, timeout):
+        """Sets the driver timeout to the given timeout."""
         if timeout > 0:
             logging.debug(f'Setting driver implicit wait to {timeout} milliseconds.')
             if self.w3c:
-                self.executor.execute(Command.SET_TIMEOUTS, {'sessionId': session_id, 'implicit': int(timeout)})
+                self.executor.execute(Command.SET_TIMEOUTS, {'sessionId': self.session_id, 'implicit': int(timeout)})
             else:
-                self.executor.execute(Command.IMPLICIT_WAIT, {'sessionId': session_id, 'ms': float(timeout)})
+                self.executor.execute(Command.IMPLICIT_WAIT, {'sessionId': self.session_id, 'ms': float(timeout)})
 
-    def handle_sleep(self, sleep_timing_type, sleep_time, command, step_executed=False):
+    @staticmethod
+    def handle_sleep(sleep_timing_type, sleep_time, command, step_executed=False):
+        """Handles step sleep before/after step execution."""
         # Sleep Before if not Quit command
         if command is not Command.QUIT:
             if sleep_timing_type:

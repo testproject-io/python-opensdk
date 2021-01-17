@@ -46,7 +46,7 @@ class AddonHelper:
         step_helper = self._command_executor.step_helper
 
         # Handling driver timeout
-        step_helper.handle_timeout(settings.timeout, self._agent_client.agent_session.session_id)
+        step_helper.handle_timeout(settings.timeout)
         # Handling sleep before execution
         step_helper.handle_sleep(settings.sleep_timing_type, settings.sleep_time, None)
 

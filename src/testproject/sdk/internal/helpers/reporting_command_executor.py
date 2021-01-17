@@ -56,7 +56,9 @@ class ReportingCommandExecutor:
         self._stashed_command = None
         self._latest_known_test_name = ReportHelper.infer_test_name()
         self._excluded_test_names = list()
-        self._step_helper = StepHelper(remote_connection, agent_client.agent_session.dialect == "W3C")
+        self._step_helper = StepHelper(executor=remote_connection,
+                                       w3c=agent_client.agent_session.dialect == "W3C",
+                                       session_id=agent_client.agent_session.session_id)
         self._settings = StepSettings()
 
     @property

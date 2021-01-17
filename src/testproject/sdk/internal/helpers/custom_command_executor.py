@@ -46,7 +46,7 @@ class CustomCommandExecutor(RemoteConnection, ReportingCommandExecutor):
         """
         self.update_known_test_name()
 
-        self.step_helper.handle_timeout(self.settings.timeout, self.agent_client.agent_session.session_id)
+        self.step_helper.handle_timeout(self.settings.timeout)
 
         # Handling sleep before execution
         self.step_helper.handle_sleep(self.settings.sleep_timing_type, self.settings.sleep_time, command)
