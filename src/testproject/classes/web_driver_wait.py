@@ -57,8 +57,12 @@ class TestProjectWebDriverWait(WebDriverWait):
             # Handle invert result
             result = not result if self.step_settings.invert_result else result
 
+            # Handle always pass
+            result = True if self.step_settings.always_pass else result
+
             # Handle screenshot condition
             screenshot = self.step_helper.take_screenshot(self.step_settings.screenshot_condition, result)
+
         # Enable reports and report the step result with all execution details.
         self._driver.report().disable_reports(False)
         result_str = (('Passed' if result else 'Failed')

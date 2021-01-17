@@ -82,4 +82,7 @@ class AddonHelper:
                                               if response.execution_result_type is not ExecutionResultType.Passed
                                               else ExecutionResultType.Failed)
 
+
+        # Handle always pass
+        result = True if settings.always_pass else result
         return action

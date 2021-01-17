@@ -169,6 +169,9 @@ class ReportingCommandExecutor:
         # Invert result is set?
         passed = not passed if self.settings.invert_result else passed
 
+        # Handle always pass
+        passed = True if self.settings.always_pass else passed
+
         driver_command_report = DriverCommandReport(command, params, result, passed)
 
         # Is screenshot needed?
