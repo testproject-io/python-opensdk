@@ -17,7 +17,7 @@ from time import sleep
 from selenium.webdriver.remote.command import Command
 from selenium.webdriver.remote.remote_connection import RemoteConnection
 
-from src.testproject.enums import SleepTimingType
+from src.testproject.enums import SleepTimingType, TakeScreenshotConditionType
 
 
 class StepHelper:
@@ -47,3 +47,16 @@ class StepHelper:
                     logging.debug(f'Step is designed to sleep for {sleep_time} milliseconds'
                                   f' {sleep_timing_type.name} execution.')
                     sleep(sleep_time / 1000.0)
+
+    @staticmethod
+    def take_screenshot(take_screenshot_condition: TakeScreenshotConditionType, passed: bool) -> bool:
+        """Returns true if the step report should include screenshot."""
+        if take_screenshot_condition is TakeScreenshotConditionType.Always:
+            return True
+        if take_screenshot_condition is TakeScreenshotConditionType.Never:
+            return False
+        if passed and (take_screenshot_condition is TakeScreenshotConditionType.Success):
+            return True
+        if not passed and (take_screenshot_condition is TakeScreenshotConditionType.Failure):
+            return False
+        return False
