@@ -15,6 +15,7 @@
 import logging
 import os
 
+from src.testproject.classes import ElementSearchCriteria
 from src.testproject.helpers import ReportHelper
 from src.testproject.rest.messages import StepReport, CustomTestReport
 
@@ -33,7 +34,8 @@ class Reporter:
         self._command_executor = command_executor
 
     def step(
-        self, description: str, message: str, passed: bool, screenshot: bool = False
+        self, description: str, message: str, passed: bool, screenshot: bool = False,
+            element: ElementSearchCriteria = None, inputs: dict = None, outputs: dict = None
     ):
         """Sends a step report to the Agent Client
 
@@ -42,6 +44,9 @@ class Reporter:
             message (str): A message that goes with the step
             passed (bool): True if the step should be marked as passed, False otherwise
             screenshot (bool): True if a screenshot should be made, False otherwise
+            element (ElementSearchCriteria): The step's element search criteria.
+            inputs (dict): Input parameters associated with the step
+            outputs (dict): Output parameters associated with the step
         """
 
         # First update the current test name and report a test if necessary
@@ -54,6 +59,9 @@ class Reporter:
                 message,
                 passed,
                 self._command_executor.create_screenshot() if screenshot else None,
+                element,
+                inputs,
+                outputs,
             )
             self._command_executor.agent_client.report_step(step_report)
         else:
