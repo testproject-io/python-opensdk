@@ -38,7 +38,7 @@ class StepHelper:
                 self.executor.execute(Command.IMPLICIT_WAIT, {'sessionId': self.session_id, 'ms': float(timeout)})
 
     @staticmethod
-    def handle_sleep(sleep_timing_type, sleep_time, command, step_executed=False):
+    def handle_sleep(sleep_timing_type, sleep_time, command=None, step_executed=False):
         """Handles step sleep before/after step execution."""
         # Sleep Before if not Quit command
         if command is not Command.QUIT:
