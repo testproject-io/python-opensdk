@@ -13,15 +13,19 @@
 # limitations under the License.
 import logging
 import os
+import inspect
 
+from appium.webdriver.common.mobileby import MobileBy
 from selenium.webdriver.common.by import By
 
-from src.testproject.enums import ExecutionResultType
+from src.testproject.classes import ElementSearchCriteria
+from src.testproject.enums import ExecutionResultType, FindByType
 from src.testproject.rest.messages import AddonExecutionResponse
 from src.testproject.sdk.addons import ActionProxy
 from src.testproject.sdk.exceptions import SdkException
 from src.testproject.sdk.internal.agent import AgentClient
 from src.testproject.sdk.internal.helpers import ReportingCommandExecutor
+from src.testproject.sdk.internal.reporter import Reporter
 
 
 class AddonHelper:
@@ -30,7 +34,6 @@ class AddonHelper:
         self._command_executor = command_executor
 
     def execute(self, action: ActionProxy, by: By = None, by_value: str = None) -> ActionProxy:
-
         # Set the locator properties
         action.proxydescriptor.by = by
         action.proxydescriptor.by_value = by_value
@@ -48,16 +51,19 @@ class AddonHelper:
         # Handling driver timeout
         step_helper.handle_timeout(settings.timeout)
         # Handling sleep before execution
-        step_helper.handle_sleep(settings.sleep_timing_type, settings.sleep_time, None)
+        step_helper.handle_sleep(sleep_timing_type=settings.sleep_timing_type, sleep_time=settings.sleep_time)
 
+        # Execute the action
         response: AddonExecutionResponse = self._agent_client.execute_proxy(action)
 
         # Handling sleep after execution
-        step_helper.handle_sleep(settings.sleep_timing_type, settings.sleep_time, None, True)
+        step_helper.handle_sleep(sleep_timing_type=settings.sleep_timing_type, sleep_time=settings.sleep_time,
+                                 step_executed=True)
 
-        if response.execution_result_type != ExecutionResultType.Passed and not settings.invert_result:
+        if response.execution_result_type is not ExecutionResultType.Passed and not settings.invert_result:
             raise SdkException(f"Error occurred during addon action execution: {response.message}")
 
+        # Update attributes value from response
         for field in response.fields:
 
             # skip non-output fields
@@ -72,17 +78,32 @@ class AddonHelper:
             # update the attribute value with the value from the response
             setattr(action, field.name, field.value)
 
-        # Handle invert result
-        if settings.invert_result:
-            # Add invert result to message.
-            response.message = (f'{response.message}{os.linesep}Step result inverted.'
-                                if response.message else 'Step result inverted.')
-            # If not passed, invert to passed, else invert to Failed.
-            response.execution_result_type = (ExecutionResultType.Passed
-                                              if response.execution_result_type is not ExecutionResultType.Passed
-                                              else ExecutionResultType.Failed)
+        # Extract result from response result.
+        result = True if response.execution_result_type is ExecutionResultType.Passed else False
+        result, step_message = step_helper.handle_step_result(step_result=result, base_msg=response.message,
+                                                              invert_result=settings.invert_result,
+                                                              always_pass=settings.always_pass)
 
+        # Handle screenshot condition
+        screenshot = step_helper.take_screenshot(settings.screenshot_condition, result)
 
-        # Handle always pass
-        result = True if settings.always_pass else result
+        description = f'Execute \'{action.proxydescriptor.classname.split(".")[-1]}\''
+
+        # Getting all additional information.
+        element = None
+        if action.proxydescriptor.by:
+            element_by = ''.join(next(filter(lambda member: member[1] == action.proxydescriptor.by,
+                                             inspect.getmembers(MobileBy)))[0].split('_'))
+            element = ElementSearchCriteria(find_by_type=FindByType[element_by],
+                                            by_value=action.proxydescriptor.by_value,
+                                            index=-1)
+        input_fields = {f.name: f.value for f in response.fields if not f.is_output}
+        output_fields = {f.name: f.value for f in response.fields if f.is_output}
+        Reporter(command_executor=self._command_executor).step(description=description,
+                                                               message=f'{step_message}{os.linesep}',
+                                                               element=element,
+                                                               inputs=input_fields,
+                                                               outputs=output_fields,
+                                                               passed=result,
+                                                               screenshot=screenshot)
         return action
