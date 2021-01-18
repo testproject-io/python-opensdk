@@ -22,6 +22,7 @@ class TestProjectWebDriverWait(WebDriverWait):
     """
     def __init__(self, driver: Union[BaseDriver, Remote], timeout):
         super().__init__(driver, timeout)
+        self._driver = driver
 
     def until(self, method, message=''):
         """Executes the wrapping function for until."""
@@ -108,3 +109,8 @@ class TestProjectWebDriverWait(WebDriverWait):
                 continue
             res += [attr]
         return res
+
+    @property
+    def driver(self):
+        """Getter for the driver."""
+        return self._driver
