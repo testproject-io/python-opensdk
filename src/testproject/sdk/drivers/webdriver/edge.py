@@ -23,8 +23,8 @@ class Edge(BaseDriver):
         edge_options (Options): Edge automation session desired capabilities and options
         desired_capabilities (dict): Dictionary object containing desired capabilities for Chrome automation session
         token (str): The developer token used to communicate with the agent
-        projectname (str): Project name to report
-        jobname (str): Job name to report
+        project_name (str): Project name to report
+        job_name (str): Job name to report
         disable_reports (bool): set to True to disable all reporting (no report will be created on TestProject)
     """
 
@@ -33,8 +33,8 @@ class Edge(BaseDriver):
         edge_options: Options = None,
         desired_capabilities: dict = None,
         token: str = None,
-        projectname: str = None,
-        jobname: str = None,
+        project_name: str = None,
+        job_name: str = None,
         disable_reports: bool = False,
     ):
         # If no options or capabilities are specified at all, use default Options
@@ -51,7 +51,7 @@ class Edge(BaseDriver):
         super().__init__(
             capabilities=caps,
             token=token,
-            projectname=projectname,
-            jobname=jobname,
+            project_name=project_name,
+            job_name=job_name,
             disable_reports=disable_reports,
         )

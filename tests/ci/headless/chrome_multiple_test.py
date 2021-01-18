@@ -28,7 +28,7 @@ if version.parse(ConfigHelper.get_sdk_version()) < version.parse("0.64.0"):
 def driver():
     chrome_options = ChromeOptions()
     chrome_options.headless = True
-    driver = webdriver.Chrome(chrome_options=chrome_options, projectname="CI - Python")
+    driver = webdriver.Chrome(chrome_options=chrome_options, project_name="CI - Python")
     yield driver
     driver.quit()
 

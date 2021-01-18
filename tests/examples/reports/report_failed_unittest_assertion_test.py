@@ -23,7 +23,7 @@ from tests.pageobjects.web import LoginPage
 class TestBasic(unittest.TestCase):
     def setUp(self):
         self.driver = webdriver.Chrome(
-            chrome_options=ChromeOptions(), projectname="Examples", jobname=None
+            chrome_options=ChromeOptions(), project_name="Examples", job_name=None
         )
 
     @report_assertion_errors

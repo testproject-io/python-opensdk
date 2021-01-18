@@ -11,8 +11,8 @@ DEV_TOKEN = "kjvgLv5jxNuy5g48Nd2BMrOFG-kGdaZ86goeBjhsqts1"
 
 @pytest.fixture
 def driver():
-    driver = webdriver.Chrome(token=DEV_TOKEN, projectname="Addon Invert Result Project",
-                              jobname="Addon Invert Result Job")
+    driver = webdriver.Chrome(token=DEV_TOKEN, project_name="Addon Invert Result Project",
+                              job_name="Addon Invert Result Job")
     yield driver
     driver.quit()
 

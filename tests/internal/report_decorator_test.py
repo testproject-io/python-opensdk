@@ -8,7 +8,7 @@ DEV_TOKEN = "Hnw-B_FakRKt5Nar7jICIbHNTwBNW9Pp09MH_nXZTI41"
 
 @pytest.fixture
 def driver():
-    driver = webdriver.Chrome(token=DEV_TOKEN, projectname="Report Decorator Project", jobname="Report Decorator Job")
+    driver = webdriver.Chrome(token=DEV_TOKEN, project_name="Report Decorator Project", job_name="Report Decorator Job")
     yield driver
     driver.quit()
 
