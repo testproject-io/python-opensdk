@@ -391,6 +391,7 @@ class AgentClient:
             "POST",
             urljoin(self._remote_address, Endpoint.AddonExecution.value),
             self._create_action_proxy_payload(action),
+            {"skipReporting": "true"}  # Delegate reporting from Agent to SDK.
         )
 
         if operation_result.status_code == HTTPStatus.NOT_FOUND:
