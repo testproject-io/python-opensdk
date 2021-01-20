@@ -14,6 +14,7 @@
 
 import logging
 import inspect
+import time
 
 from selenium.webdriver.remote.command import Command
 
@@ -274,3 +275,34 @@ class ReportingCommandExecutor:
         """
         # Both None and 0 response status values indicate command execution was OK
         return True if response.get("status") in [None, 0] else False
+
+    def pause(self, milliseconds: int):
+        """Pause test execution for the specified duration
+
+        Args:
+            self (Union[Remote, BaseDriver]): The driver invoking this pause action.
+            milliseconds (int): Number of milliseconds to pause test execution for.
+        """
+
+        # Handling sleep before execution
+        self.step_helper.handle_sleep(sleep_timing_type=self.step_settings.sleep_timing_type,
+                                      sleep_time=self.step_settings.sleep_time)
+        # Sleep for...
+        time.sleep(milliseconds / 1000.0)
+
+        # Handling sleep after execution
+        self.step_helper.handle_sleep(sleep_timing_type=self.step_settings.sleep_timing_type,
+                                      sleep_time=self.step_settings.sleep_time,
+                                      step_executed=True)
+        result, step_message = self.step_helper.handle_step_result(
+            step_result=True,
+            invert_result=self.step_settings.invert_result,
+            always_pass=self.step_settings.always_pass)
+
+        # Handle screenshot condition
+        screenshot = self.step_helper.take_screenshot(self.step_settings.screenshot_condition, result)
+        self.report().step(description=f'Pause for {{{{{milliseconds}}}}} ms',
+                           message=step_message,
+                           inputs={"milliseconds": milliseconds},
+                           passed=result,
+                           screenshot=screenshot)

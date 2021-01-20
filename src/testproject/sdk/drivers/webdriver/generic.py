@@ -15,6 +15,7 @@
 import logging
 
 from packaging import version
+
 from src.testproject.enums import EnvironmentVariable
 from src.testproject.helpers import ReportHelper, LoggingHelper, ConfigHelper, AddonHelper
 from src.testproject.rest import ReportSettings
