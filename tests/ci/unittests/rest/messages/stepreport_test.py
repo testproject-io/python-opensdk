@@ -28,6 +28,10 @@ def test_to_json_without_screenshot(mocker):
         "description": "my_description",
         "message": "my_message",
         "passed": True,
+        "element": None,
+        "inputParameters": None,
+        "outputParameters": None,
+        "screenshot": None
     }
 
 
@@ -44,5 +48,8 @@ def test_to_json_with_screenshot(mocker):
         "description": "another_description",
         "message": "another_message",
         "passed": False,
+        "element": None,
+        "inputParameters": None,
+        "outputParameters": None,
         "screenshot": "base64_screenshot_here",
     }
