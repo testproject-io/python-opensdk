@@ -24,7 +24,7 @@ def driver():
     firefox_options = Options()
     firefox_options.add_argument("-headless")
     driver = webdriver.Firefox(
-        firefox_options=firefox_options, projectname="CI - Python"
+        firefox_options=firefox_options, project_name="CI - Python"
     )
     yield driver
     driver.quit()

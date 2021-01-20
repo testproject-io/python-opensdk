@@ -22,7 +22,7 @@ from tests.pageobjects.web import LoginPage
 
 @pytest.fixture
 def driver():
-    driver = webdriver.Chrome(chrome_options=ChromeOptions(), projectname="Examples", jobname=None)
+    driver = webdriver.Chrome(chrome_options=ChromeOptions(), project_name="Examples", job_name=None)
     yield driver
     driver.quit()
 

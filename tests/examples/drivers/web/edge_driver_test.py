@@ -21,7 +21,7 @@ from tests.pageobjects.web import LoginPage, ProfilePage
 
 @pytest.fixture
 def driver():
-    driver = webdriver.Edge(edge_options=Options(), projectname="Examples", jobname=None)
+    driver = webdriver.Edge(edge_options=Options(), project_name="Examples", job_name=None)
     yield driver
     driver.quit()
 

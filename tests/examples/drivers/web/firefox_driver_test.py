@@ -21,7 +21,7 @@ from tests.pageobjects.web import LoginPage, ProfilePage
 
 @pytest.fixture
 def driver():
-    driver = webdriver.Firefox(firefox_options=Options(), projectname="Examples", jobname=None)
+    driver = webdriver.Firefox(firefox_options=Options(), project_name="Examples", job_name=None)
     yield driver
     driver.quit()
 
