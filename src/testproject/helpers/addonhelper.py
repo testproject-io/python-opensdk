@@ -16,12 +16,14 @@ import os
 
 from selenium.webdriver.common.by import By
 
-from src.testproject.enums import ExecutionResultType
+from src.testproject.classes import ElementSearchCriteria
+from src.testproject.enums import ExecutionResultType, FindByType
 from src.testproject.rest.messages import AddonExecutionResponse
 from src.testproject.sdk.addons import ActionProxy
 from src.testproject.sdk.exceptions import SdkException
 from src.testproject.sdk.internal.agent import AgentClient
 from src.testproject.sdk.internal.helpers import ReportingCommandExecutor
+from src.testproject.sdk.internal.reporter import Reporter
 
 
 class AddonHelper:
@@ -30,7 +32,6 @@ class AddonHelper:
         self._command_executor = command_executor
 
     def execute(self, action: ActionProxy, by: By = None, by_value: str = None) -> ActionProxy:
-
         # Set the locator properties
         action.proxydescriptor.by = by
         action.proxydescriptor.by_value = by_value
@@ -48,16 +49,19 @@ class AddonHelper:
         # Handling driver timeout
         step_helper.handle_timeout(settings.timeout, self._agent_client.agent_session.session_id)
         # Handling sleep before execution
-        step_helper.handle_sleep(settings.sleep_timing_type, settings.sleep_time, None)
+        step_helper.handle_sleep(sleep_timing_type=settings.sleep_timing_type, sleep_time=settings.sleep_time)
 
+        # Execute the action
         response: AddonExecutionResponse = self._agent_client.execute_proxy(action)
 
         # Handling sleep after execution
-        step_helper.handle_sleep(settings.sleep_timing_type, settings.sleep_time, None, True)
+        step_helper.handle_sleep(sleep_timing_type=settings.sleep_timing_type, sleep_time=settings.sleep_time,
+                                 step_executed=True)
 
-        if response.execution_result_type != ExecutionResultType.Passed and not settings.invert_result:
+        if response.execution_result_type is not ExecutionResultType.Passed and not settings.invert_result:
             raise SdkException(f"Error occurred during addon action execution: {response.message}")
 
+        # Update attributes value from response
         for field in response.fields:
 
             # skip non-output fields
@@ -72,14 +76,36 @@ class AddonHelper:
             # update the attribute value with the value from the response
             setattr(action, field.name, field.value)
 
-        # Handle invert result
-        if settings.invert_result:
-            # Add invert result to message.
-            response.message = (f'{response.message}{os.linesep}Step result inverted.'
-                                if response.message else 'Step result inverted.')
-            # If not passed, invert to passed, else invert to Failed.
-            response.execution_result_type = (ExecutionResultType.Passed
-                                              if response.execution_result_type is not ExecutionResultType.Passed
-                                              else ExecutionResultType.Failed)
+        # Extract result from response result.
+        result = True if response.execution_result_type is ExecutionResultType.Passed else False
+        result, step_message = step_helper.handle_step_result(step_result=result, base_msg=response.message,
+                                                              invert_result=settings.invert_result,
+                                                              always_pass=settings.always_pass)
 
+        # Handle screenshot condition
+        screenshot = step_helper.take_screenshot(settings.screenshot_condition, result)
+
+        # Getting the addon name from its proxy descriptor class name.
+        # For example:
+        #   action.proxydescriptor.classname = io.testproject.something.i.dont.care.TypeRandomPhoneNumber
+        #   description is 'Execute TypeRandomPhoneNumber'.
+        description = f'Execute \'{action.proxydescriptor.classname.split(".")[-1]}\''
+
+        element = None
+        # If proxy descriptor has the by property and the by property is implemented by TestProject's FindByType...
+        if action.proxydescriptor.by and FindByType.has_value(action.proxydescriptor.by):
+            element = ElementSearchCriteria(find_by_type=FindByType(action.proxydescriptor.by),
+                                            by_value=action.proxydescriptor.by_value,
+                                            index=-1)
+        # Creating input/output fields
+        input_fields = {f.name: f.value for f in response.fields if not f.is_output}
+        output_fields = {f.name: f.value for f in response.fields if f.is_output}
+        # Manually reporting the addon step with all the information.
+        Reporter(command_executor=self._command_executor).step(description=description,
+                                                               message=f'{step_message}{os.linesep}',
+                                                               element=element,
+                                                               inputs=input_fields,
+                                                               outputs=output_fields,
+                                                               passed=result,
+                                                               screenshot=screenshot)
         return action
