@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import logging
+import time
 
 from appium.webdriver.webdriver import WebDriver as AppiumWebDriver
 
@@ -134,6 +135,36 @@ class Remote(AppiumWebDriver):
             AddonHelper: object giving access to addon proxy methods
         """
         return AddonHelper(self._agent_client, self.command_executor)
+
+    def pause(self, milliseconds: int):
+        """Pause test execution for the specified duration
+
+        Args:
+            milliseconds (int): Number of milliseconds to pause test execution for
+        """
+
+        # Handling sleep before execution
+        self.command_executor.step_helper.handle_sleep(sleep_timing_type=self.step_settings.sleep_timing_type,
+                                                       sleep_time=self.step_settings.sleep_time)
+        # Sleep for...
+        time.sleep(milliseconds / 1000.0)
+
+        # Handling sleep after execution
+        self.command_executor.step_helper.handle_sleep(sleep_timing_type=self.step_settings.sleep_timing_type,
+                                                       sleep_time=self.step_settings.sleep_time,
+                                                       step_executed=True)
+        result, step_message = self.command_executor.step_helper.handle_step_result(
+            step_result=True,
+            invert_result=self.step_settings.invert_result,
+            always_pass=self.step_settings.always_pass)
+
+        # Handle screenshot condition
+        screenshot = self.command_executor.step_helper.take_screenshot(self.step_settings.screenshot_condition, result)
+        self.report().step(description=f'Pause for {{{{{milliseconds}}}}} ms',
+                           message=step_message,
+                           inputs={"milliseconds": milliseconds},
+                           passed=result,
+                           screenshot=screenshot)
 
     def quit(self):
         """Quits the driver and stops the session with the Agent, cleaning up after itself."""
