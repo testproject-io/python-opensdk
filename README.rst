@@ -96,6 +96,12 @@ The examples shown in this document are based on Chrome. The SDK works in the sa
 * iOS apps (using Appium)
 * Generic driver (for non-UI tests)
 
+WebDriverWait
+-------------
+In order to use Selenium's WebDriverWait with TestProject SDK all you need to do is import it directly from the SDK classes instead of from selenium's libraries.
+
+An example can be seen `here <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/web_driver_wait/web_driver_wait_test.py>`__.
+
 Development token
 -----------------
 The SDK uses a development token for communication with the Agent and the TestProject platform.
@@ -261,7 +267,9 @@ If this feature is disabled, or you would like to add steps manually, you can us
     def test_report_step_manually():
         driver = webdriver.Chrome()
         # Your test code goes here
-        driver.report().step(description='My step description', message='An additional message', passed=False, screenshot=True)
+        driver.report().step(description='My step description', message='An additional message', passed=False,
+                             screenshot=True, element=element_search_criteria_object, inputs=dict_of_input_parameters,
+                             outputs=dict_of_output_parameters)
         driver.quit()
 
 Here is a complete example using `manual test reporting of tests and steps <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/reports/manual_reporting_test.py>`__.

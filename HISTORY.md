@@ -6,6 +6,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.65.1] - 2021-01-19
+
+### Added
+
+- ([#50](https://github.com/testproject-io/python-sdk/issues/50)) - 
+  Internal WebDriverWait class with automatic reporting.
+- New driver action 'pause' - pause the execution for a given time.
+- Manual step reporting can now include the step's input/output parameters as well as the element the step used.
+    - Input/Output parameters attribute expects a Dict[str, object]
+    - Element attribute expects an [ElementSearchCriteria](https://github.com/testproject-io/python-sdk/blob/master/src/testproject/classes/elementsearchcriteria.py) object
+  
+### Changed
+
+- Attributes 'projectname' and 'jobname' that are used when creating driver instance have been renamed to
+  'project_name' and 'job_name'.
+  
+### Fixed
+
+- Proxy/Addon executions properly handles driver step settings (sleep, invert result, screenshots, etc'...)
+
 ## [0.65.0] - 2021-01-06
 
 ### Fixed
