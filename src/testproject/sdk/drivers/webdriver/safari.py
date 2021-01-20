@@ -22,8 +22,8 @@ class Safari(BaseDriver):
     Args:
         desired_capabilities (dict): Safari automation session desired capabilities and options
         token (str): The developer token used to communicate with the agent
-        projectname (str): Project name to report
-        jobname (str): Job name to report
+        project_name (str): Project name to report
+        job_name (str): Job name to report
         disable_reports (bool): set to True to disable all reporting (no report will be created on TestProject)
     """
 
@@ -31,14 +31,14 @@ class Safari(BaseDriver):
         self,
         desired_capabilities: dict = DesiredCapabilities.SAFARI,
         token: str = None,
-        projectname: str = None,
-        jobname: str = None,
+        project_name: str = None,
+        job_name: str = None,
         disable_reports: bool = False,
     ):
         super().__init__(
             capabilities=desired_capabilities,
             token=token,
-            projectname=projectname,
-            jobname=jobname,
+            project_name=project_name,
+            job_name=job_name,
             disable_reports=disable_reports,
         )
