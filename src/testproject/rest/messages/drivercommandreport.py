@@ -22,6 +22,7 @@ class DriverCommandReport:
         result (dict): The result of the command that was executed
         passed (bool): Indication whether or not command execution was performed successfully
         screenshot (str): Screenshot as base64 encoded string
+        message (str): The message to include in the result
 
     Attributes:
         _command (str): The name of the command that was executed
@@ -29,6 +30,7 @@ class DriverCommandReport:
         _result (dict): The result of the command that was executed
         _passed (bool): Indication whether or not command execution was performed successfully
         _screenshot (str): Screenshot as base64 encoded string
+        _message (str): The message to include in the result
     """
 
     def __init__(
@@ -38,12 +40,14 @@ class DriverCommandReport:
         result: dict,
         passed: bool,
         screenshot: str = None,
+        message: str = None
     ):
         self._command = command
         self._command_params = command_params
         self._result = result
         self._passed = passed
         self._screenshot = screenshot
+        self._message = message
 
     @property
     def command(self) -> str:
@@ -75,6 +79,16 @@ class DriverCommandReport:
         """Setter for the screenshot property"""
         self._screenshot = value
 
+    @property
+    def message(self) -> str:
+        """Getter for the message property"""
+        return self._message
+
+    @message.setter
+    def message(self, value: str):
+        """Setter for the message property"""
+        self._message = value
+
     def to_json(self):
         """Creates a JSON representation of the current DriverCommandReport instance
 
@@ -82,15 +96,13 @@ class DriverCommandReport:
                 dict: JSON representation of the current instance
         """
         payload = {
-            "commandName": self._command,
-            "commandParameters": self._command_params,
-            "result": self._result,
-            "passed": self._passed,
+            "commandName": self.command,
+            "commandParameters": self.command_params,
+            "result": self.result,
+            "passed": self.passed,
+            "message": self.message,
+            "screenshot": self.screenshot
         }
-
-        # Add screenshot to report if it is provided
-        if self._screenshot is not None:
-            payload["screenshot"] = self._screenshot
 
         return payload
 
@@ -101,9 +113,11 @@ class DriverCommandReport:
 
         return (
             self._command == other._command
-            and self._command_params == other._command_params
-            and self._result == other._result
-            and self._passed == other._passed
+            and self.command_params == other.command_params
+            and self.result == other.result
+            and self.passed == other.passed
+            and self.message == other.message
+            and self.screenshot == other.screenshot
         )
 
     def __hash__(self):
@@ -115,5 +129,6 @@ class DriverCommandReport:
                 self.result,
                 self.passed,
                 self.screenshot,
+                self.message
             )
         )
