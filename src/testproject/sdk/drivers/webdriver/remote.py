@@ -25,6 +25,7 @@ from src.testproject.sdk.internal.agent import AgentClient
 from src.testproject.sdk.internal.helpers import CustomAppiumCommandExecutor
 from src.testproject.sdk.internal.reporter import Reporter
 from src.testproject.sdk.internal.session import AgentSession
+import os
 
 
 class Remote(AppiumWebDriver):
@@ -102,6 +103,11 @@ class Remote(AppiumWebDriver):
 
         # this ensures that mobile-specific commands are also available for our command executor
         self._addCommands()
+
+        # Disable automatic command and test reports if Behave reporting is enabled.
+        if os.getenv("TP_DISABLE_AUTO_REPORTING") == "True":
+            self.command_executor.disable_command_reports = True
+            self.command_executor.disable_auto_test_reports = True
 
         Remote.__instance = self
 

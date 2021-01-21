@@ -24,6 +24,7 @@ from src.testproject.sdk.internal.helpers import CustomCommandExecutor
 from src.testproject.sdk.internal.reporter import Reporter
 from src.testproject.sdk.internal.session import AgentSession
 from selenium.webdriver.remote.webdriver import WebDriver as RemoteWebDriver
+import os
 
 
 class BaseDriver(RemoteWebDriver):
@@ -97,6 +98,11 @@ class BaseDriver(RemoteWebDriver):
         )
 
         self.command_executor.disable_reports = disable_reports
+
+        # Disable automatic command and test reports if Behave reporting is enabled.
+        if os.getenv("TP_DISABLE_AUTO_REPORTING") == "True":
+            self.command_executor.disable_command_reports = True
+            self.command_executor.disable_auto_test_reports = True
 
         RemoteWebDriver.__init__(
             self,
