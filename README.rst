@@ -419,6 +419,53 @@ If you wish, you can override the default log configuration:
 
 See `this page <https://docs.python.org/3/library/logging.html#logging-levels>`__ for a list of accepted logging levels and `look here <https://docs.python.org/3/howto/logging.html#changing-the-format-of-displayed-messages>`__ for more information on how to define a custom logging format.
 
+Behave Support
+--------------
+The SDK also supports automatic reporting of Behave features, scenarios and steps using the @behave_reporter decorator.
+
+It will disable the reporting of driver commands and automatic reporting of tests.
+Instead, it will report:
+
+* A test for every scenario in a feature file
+* All steps in a scenario as steps in the corresponding test
+* Steps are automatically marked as passed or failed, to create comprehensive living documentation from your
+  specifications on TestProject Cloud.
+
+To enable Behave feature reporting, in your environment.py decorate one or more of the following methods:
+
+* method used to initialize your driver (usually before_all or before_feature to store the driver in the behave context)
+* after_step
+* after_scenario
+
+    Storing the driver in the context provides direct access to the driver throughout the program
+    such as in the step implementations.
+
+.. code-block:: python
+
+    @behave_reporter
+    def before_all(context):
+        context.driver = webdriver.Chrome(projectname="Behave BDD")
+
+
+    @behave_reporter
+    def after_step(context, step):
+        pass
+
+
+    @behave_reporter
+    def after_scenario(context, scenario):
+        pass
+
+
+By default, screenshots are taken only when step fail in your test, if you would like to change
+the behavior to always take a screenshot, pass the screenshot argument as ``True`` in your decorator.
+
+.. code-block:: python
+
+    @behave_reporter(screenshot=True)
+    def after_step(context, step):
+        pass
+
 Examples
 --------
 Here is a list of all examples for the different drivers that are supported by this SDK:
