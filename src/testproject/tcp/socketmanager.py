@@ -14,9 +14,8 @@
 
 import logging
 import socket
-import atexit
-
 from urllib.parse import urlparse
+
 from src.testproject.sdk.exceptions import AgentConnectException
 
 
@@ -25,16 +24,11 @@ class SocketManager:
 
     Attributes:
         __instance (SocketManager): The singleton instance of this class
-        __socket (socket.Socket): A singleton socket instance used to communicate with the Agent
     """
 
     __instance = None
 
     __socket = None
-
-    def __init__(self):
-        """Create SocketManager instance and register shutdown hook"""
-        atexit.register(self.close_socket)
 
     @classmethod
     def instance(cls):
