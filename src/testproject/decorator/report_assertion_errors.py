@@ -19,11 +19,7 @@ import sys
 import traceback
 from functools import wraps
 
-from src.testproject.sdk.exceptions import SdkException
-
-from src.testproject.sdk.drivers.webdriver import Remote, Generic
-
-from src.testproject.sdk.drivers.webdriver.base import BaseDriver
+from src.testproject.helpers.activesessionhelper import get_active_driver_instance
 
 
 def report_assertion_errors(func=None, *, screenshot: bool = False):
@@ -49,7 +45,7 @@ def report_assertion_errors(func=None, *, screenshot: bool = False):
                 )
 
                 _, line, function, text = tb_info[line_index]
-                driver = __get_active_driver_instance()
+                driver = get_active_driver_instance()
                 message = f"Assertion failed on line {line} in {function}"
                 description, message = __handle_step_report_details(description, message)
                 driver.report().step(
@@ -67,21 +63,6 @@ def report_assertion_errors(func=None, *, screenshot: bool = False):
         return _report_assertion_errors(func)
 
     return _report_assertion_errors
-
-
-def __get_active_driver_instance():
-    """Get the current driver instance in use (BaseDriver, Remote or Generic) """
-    driver = BaseDriver.instance()
-    if driver is None:
-        driver = Remote.instance()
-        if driver is None:
-            driver = Generic.instance()
-            if driver is None:
-                raise SdkException(
-                    "No active driver instance found, so cannot report failed assertion"
-                )
-
-    return driver
 
 
 def __handle_step_report_details(description, message):
