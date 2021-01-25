@@ -77,7 +77,8 @@ class SocketManager:
             f"Socket connection to {host}:{socket_port} established successfully"
         )
 
-    def is_connected(self) -> bool:
+    @staticmethod
+    def is_connected() -> bool:
         """Sends a simple message to the socket to see if it's connected
 
             Returns:
