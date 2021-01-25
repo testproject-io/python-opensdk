@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.65.1] - 2021-01-25
+
+### Added
+
+- Support for Behave framework.
+
 ## [0.65.0] - 2021-01-06
 
 ### Fixed

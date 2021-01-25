@@ -24,6 +24,7 @@ class EnvironmentVariable(Enum):
     TP_TEST_NAME = "TP_TEST_NAME"
     TP_PROJECT_NAME = "TP_PROJECT_NAME"
     TP_JOB_NAME = "TP_JOB_NAME"
+    TP_DISABLE_AUTO_REPORTING = "TP_DISABLE_AUTO_REPORTING"
 
     def remove(self):
         """Try and remove the environment variable, proceed if the variable doesn't exist"""
