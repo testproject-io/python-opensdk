@@ -87,6 +87,7 @@ class AgentClient:
         self._reporting_thread = threading.Thread(
             target=self.__report_worker, daemon=True
         )
+        self._close_socket = False
         self._reporting_thread.start()
 
         if not self.__start_session():
@@ -372,7 +373,7 @@ class AgentClient:
             )
 
         if not AgentClient.can_reuse_session():
-            SocketManager.instance().close_socket()
+            self._close_socket = True
 
     def execute_proxy(self, action: ActionProxy) -> AddonExecutionResponse:
         """Sends a custom action to the Agent
@@ -460,6 +461,9 @@ class AgentClient:
                     f"Unknown object of type {type(item)} found on queue, ignoring it.."
                 )
             self._queue.task_done()
+        # Close socket only after agent_client is no longer running and all reports in the queue have been sent.
+        if self._close_socket:
+            SocketManager.instance().close_socket()
 
 
 class QueueItem:
