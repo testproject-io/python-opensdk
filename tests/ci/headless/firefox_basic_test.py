@@ -26,6 +26,7 @@ def driver():
     driver = webdriver.Firefox(
         firefox_options=firefox_options, projectname="CI - Python"
     )
+    driver.set_window_size(1920, 1080)
     yield driver
     driver.quit()
 
