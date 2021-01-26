@@ -20,7 +20,7 @@ from tests.pageobjects.web import LoginPage, ProfilePage
 
 @pytest.fixture
 def driver():
-    driver = webdriver.Safari(projectname="Examples", jobname=None)
+    driver = webdriver.Safari(project_name="Examples", job_name=None)
     yield driver
     driver.quit()
 

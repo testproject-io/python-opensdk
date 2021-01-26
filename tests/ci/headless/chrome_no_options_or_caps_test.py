@@ -20,7 +20,7 @@ from tests.pageobjects.web import LoginPage, ProfilePage
 
 @pytest.fixture
 def driver():
-    driver = webdriver.Chrome(projectname="CI - Python")
+    driver = webdriver.Chrome(project_name="CI - Python")
     yield driver
     driver.quit()
 
