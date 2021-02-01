@@ -18,15 +18,20 @@ from enum import Enum, unique
 @unique
 class FindByType(Enum):
     """Enumeration of supported element locator strategies"""
-    ID = 0
-    NAME = 1
-    CLASSNAME = 2
-    CSSSELECTOR = 3
-    LINKTEXT = 4
-    PARTIALLINKTEXT = 5
-    TAG_NAME = 6
-    XPATH = 7
-    ACCESSIBILITYID = 8
-    IOSUIAUTOMATION = 9
-    ANDROIDUIAUTOMATOR = 10
-    NAMEDTEXTFIELD = 11
+    ID = "id"
+    NAME = "name"
+    CLASSNAME = "class name"
+    CSSSELECTOR = "css selector"
+    LINKTEXT = "link text"
+    PARTIALLINKTEXT = "partial link text"
+    TAG_NAME = "tag name"
+    XPATH = "xpath"
+    ACCESSIBILITYID = "accessibility id"
+    IOSUIAUTOMATION = "-ios uiautomation"
+    ANDROIDUIAUTOMATOR = "-android uiautomator"
+    IOSPREDICATE = "-ios predicate string"
+    IOSCLASSCHAIN = "-ios class chain"
+
+    @classmethod
+    def has_value(cls, value):
+        return value in cls._value2member_map_

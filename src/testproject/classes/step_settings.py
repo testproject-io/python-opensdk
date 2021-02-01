@@ -16,7 +16,24 @@ from src.testproject.enums import SleepTimingType, TakeScreenshotConditionType
 
 
 class StepSettings:
-    """Represents settings for automatic step reporting."""
+    """Represents settings for automatic step reporting.
+
+    Args:
+        sleep_time: is the sleep time number in milliseconds.
+        sleep_timing_type: defines if the sleep will occur 'Before' or 'After' step execution.
+        timeout: of the driver AKA explicit wait.
+        invert_result: will invert step execution result when True.
+        always_pass: will forcefully pass the step in case of failure when True.
+
+    Examples:
+        # This class should be used with a driver.
+        # Option 1 - assuming driver instance 'driver'
+        driver.step_settings = StepSettings(**args)
+        # Option 2 - using the DriverStepSettings
+        with DriverStepSettings(driver, StepSettings(**args)):
+            # Some driver command.
+
+    """
     def __init__(self, sleep_time: int = 0, sleep_timing_type: SleepTimingType = None, timeout: int = -1,
                  invert_result: bool = False, always_pass: bool = False,
                  screenshot_condition: TakeScreenshotConditionType = TakeScreenshotConditionType.Failure):

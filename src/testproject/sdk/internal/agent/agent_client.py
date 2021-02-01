@@ -192,18 +192,21 @@ class AgentClient:
         )
         return start_session_response
 
-    def send_request(self, method, path, body=None) -> OperationResult:
+    def send_request(self, method, path, body=None, params=None) -> OperationResult:
         """Sends HTTP request to Agent
 
         Args:
             method (str): HTTP method (GET, POST, ...)
             path (str): Relative API route path
             body (dict): Request body
+            params (dict): Request parameters
 
         Returns:
             OperationResult: contains result of the sent request
         """
         with requests.Session() as session:
+            if params:
+                session.params = params
             if method == "GET":
                 response = session.get(path, headers={"Authorization": self._token})
             elif method == "POST":
@@ -388,6 +391,7 @@ class AgentClient:
             "POST",
             urljoin(self._remote_address, Endpoint.AddonExecution.value),
             self._create_action_proxy_payload(action),
+            {"skipReporting": "true"}  # Delegate reporting from Agent to SDK.
         )
 
         if operation_result.status_code == HTTPStatus.NOT_FOUND:
