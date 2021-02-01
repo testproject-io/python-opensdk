@@ -16,9 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- ([#68](https://github.com/testproject-io/python-sdk/issues/68)) - Un-sanitized assertions in test reports.
-- ([#48](https://github.com/testproject-io/python-sdk/issues/48)) - Minor changes to the 'report' decorator.
-- ([#89](https://github.com/testproject-io/python-sdk/issues/89)) - Fixing incorrect error messages.
+- ([#68](https://github.com/testproject-io/python-opensdk/issues/68)) - Un-sanitized assertions in test reports.
+- ([#48](https://github.com/testproject-io/python-opensdk/issues/48)) - Minor changes to the 'report' decorator.
+- ([#89](https://github.com/testproject-io/python-opensdk/issues/89)) - Fixing incorrect error messages.
 
 ### Added
 
