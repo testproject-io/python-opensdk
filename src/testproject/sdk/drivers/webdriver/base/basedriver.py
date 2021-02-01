@@ -13,6 +13,9 @@
 # limitations under the License.
 
 import logging
+import os
+
+from selenium.webdriver.remote.webdriver import WebDriver as RemoteWebDriver
 
 from src.testproject.classes import StepSettings
 from src.testproject.enums import EnvironmentVariable
@@ -23,8 +26,6 @@ from src.testproject.sdk.internal.agent import AgentClient
 from src.testproject.sdk.internal.helpers import CustomCommandExecutor
 from src.testproject.sdk.internal.reporter import Reporter
 from src.testproject.sdk.internal.session import AgentSession
-from selenium.webdriver.remote.webdriver import WebDriver as RemoteWebDriver
-import os
 
 
 class BaseDriver(RemoteWebDriver):
@@ -145,6 +146,9 @@ class BaseDriver(RemoteWebDriver):
             AddonHelper: object giving access to addon proxy methods
         """
         return AddonHelper(self._agent_client, self.command_executor)
+
+    def pause(self, milliseconds: int):
+        self.command_executor.pause(milliseconds)
 
     def quit(self):
         """Quits the driver and stops the session with the Agent, cleaning up after itself"""

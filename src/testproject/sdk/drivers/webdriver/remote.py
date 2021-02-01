@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import logging
+import os
 
 from appium.webdriver.webdriver import WebDriver as AppiumWebDriver
 
@@ -25,7 +26,6 @@ from src.testproject.sdk.internal.agent import AgentClient
 from src.testproject.sdk.internal.helpers import CustomAppiumCommandExecutor
 from src.testproject.sdk.internal.reporter import Reporter
 from src.testproject.sdk.internal.session import AgentSession
-import os
 
 
 class Remote(AppiumWebDriver):
@@ -140,6 +140,9 @@ class Remote(AppiumWebDriver):
             AddonHelper: object giving access to addon proxy methods
         """
         return AddonHelper(self._agent_client, self.command_executor)
+
+    def pause(self, milliseconds: int):
+        self.command_executor.pause(milliseconds)
 
     def quit(self):
         """Quits the driver and stops the session with the Agent, cleaning up after itself."""
