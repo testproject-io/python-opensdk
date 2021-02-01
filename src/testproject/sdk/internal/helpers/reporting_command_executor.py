@@ -18,7 +18,6 @@ import inspect
 from selenium.webdriver.remote.command import Command
 
 from src.testproject.classes import StepSettings
-from src.testproject.enums import TakeScreenshotConditionType
 from src.testproject.helpers import ReportHelper
 from src.testproject.helpers.step_helper import StepHelper
 from src.testproject.rest.messages import DriverCommandReport, CustomTestReport
@@ -145,7 +144,7 @@ class ReportingCommandExecutor:
         Args:
             command (str): The driver command to execute
             params (dict): Named parameters to send with the command as its JSON payload
-            result (dict): The response returned by the Selenium remote webdriver server
+            result (dict): The response returned by the Selenium remote WebDriver server
             passed (bool): True if the command execution was successful, False otherwise
         """
         if command == Command.QUIT:
@@ -165,22 +164,15 @@ class ReportingCommandExecutor:
                 self._is_webdriverwait = True
                 break
 
-        # Invert result is set?
-        passed = not passed if self.settings.invert_result else passed
+        # Handle step result and message.
+        passed, step_message = self.step_helper.handle_step_result(step_result=passed,
+                                                                   invert_result=self.settings.invert_result,
+                                                                   always_pass=self.settings.always_pass)
+        screenshot = (self.create_screenshot()
+                      if self.step_helper.take_screenshot(self.settings.screenshot_condition, passed)
+                      else None)
 
-        driver_command_report = DriverCommandReport(command, params, result, passed)
-
-        # Is screenshot needed?
-        take_screenshot = False
-        if self.settings.screenshot_condition is TakeScreenshotConditionType.Failure and not passed:
-            take_screenshot = True
-        elif self.settings.screenshot_condition is TakeScreenshotConditionType.Success and passed:
-            take_screenshot = True
-        elif self.settings.screenshot_condition is TakeScreenshotConditionType.Always:
-            take_screenshot = True
-
-        if take_screenshot:
-            driver_command_report.screenshot = self.create_screenshot()
+        driver_command_report = DriverCommandReport(command, params, result, passed, screenshot, step_message)
 
         if self._is_webdriverwait:
             if not self._disable_reports and not self.disable_command_reports:
@@ -269,7 +261,8 @@ class ReportingCommandExecutor:
                 self.agent_client.report_driver_command(self._stashed_command)
                 self._stashed_command = None
 
-    def is_command_passed(self, response: dict) -> bool:
+    @staticmethod
+    def is_command_passed(response: dict) -> bool:
         """Determine command result based on response using state and status.
 
         Args:
