@@ -269,7 +269,8 @@ class ReportingCommandExecutor:
                 self.agent_client.report_driver_command(self._stashed_command)
                 self._stashed_command = None
 
-    def is_command_passed(self, response: dict) -> bool:
+    @staticmethod
+    def is_command_passed(response: dict) -> bool:
         """Determine command result based on response using state and status.
 
         Args:
