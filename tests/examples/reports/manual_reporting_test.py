@@ -14,6 +14,8 @@
 
 import pytest
 
+from src.testproject.classes import ElementSearchCriteria
+from src.testproject.enums import FindByType
 from src.testproject.sdk.drivers import webdriver
 from tests.pageobjects.web import LoginPage, ProfilePage
 
@@ -28,7 +30,6 @@ def driver():
 
 
 def test_is_reported_as_passed(driver):
-
     LoginPage(driver).open().login_as("John Smith", "12345")
     assert ProfilePage(driver).greetings_are_displayed() is True
     driver.report().test(name="Passing test", passed=True)
@@ -42,5 +43,7 @@ def test_is_reported_as_failed_with_additional_step(driver):
         message="An additional message that goes with the step",
         passed=False,
         screenshot=True,
+        element=ElementSearchCriteria(FindByType.ID, "the_ID_value"),
+        inputs={"parameter_name_x": "any_object_value_of_x", "another_parameter_y": True}
     )
     driver.report().test(name="Failing test", passed=False)
