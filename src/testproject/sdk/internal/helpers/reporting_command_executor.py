@@ -145,7 +145,7 @@ class ReportingCommandExecutor:
         Args:
             command (str): The driver command to execute
             params (dict): Named parameters to send with the command as its JSON payload
-            result (dict): The response returned by the Selenium remote webdriver server
+            result (dict): The response returned by the Selenium remote WebDriver server
             passed (bool): True if the command execution was successful, False otherwise
         """
         if command == Command.QUIT:
