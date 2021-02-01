@@ -172,7 +172,7 @@ class ReportingCommandExecutor:
                       if self.step_helper.take_screenshot(self.settings.screenshot_condition, passed)
                       else None)
 
-        driver_command_report = DriverCommandReport(command, params, result, passed)
+        driver_command_report = DriverCommandReport(command, params, result, passed, screenshot, step_message)
 
         if self._is_webdriverwait:
             if not self._disable_reports and not self.disable_command_reports:
