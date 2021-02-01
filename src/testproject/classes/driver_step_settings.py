@@ -21,6 +21,16 @@ class DriverStepSettings:
 
     If driver auto step reports is enabled, all the driver commands within this compound statement will be reported
     according to the given StepSettings.
+
+    Args:
+        driver (Union[BaseDriver, Remote]): the driver instance to apply the StepSettings to.
+        step_settings: is the StepSettings object to apply on the driver.
+
+    Examples:
+        # Assuming driver instance 'driver' and StepSettings instance step_settings
+        with DriverStepSettings(driver, step_settings):
+            # Some driver command.
+
     """
     def __init__(self, driver, step_settings: StepSettings):
         """Initializes the 'with' statement."""
