@@ -1,5 +1,5 @@
-TestProject SDK For Python
-==========================
+TestProject OpenSDK for Python
+==============================
 
 `TestProject <https://testproject.io/>`__ is a **Free** Test Automation platform for Web, Mobile and API testing.
 
@@ -155,8 +155,8 @@ The SDK will attempt to infer Project and Job names when you use pytest or unitt
 
 Examples using inferred project and job names:
 
-* `pytest <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/frameworks/pytest/implicit_report_test.py>`__
-* `unittest <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/frameworks/unittest/implicit_report_test.py>`__
+* `pytest <https://github.com/testproject-io/python-opensdk/blob/master/tests/examples/frameworks/pytest/implicit_report_test.py>`__
+* `unittest <https://github.com/testproject-io/python-opensdk/blob/master/tests/examples/frameworks/unittest/implicit_report_test.py>`__
 
 Explicit project and job names
 ------------------------------
@@ -183,8 +183,8 @@ or using the ``@report`` decorator:
 
 Examples using explicitly specified project and job names:
 
-* `pytest <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/frameworks/pytest/explicit_report_test.py>`__
-* `unittest <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/frameworks/unittest/explicit_report_test.py>`__
+* `pytest <https://github.com/testproject-io/python-opensdk/blob/master/tests/examples/frameworks/pytest/explicit_report_test.py>`__
+* `unittest <https://github.com/testproject-io/python-opensdk/blob/master/tests/examples/frameworks/unittest/explicit_report_test.py>`__
 
 Reporting extensions
 --------------------
@@ -210,7 +210,7 @@ This decorator has an optional boolean argument 'screenshot' that will decide if
         assert 1 == 2  # This assertion will be reported automatically as a failed step and no screenshot will be taken
         driver.quit()
 
-Here is a working example for `pytest <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/reports/report_failed_pytest_assertion_test.py>`__, and here is one for `unittest <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/reports/report_failed_unittest_assertion_test.py>`__.
+Here is a working example for `pytest <https://github.com/testproject-io/python-opensdk/blob/master/tests/examples/reports/report_failed_pytest_assertion_test.py>`__, and here is one for `unittest <https://github.com/testproject-io/python-opensdk/blob/master/tests/examples/reports/report_failed_unittest_assertion_test.py>`__.
 
 Please make sure to follow the advice given `here <#the-importance-of-using-quit>`__ to ensure correct test name reporting.
 
@@ -237,7 +237,7 @@ To override the inferring of the test name and specify a custom test name instea
         # Your test code goes here
         driver.quit()
 
-Here is a complete example using `automatic reporting <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/reports/automatic_reporting_test.py>`__.
+Here is a complete example using `automatic reporting <https://github.com/testproject-io/python-opensdk/blob/master/tests/examples/reports/automatic_reporting_test.py>`__.
 
 Manual test reporting
 ^^^^^^^^^^^^^^^^^^^^^
@@ -264,7 +264,7 @@ If this feature is disabled, or you would like to add steps manually, you can us
         driver.report().step(description='My step description', message='An additional message', passed=False, screenshot=True)
         driver.quit()
 
-Here is a complete example using `manual test reporting of tests and steps <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/reports/manual_reporting_test.py>`__.
+Here is a complete example using `manual test reporting of tests and steps <https://github.com/testproject-io/python-opensdk/blob/master/tests/examples/reports/manual_reporting_test.py>`__.
 
 Step settings
 ^^^^^^^^^^^^^
@@ -472,23 +472,23 @@ Here is a list of all examples for the different drivers that are supported by t
 
 *Web*
 
-* `Chrome test <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/drivers/web/chrome_driver_test.py>`__
-* `Firefox test <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/drivers/web/firefox_driver_test.py>`__
-* `Safari test <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/drivers/web/safari_driver_test.py>`__
-* `Edge test <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/drivers/web/edge_driver_test.py>`__
-* `Internet Explorer test <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/drivers/web/ie_driver_test.py>`__
+* `Chrome test <https://github.com/testproject-io/python-opensdk/blob/master/tests/examples/drivers/web/chrome_driver_test.py>`__
+* `Firefox test <https://github.com/testproject-io/python-opensdk/blob/master/tests/examples/drivers/web/firefox_driver_test.py>`__
+* `Safari test <https://github.com/testproject-io/python-opensdk/blob/master/tests/examples/drivers/web/safari_driver_test.py>`__
+* `Edge test <https://github.com/testproject-io/python-opensdk/blob/master/tests/examples/drivers/web/edge_driver_test.py>`__
+* `Internet Explorer test <https://github.com/testproject-io/python-opensdk/blob/master/tests/examples/drivers/web/ie_driver_test.py>`__
 
 *Android*
 
-* `Android native test <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/drivers/android/android_driver_test.py>`__
+* `Android native test <https://github.com/testproject-io/python-opensdk/blob/master/tests/examples/drivers/android/android_driver_test.py>`__
 * `Android native app <https://github.com/testproject-io/android-demo-app>`__
-* `Web test on mobile Chrome <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/drivers/android/android_driver_chrome_test.py>`__
+* `Web test on mobile Chrome <https://github.com/testproject-io/python-opensdk/blob/master/tests/examples/drivers/android/android_driver_chrome_test.py>`__
 
 *iOS*
 
-* `iOS native test <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/drivers/ios/ios_driver_test.py>`__
+* `iOS native test <https://github.com/testproject-io/python-opensdk/blob/master/tests/examples/drivers/ios/ios_driver_test.py>`__
 * `iOS native app <https://github.com/testproject-io/ios-demo-app>`__
-* `Web test on mobile Safari <https://github.com/testproject-io/python-sdk/blob/master/tests/examples/drivers/ios/ios_driver_safari_test.py>`__
+* `Web test on mobile Safari <https://github.com/testproject-io/python-opensdk/blob/master/tests/examples/drivers/ios/ios_driver_safari_test.py>`__
 
 License
 -------
