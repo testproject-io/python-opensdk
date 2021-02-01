@@ -18,7 +18,6 @@ import inspect
 from selenium.webdriver.remote.command import Command
 
 from src.testproject.classes import StepSettings
-from src.testproject.enums import TakeScreenshotConditionType
 from src.testproject.helpers import ReportHelper
 from src.testproject.helpers.step_helper import StepHelper
 from src.testproject.rest.messages import DriverCommandReport, CustomTestReport
@@ -169,20 +168,11 @@ class ReportingCommandExecutor:
         passed, step_message = self.step_helper.handle_step_result(step_result=passed,
                                                                    invert_result=self.settings.invert_result,
                                                                    always_pass=self.settings.always_pass)
+        screenshot = (self.create_screenshot()
+                      if self.step_helper.take_screenshot(self.settings.screenshot_condition, passed)
+                      else None)
 
         driver_command_report = DriverCommandReport(command, params, result, passed)
-
-        # Is screenshot needed?
-        take_screenshot = False
-        if self.settings.screenshot_condition is TakeScreenshotConditionType.Failure and not passed:
-            take_screenshot = True
-        elif self.settings.screenshot_condition is TakeScreenshotConditionType.Success and passed:
-            take_screenshot = True
-        elif self.settings.screenshot_condition is TakeScreenshotConditionType.Always:
-            take_screenshot = True
-
-        if take_screenshot:
-            driver_command_report.screenshot = self.create_screenshot()
 
         if self._is_webdriverwait:
             if not self._disable_reports and not self.disable_command_reports:
