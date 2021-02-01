@@ -165,8 +165,10 @@ class ReportingCommandExecutor:
                 self._is_webdriverwait = True
                 break
 
-        # Invert result is set?
-        passed = not passed if self.settings.invert_result else passed
+        # Handle step result and message.
+        passed, step_message = self.step_helper.handle_step_result(step_result=passed,
+                                                                   invert_result=self.settings.invert_result,
+                                                                   always_pass=self.settings.always_pass)
 
         driver_command_report = DriverCommandReport(command, params, result, passed)
 
