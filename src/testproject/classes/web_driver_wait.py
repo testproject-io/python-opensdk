@@ -1,13 +1,10 @@
 import os
 import json
-from typing import Union
 
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.wait import WebDriverWait
 
 from src.testproject.classes import DriverStepSettings, StepSettings
-from src.testproject.sdk.drivers.webdriver import Remote
-from src.testproject.sdk.drivers.webdriver.base import BaseDriver
 
 
 class TestProjectWebDriverWait(WebDriverWait):
@@ -21,11 +18,11 @@ class TestProjectWebDriverWait(WebDriverWait):
     Due to the above, this wrapper class handles the step reporting and user defined step settings.
 
     Args:
-        driver: that this WebDriverWait instance will use to execute commands.
+        driver (Union[BaseDriver, Remote]): that this WebDriverWait instance will use to execute commands.
         timeout: is the WebDriverWait timeout to wait for expected condition before raising TimeoutException.
 
     """
-    def __init__(self, driver: Union[BaseDriver, Remote], timeout):
+    def __init__(self, driver, timeout):
         super().__init__(driver, timeout)
         self._driver = driver
 
