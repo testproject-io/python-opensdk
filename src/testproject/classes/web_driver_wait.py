@@ -43,6 +43,7 @@ class TestProjectWebDriverWait(WebDriverWait):
         Returns the result of the executed function.
         """
         timeout_exception = None
+        result = None
         step_helper = self.driver.command_executor.step_helper
         step_settings = self.driver.command_executor.settings
         # Save current disable_reports value and disable reports before executing the wait function.
@@ -57,18 +58,19 @@ class TestProjectWebDriverWait(WebDriverWait):
         with DriverStepSettings(self._driver, StepSettings()):
             try:
                 result = getattr(super(), function_name)(method, message)
+                passed = True if result else False
             except TimeoutException as e:
-                result = False
+                passed = False
                 timeout_exception = e
         # Handle sleep after
         step_helper.handle_sleep(sleep_timing_type=step_settings.sleep_timing_type,
                                  sleep_time=step_settings.sleep_time, step_executed=True)
         # Handle result
-        result, step_message = step_helper.handle_step_result(step_result=result,
+        passed, step_message = step_helper.handle_step_result(step_result=passed,
                                                               invert_result=step_settings.invert_result,
                                                               always_pass=step_settings.always_pass)
         # Handle screenshot condition
-        screenshot = step_helper.take_screenshot(step_settings.screenshot_condition, result)
+        screenshot = step_helper.take_screenshot(step_settings.screenshot_condition, passed)
 
         # Set the previous value of disable_reports.
         self._driver.report().disable_reports(reports_disabled)
@@ -79,11 +81,11 @@ class TestProjectWebDriverWait(WebDriverWait):
         step_name, step_attributes = self.get_report_details(method)
         self._driver.report().step(description=f'Wait {function_name} {step_name}',
                                    message=f'{step_message}{os.linesep}',
-                                   passed=result,
+                                   passed=passed,
                                    inputs=step_attributes,
                                    screenshot=screenshot)
         # Always pass ignore result and thrown exception.
-        if step_settings.always_pass:
+        if not result and step_settings.always_pass:
             return True
         # Raise exception if there was one.
         if timeout_exception:
