@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import logging
+import os
 
 from packaging import version
 
@@ -83,9 +84,13 @@ class Generic:
                 if project_name is not None
                 else ReportHelper.infer_project_name()
             )
-            self._job_name = (
-                job_name if job_name is not None else ReportHelper.infer_job_name()
-            )
+
+            if job_name:
+                self._job_name = job_name
+            else:
+                self._job_name = ReportHelper.infer_job_name()
+                # Can update job name at runtime if not specified.
+                os.environ[EnvironmentVariable.TP_UPDATE_JOB_NAME.value] = "True"
 
         report_settings = ReportSettings(self._project_name, self._job_name)
 
