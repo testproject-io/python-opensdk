@@ -22,7 +22,7 @@ from src.testproject.decorator.behave_reporter import behave_reporter
 
 @behave_reporter()
 def before_all(context):
-    context.driver = webdriver.Chrome(projectname="Python BDD", jobname="Behave")
+    context.driver = webdriver.Chrome(project_name="Python BDD", job_name="Behave")
 
 
 """ Executed after each step in the scenario.
