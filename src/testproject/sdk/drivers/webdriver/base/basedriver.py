@@ -154,6 +154,14 @@ class BaseDriver(RemoteWebDriver):
     def pause(self, milliseconds: int):
         self.command_executor.pause(milliseconds)
 
+    def update_job_name(self, job_name):
+        """Updates the job name of the execution during runtime
+
+        Args:
+            job_name (str): updated job name to set for the execution.
+        """
+        self._agent_client.update_job_name(job_name=job_name)
+
     def quit(self):
         """Quits the driver and stops the session with the Agent, cleaning up after itself"""
         # Report any left over driver command reports

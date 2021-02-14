@@ -16,6 +16,8 @@ from src.testproject.helpers.activesessionhelper import get_active_driver_instan
 
 from functools import wraps
 from src.testproject.enums import EnvironmentVariable
+from src.testproject.sdk.exceptions import SdkException
+import logging
 import os
 
 
@@ -32,26 +34,34 @@ def behave_reporter(func=None, *, screenshot: bool = False):
             # Disable automatic test and command reporting.
             if os.getenv("TP_DISABLE_AUTO_REPORTING") != "True":
                 os.environ[EnvironmentVariable.TP_DISABLE_AUTO_REPORTING.value] = "True"
-            # Update job name as soon as possible.
-            context = args[0]
-            # Check if the context has a feature attribute which is not None to avoid error when decorator
-            # is used on a method with a different param.
-            if hasattr(context, 'feature') and context.feature and not hasattr(context, 'tp_job_name_updated'):
-                # Update the job name
-                context.tp_job_name_updated = True
-                # noinspection PyProtectedMember
-                get_active_driver_instance()._agent_client.update_job_name(context.feature.name)
-            # Report step or test based on the constant hook name.
-            # Behave always calls the methods with the arguments in the following order: (context, step/scenario).
-            hook_name = _func.__name__
-            if hook_name == "after_step":
+
+            driver = None
+            try:
                 driver = get_active_driver_instance()
-                step = args[1]
-                report_step(driver=driver, step=step, screenshot=screenshot)
-            if hook_name == "after_scenario":
-                driver = get_active_driver_instance()
-                scenario = args[1]
-                report_test(driver=driver, scenario=scenario)
+            except SdkException as err:
+                logging.error(f"No valid WebDriver found: {err} - Reports are disabled!")
+
+            if driver is not None:
+
+                # Update job name as soon as possible.
+                context = args[0]
+                # Check if the context has a feature attribute which is not None to avoid error when decorator
+                # is used on a method with a different param.
+                if hasattr(context, 'feature') and context.feature and not hasattr(context, 'tp_job_name_updated'):
+                    # Update the job name
+                    driver.update_job_name(context.feature.name)
+                    context.tp_job_name_updated = True
+
+                # Report step or test based on the constant hook name.
+                # Behave always calls the methods with the arguments in the following order: (context, step/scenario).
+                hook_name = _func.__name__
+                if hook_name == "after_step":
+                    step = args[1]
+                    report_step(driver=driver, step=step, screenshot=screenshot)
+                if hook_name == "after_scenario":
+                    scenario = args[1]
+                    report_test(driver=driver, scenario=scenario)
+
             return _func(*args, **kwargs)
         return wrapper
 
