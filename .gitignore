@@ -129,3 +129,6 @@ dmypy.json
 
 # Pytest
 pytest.ini
+
+# Locally generated reports
+reports/

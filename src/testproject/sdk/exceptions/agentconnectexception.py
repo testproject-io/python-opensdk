@@ -15,4 +15,5 @@
 
 class AgentConnectException(Exception):
     """Custom exception type to be raised when SDK cannot connect to Agent"""
+
     pass

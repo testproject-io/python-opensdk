@@ -41,6 +41,7 @@ class SessionResponse:
         dialect: str,
         capabilities: dict,
         agent_version: str,
+        local_report: str,
     ):
         self._dev_socket_port = dev_socket_port
         self._server_address = server_address
@@ -48,6 +49,7 @@ class SessionResponse:
         self._dialect = dialect
         self._capabilities = capabilities
         self._agent_version = agent_version
+        self._local_report = local_report
 
     @property
     def dev_socket_port(self) -> int:
@@ -78,3 +80,8 @@ class SessionResponse:
     def agent_version(self) -> str:
         """Getter for the Agent version"""
         return self._agent_version
+
+    @property
+    def local_report(self) -> str:
+        """Getter for the Local Report"""
+        return self._local_report

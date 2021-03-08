@@ -38,10 +38,7 @@ class RedactHelper:
         Returns:
             dict: A redacted version of the dictionary, where password values are replaced by '****'
         """
-        if (
-                command == Command.SEND_KEYS_TO_ELEMENT
-                or command == Command.SEND_KEYS_TO_ACTIVE_ELEMENT
-        ):
+        if command == Command.SEND_KEYS_TO_ELEMENT or command == Command.SEND_KEYS_TO_ACTIVE_ELEMENT:
             element_id = params["id"]
 
             if not self._redaction_required(element_id):
@@ -111,4 +108,7 @@ class RedactHelper:
         get_attribute_response = self._command_executor.execute(
             Command.GET_ELEMENT_ATTRIBUTE, get_attribute_params, True
         )
-        return get_attribute_response["value"] in ["password", "XCUIElementTypeSecureTextField"]
+        return get_attribute_response["value"] in [
+            "password",
+            "XCUIElementTypeSecureTextField",
+        ]

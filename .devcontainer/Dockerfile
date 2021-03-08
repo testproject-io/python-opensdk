@@ -13,6 +13,12 @@ FROM mcr.microsoft.com/vscode/devcontainers/python:0-${VARIANT}
 COPY .devcontainer/files/.bashrc /home/vscode/
 COPY .devcontainer/files/.inputrc /home/vscode/
 
+# Upgrade pip
+RUN python3 -m pip install --upgrade pip
+
+# Install dependencies
+RUN pip3 install flake8 black wheel importlib-metadata pytest
+
 # Allow the vscode user to pip install globally w/o sudo
 ENV PIP_TARGET=/usr/local/pip-global
 ENV PYTHONPATH=${PIP_TARGET}:${PYTHONPATH}

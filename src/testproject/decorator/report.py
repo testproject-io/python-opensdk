@@ -23,18 +23,18 @@ from src.testproject.sdk.drivers.webdriver.base import BaseDriver
 
 def report(project: str = None, job: str = None, test: str = None):
     """Enables setting a custom name for the project, job and test for reporting purposes
-        Args:
-            project (str): The name of the project
-            job (str): The name of the job
-            test (str): The name of the test
-        Returns:
-            report_decorator: The decorated test method.
+    Args:
+        project (str): The name of the project
+        job (str): The name of the job
+        test (str): The name of the test
+    Returns:
+        report_decorator: The decorated test method.
     """
 
     def report_decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            driver: Union[Remote, BaseDriver] = kwargs.get('driver')
+            driver: Union[Remote, BaseDriver] = kwargs.get("driver")
             if project:
                 os.environ[EnvironmentVariable.TP_PROJECT_NAME.value] = project
             if job:

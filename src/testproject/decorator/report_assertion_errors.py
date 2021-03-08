@@ -38,11 +38,7 @@ def report_assertion_errors(func=None, *, screenshot: bool = False):
                 line_index = -1 if os.getenv("PYTEST_CURRENT_TEST") is not None else -2
 
                 # Depending on the unit testing framework we format the reported error differently
-                description = (
-                    ae.__repr__()
-                    if os.getenv("PYTEST_CURRENT_TEST") is not None
-                    else str(ae)
-                )
+                description = ae.__repr__() if os.getenv("PYTEST_CURRENT_TEST") is not None else str(ae)
 
                 _, line, function, text = tb_info[line_index]
                 driver = get_active_driver_instance()
@@ -73,8 +69,8 @@ def __handle_step_report_details(description, message):
     """
     inner_description = re.search(r"AssertionError\('(.*)'\)", description)
     if inner_description:
-        inner_description = inner_description.group(1).replace('\\n', os.linesep).split(' + ')
-        description = 'Assertion failed {{' + inner_description[0] + '}}'
+        inner_description = inner_description.group(1).replace("\\n", os.linesep).split(" + ")
+        description = "Assertion failed {{" + inner_description[0] + "}}"
         if len(inner_description) > 1:
             message += os.linesep
             for line in inner_description[1:]:

@@ -40,7 +40,7 @@ class DriverCommandReport:
         result: dict,
         passed: bool,
         screenshot: str = None,
-        message: str = None
+        message: str = None,
     ):
         self._command = command
         self._command_params = command_params
@@ -92,8 +92,8 @@ class DriverCommandReport:
     def to_json(self):
         """Creates a JSON representation of the current DriverCommandReport instance
 
-            Returns:
-                dict: JSON representation of the current instance
+        Returns:
+            dict: JSON representation of the current instance
         """
         payload = {
             "commandName": self.command,
@@ -101,7 +101,7 @@ class DriverCommandReport:
             "result": self.result,
             "passed": self.passed,
             "message": self.message,
-            "screenshot": self.screenshot
+            "screenshot": self.screenshot,
         }
 
         return payload
@@ -129,6 +129,6 @@ class DriverCommandReport:
                 self.result,
                 self.passed,
                 self.screenshot,
-                self.message
+                self.message,
             )
         )

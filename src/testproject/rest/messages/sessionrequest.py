@@ -29,6 +29,7 @@ class SessionRequest:
         _language (str): Test code language (Python, obviously)
         _project_name (str): Project name to report
         _job_name (str): Job name to report
+        _report_type (ReportType): Report type = cloud, local or both.
     """
 
     def __init__(self, capabilities: dict, report_settings: ReportSettings):
@@ -37,6 +38,7 @@ class SessionRequest:
         self._language = "Python"
         self._project_name = report_settings.project_name
         self._job_name = report_settings.job_name
+        self._report_type = report_settings.report_type
 
     def to_json(self):
         """Returns a JSON representation of the current SessionRequest instance"""
@@ -46,4 +48,5 @@ class SessionRequest:
             "capabilities": self._capabilities,
             "sdkVersion": self._sdk_version,
             "language": self._language,
+            "reportType": self._report_type.name,
         }

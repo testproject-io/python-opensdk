@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from appium.webdriver.common.mobileby import MobileBy
 from selenium.webdriver.common.by import By
 from src.testproject.classes import ElementSearchCriteria
 from src.testproject.enums import FindByType
@@ -49,11 +50,15 @@ class SeleniumHelper:
             return ElementSearchCriteria(FindByType.PARTIALLINKTEXT, by_value)
         elif by == By.TAG_NAME:
             return ElementSearchCriteria(FindByType.TAG_NAME, by_value)
+        elif by == MobileBy.ACCESSIBILITY_ID:
+            return ElementSearchCriteria(FindByType.ACCESSIBILITYID, by_value)
+        elif by == MobileBy.IOS_PREDICATE:
+            return ElementSearchCriteria(FindByType.IOSPREDICATE, by_value)
         else:
             raise SdkException(f"Did not recognize locator strategy {by}")
 
     @staticmethod
-    def create_addon_locator(by: By, by_value: str):
+    def create_addon_locator(by: By, by_value: str) -> dict:
         """Creates and returns an locator used in an addon based on a locator strategy
 
         Args:
@@ -69,7 +74,7 @@ class SeleniumHelper:
         elif by == By.NAME:
             return {"name": by_value}
         elif by == By.XPATH:
-            return {"xpath", by_value}
+            return {"xpath": by_value}
         elif by == By.CLASS_NAME:
             return {"className": by_value}
         elif by == By.CSS_SELECTOR:
@@ -80,5 +85,9 @@ class SeleniumHelper:
             return {"partialLinkText": by_value}
         elif by == By.TAG_NAME:
             return {"tagName": by_value}
+        elif by == MobileBy.ACCESSIBILITY_ID:
+            return {"accessibilityId": by_value}
+        elif by == MobileBy.IOS_PREDICATE:
+            return {"iosPredicate": by_value}
         else:
             raise SdkException(f"Did not recognize locator strategy {by}")

@@ -18,20 +18,22 @@ from selenium.webdriver.common.by import By
 class ProxyDescriptor:
     """Describes an Addon and an Action to be executed via the Agent
 
-        Args:
-            guid (str): a unique GUID used to identify the addon
-            classname (str): the name of the action class that is contained in addon
+    Args:
+        guid (str): a unique GUID used to identify the addon
+        classname (str): the name of the action class that is contained in addon
 
-        Attributes:
-            _guid (str): a unique GUID used to identify the addon
-            _classname (str): the name of the action class that is contained in the addon
-            _by (By): Locator strategy for the element associated with this action
-            _by_value (str): Corresponding locator strategy value
-            _parameters (dict): parameters and their values associated with the action
+    Attributes:
+        _guid (str): a unique GUID used to identify the addon
+        _classname (str): the name of the action class that is contained in the addon
+        _by (By): Locator strategy for the element associated with this action
+        _by_value (str): Corresponding locator strategy value
+        _parameters (dict): parameters and their values associated with the action
     """
 
     def __init__(
-        self, guid: str, classname: str,
+        self,
+        guid: str,
+        classname: str,
     ):
         self._guid = guid
         self._classname = classname

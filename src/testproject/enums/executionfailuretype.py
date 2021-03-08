@@ -18,6 +18,7 @@ from enum import Enum, unique
 @unique
 class ExecutionFailureType(Enum):
     """Enumeration of possible command execution failure reasons"""
+
     NoFailure = 0
     DriverError = 1
     MalformedExecutionJsonObject = 2

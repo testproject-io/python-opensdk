@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import pytest
+import os
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.select import Select
@@ -30,6 +31,7 @@ def driver():
     driver.quit()
 
 
+@pytest.mark.skipif("TP_CLOUD_URL" not in os.environ, reason="Running in offline mode")
 def test_update_profile_using_addon_proxy_expect_success_message_to_be_displayed(driver):
 
     textfield_phone = (By.CSS_SELECTOR, "#phone")

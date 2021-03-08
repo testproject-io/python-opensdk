@@ -22,15 +22,16 @@ class TestProjectWebDriverWait(WebDriverWait):
         timeout: is the WebDriverWait timeout to wait for expected condition before raising TimeoutException.
 
     """
+
     def __init__(self, driver, timeout):
         super().__init__(driver, timeout)
         self._driver = driver
 
-    def until(self, method, message=''):
+    def until(self, method, message=""):
         """Executes the wrapping function for until."""
         return self.execute("until", method, message)
 
-    def until_not(self, method, message=''):
+    def until_not(self, method, message=""):
         """Executes the wrapping function for until_not."""
         return self.execute("until_not", method, message)
 
@@ -52,8 +53,10 @@ class TestProjectWebDriverWait(WebDriverWait):
         # Handle driver timeout
         step_helper.handle_timeout(timeout=step_settings.timeout)
         # Handle sleep before
-        step_helper.handle_sleep(sleep_timing_type=step_settings.sleep_timing_type,
-                                 sleep_time=step_settings.sleep_time)
+        step_helper.handle_sleep(
+            sleep_timing_type=step_settings.sleep_timing_type,
+            sleep_time=step_settings.sleep_time,
+        )
         # Execute the function with default StepSettings.
         with DriverStepSettings(self._driver, StepSettings()):
             try:
@@ -63,12 +66,17 @@ class TestProjectWebDriverWait(WebDriverWait):
                 passed = False
                 timeout_exception = e
         # Handle sleep after
-        step_helper.handle_sleep(sleep_timing_type=step_settings.sleep_timing_type,
-                                 sleep_time=step_settings.sleep_time, step_executed=True)
+        step_helper.handle_sleep(
+            sleep_timing_type=step_settings.sleep_timing_type,
+            sleep_time=step_settings.sleep_time,
+            step_executed=True,
+        )
         # Handle result
-        passed, step_message = step_helper.handle_step_result(step_result=passed,
-                                                              invert_result=step_settings.invert_result,
-                                                              always_pass=step_settings.always_pass)
+        passed, step_message = step_helper.handle_step_result(
+            step_result=passed,
+            invert_result=step_settings.invert_result,
+            always_pass=step_settings.always_pass,
+        )
         # Handle screenshot condition
         screenshot = step_helper.take_screenshot(step_settings.screenshot_condition, passed)
 
@@ -76,14 +84,16 @@ class TestProjectWebDriverWait(WebDriverWait):
         self._driver.report().disable_reports(reports_disabled)
 
         # Inferring function name - until / until not
-        function_name = ' '.join(function_name.split('_'))
+        function_name = " ".join(function_name.split("_"))
         # Getting all additional step information.
         step_name, step_attributes = self.get_report_details(method)
-        self._driver.report().step(description=f'Wait {function_name} {step_name}',
-                                   message=f'{step_message}{os.linesep}',
-                                   passed=passed,
-                                   inputs=step_attributes,
-                                   screenshot=screenshot)
+        self._driver.report().step(
+            description=f"Wait {function_name} {step_name}",
+            message=f"{step_message}{os.linesep}",
+            passed=passed,
+            inputs=step_attributes,
+            screenshot=screenshot,
+        )
         # Always pass ignore result and thrown exception.
         if not result and step_settings.always_pass:
             return True
@@ -108,9 +118,10 @@ class TestProjectWebDriverWait(WebDriverWait):
             attributes_dict (dict): is all the method's attributes and their values.
 
         """
-        step_name = ' '.join(method.__class__.__name__.split('_'))
-        attributes_dict = {attribute: json.dumps(getattr(method, attribute))
-                           for attribute in self.get_user_attributes(method)}
+        step_name = " ".join(method.__class__.__name__.split("_"))
+        attributes_dict = {
+            attribute: json.dumps(getattr(method, attribute)) for attribute in self.get_user_attributes(method)
+        }
         return step_name, attributes_dict
 
     @staticmethod
@@ -132,7 +143,7 @@ class TestProjectWebDriverWait(WebDriverWait):
         Returns a list of all user defined attributes in the class.
 
         """
-        base_attrs = dir(type('dummy', (object,), {}))
+        base_attrs = dir(type("dummy", (object,), {}))
         this_cls_attrs = dir(cls)
         res = []
         for attr in this_cls_attrs:

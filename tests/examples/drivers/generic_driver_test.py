@@ -25,6 +25,4 @@ def driver():
 
 
 def test_example_using_generic(driver):
-    driver.report().step(
-        description="Hello, World!", message="Here goes a message", passed=True
-    )
+    driver.report().step(description="Hello, World!", message="Here goes a message", passed=True)

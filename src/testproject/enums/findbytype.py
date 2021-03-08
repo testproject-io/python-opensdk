@@ -18,6 +18,7 @@ from enum import Enum, unique
 @unique
 class FindByType(Enum):
     """Enumeration of supported element locator strategies"""
+
     ID = "id"
     NAME = "name"
     CLASSNAME = "class name"

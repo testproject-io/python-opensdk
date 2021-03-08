@@ -19,7 +19,13 @@ from selenium.webdriver.remote.webdriver import WebDriver as RemoteWebDriver
 
 from src.testproject.classes import StepSettings
 from src.testproject.enums import EnvironmentVariable
-from src.testproject.helpers import ReportHelper, LoggingHelper, ConfigHelper, AddonHelper
+from src.testproject.enums.report_type import ReportType
+from src.testproject.helpers import (
+    ReportHelper,
+    LoggingHelper,
+    ConfigHelper,
+    AddonHelper,
+)
 from src.testproject.rest import ReportSettings
 from src.testproject.sdk.exceptions import SdkException
 from src.testproject.sdk.internal.agent import AgentClient
@@ -37,6 +43,7 @@ class BaseDriver(RemoteWebDriver):
         project_name (str): Project name to report
         job_name (str): Job name to report
         disable_reports (bool): set to True to disable all reporting (no report will be created on TestProject)
+        report_type (ReportType): Type of report to produce - cloud, local or both.
 
     Attributes:
         _agent_client (AgentClient): client responsible for communicating with the TestProject agent
@@ -56,6 +63,7 @@ class BaseDriver(RemoteWebDriver):
         project_name: str,
         job_name: str,
         disable_reports: bool,
+        report_type: ReportType,
     ):
 
         if BaseDriver.__instance is not None:
@@ -73,11 +81,7 @@ class BaseDriver(RemoteWebDriver):
             self._project_name = ""
             self._job_name = ""
         else:
-            self._project_name = (
-                project_name
-                if project_name is not None
-                else ReportHelper.infer_project_name()
-            )
+            self._project_name = project_name if project_name is not None else ReportHelper.infer_project_name()
 
             if job_name:
                 self._job_name = job_name
@@ -89,7 +93,7 @@ class BaseDriver(RemoteWebDriver):
         self._agent_client: AgentClient = AgentClient(
             token=self._token,
             capabilities=capabilities,
-            report_settings=ReportSettings(self._project_name, self._job_name),
+            report_settings=ReportSettings(self._project_name, self._job_name, report_type),
         )
         self._agent_session: AgentSession = self._agent_client.agent_session
         self.w3c = True if self._agent_session.dialect == "W3C" else False

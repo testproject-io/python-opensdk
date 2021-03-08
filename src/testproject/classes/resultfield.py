@@ -16,10 +16,10 @@
 class ResultField:
     """Object representing a field associated with an action
 
-        Attributes:
-            _name (str): The field name
-            _value: the field value
-            _is_output (bool): True if the field is an output field, False otherwise
+    Attributes:
+        _name (str): The field name
+        _value: the field value
+        _is_output (bool): True if the field is an output field, False otherwise
     """
 
     def __init__(self, name: str = None, value=None, output: bool = None):

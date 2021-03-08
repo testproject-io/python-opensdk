@@ -39,9 +39,7 @@ class ReportHelper:
 
         if current_test_info is not None:
             # we're using pytest
-            result = cls.infer_name_from_pytest_info_for(
-                current_test_info, ReportNamingElement.Test
-            )
+            result = cls.infer_name_from_pytest_info_for(current_test_info, ReportNamingElement.Test)
         else:
             # Try finding the right entry in the call stack (for unittest or when no testing framework is used)
             logging.debug("Attempting to infer test name using inspect.stack()")
@@ -58,9 +56,7 @@ class ReportHelper:
             str: The inferred project name (typically the folder containing the test file)
         """
         # Did we set the project name using our decorator?
-        project_name_in_decorator = os.environ.get(
-            EnvironmentVariable.TP_PROJECT_NAME.value
-        )
+        project_name_in_decorator = os.environ.get(EnvironmentVariable.TP_PROJECT_NAME.value)
         if project_name_in_decorator is not None:
             return project_name_in_decorator
 
@@ -68,9 +64,7 @@ class ReportHelper:
 
         if current_test_info is not None:
             # we're using pytest
-            result = cls.infer_name_from_pytest_info_for(
-                current_test_info, ReportNamingElement.Project
-            )
+            result = cls.infer_name_from_pytest_info_for(current_test_info, ReportNamingElement.Project)
         else:
             # Try finding the right entry in the call stack (for unittest or when no testing framework is used)
             logging.debug("Attempting to infer project name using inspect.stack()")
@@ -95,9 +89,7 @@ class ReportHelper:
 
         if current_test_info is not None:
             # we're using pytest
-            result = cls.infer_name_from_pytest_info_for(
-                current_test_info, ReportNamingElement.Job
-            )
+            result = cls.infer_name_from_pytest_info_for(current_test_info, ReportNamingElement.Job)
         else:
             # Try finding the right entry in the call stack (for unittest or when no testing framework is used)
             logging.debug("Attempting to infer job name using inspect.stack()")
@@ -107,9 +99,7 @@ class ReportHelper:
         return result if result is not None else "Unnamed Job"
 
     @classmethod
-    def infer_name_from_pytest_info_for(
-        cls, pytest_info: str, element_to_find: ReportNamingElement
-    ):
+    def infer_name_from_pytest_info_for(cls, pytest_info: str, element_to_find: ReportNamingElement):
         """Uses the test info stored by pytest to infer a project, job or test name
 
         Args:
@@ -122,7 +112,7 @@ class ReportHelper:
         path_to_test_file = pytest_info.split(" ")[0].split("::")[0]
         if element_to_find == ReportNamingElement.Project:
             # Return the path without base file name parsed as "package".s
-            return path_to_test_file[0: path_to_test_file.rfind("/")].replace("/", ".")
+            return path_to_test_file[0 : path_to_test_file.rfind("/")].replace("/", ".")
         elif element_to_find == ReportNamingElement.Job:
             # Return the base file name without '.py' extension.
             head, tail = ntpath.split(path_to_test_file)
@@ -159,15 +149,11 @@ class ReportHelper:
                         "tearDownClass",
                     ]:
                         if element_to_find == ReportNamingElement.Project:
-                            path_elements = os.path.normpath(frame.filename).split(
-                                os.sep
-                            )
+                            path_elements = os.path.normpath(frame.filename).split(os.sep)
                             # return the folder name containing the current test file as the project name
                             return str(path_elements[-2])
                         elif element_to_find == ReportNamingElement.Job:
-                            path_elements = os.path.normpath(frame.filename).split(
-                                os.sep
-                            )
+                            path_elements = os.path.normpath(frame.filename).split(os.sep)
                             # return the current test file name minus the .py extension as the job name
                             return str(path_elements[-1]).split(".py")[0]
                         else:

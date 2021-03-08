@@ -34,8 +34,14 @@ class Reporter:
         self._command_executor = command_executor
 
     def step(
-        self, description: str, message: str, passed: bool, screenshot: bool = False,
-            element: ElementSearchCriteria = None, inputs: dict = None, outputs: dict = None
+        self,
+        description: str,
+        message: str,
+        passed: bool,
+        screenshot: bool = False,
+        element: ElementSearchCriteria = None,
+        inputs: dict = None,
+        outputs: dict = None,
     ):
         """Sends a step report to the Agent Client
 
@@ -86,7 +92,11 @@ class Reporter:
                         "when creating a driver instance to avoid duplicates in the report"
                     )
 
-            test_report = CustomTestReport(name=name, passed=passed, message=message,)
+            test_report = CustomTestReport(
+                name=name,
+                passed=passed,
+                message=message,
+            )
 
             self._command_executor.agent_client.report_test(test_report)
 

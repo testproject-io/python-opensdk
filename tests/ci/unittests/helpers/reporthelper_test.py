@@ -20,10 +20,7 @@ from src.testproject.helpers import ReportHelper
 
 
 def test_test_name_is_inferred_correctly_from_method_name():
-    assert (
-        ReportHelper.infer_test_name()
-        == "test_test_name_is_inferred_correctly_from_method_name"
-    )
+    assert ReportHelper.infer_test_name() == "test_test_name_is_inferred_correctly_from_method_name"
 
 
 def test_project_name_is_inferred_correctly():
@@ -40,8 +37,6 @@ def test_test_name_is_inferred_correctly_from_method_name_and_parameter_values(
 ):
     current_test_info = os.environ.get("PYTEST_CURRENT_TEST")
     assert (
-        ReportHelper.infer_name_from_pytest_info_for(
-            current_test_info, ReportNamingElement.Test
-        )
+        ReportHelper.infer_name_from_pytest_info_for(current_test_info, ReportNamingElement.Test)
         == f"test_test_name_is_inferred_correctly_from_method_name_and_parameter_values[{parameter}]"
     )

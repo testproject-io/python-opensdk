@@ -29,6 +29,9 @@ def test_update_profile_expect_success_message_to_be_displayed(driver):
 
     LoginPage(driver).open().login_as("John Smith", "12345")
     ProfilePage(driver).update_profile(
-        country="Australia", address="Main Street 123", email="john@smith.org", phone="+1987654321",
+        country="Australia",
+        address="Main Street 123",
+        email="john@smith.org",
+        phone="+1987654321",
     )
     assert ProfilePage(driver).saved_message_is_displayed()

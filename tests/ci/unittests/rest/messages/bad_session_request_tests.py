@@ -18,7 +18,7 @@ def test_wrong_udid():
             "udid": "11",
             "platformName": "Android",
             "unicodeKeyboard": "true",
-            "resetKeyboard": "true"
+            "resetKeyboard": "true",
         }
 
         driver = webdriver.Remote(desired_capabilities=desired_capabilities)

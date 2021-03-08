@@ -14,7 +14,6 @@
 
 import logging
 import socket
-from urllib.parse import urlparse
 
 from src.testproject.sdk.exceptions import AgentConnectException
 
@@ -64,25 +63,21 @@ class SocketManager:
             logging.debug("open_socket(): Socket is already connected")
             return
 
-        host = urlparse(socket_address).hostname
-
         SocketManager.__socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         SocketManager.__socket.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
-        SocketManager.__socket.connect((host, socket_port))
+        SocketManager.__socket.connect((socket_address, socket_port))
 
         if not self.is_connected():
             raise AgentConnectException("Failed connecting to Agent socket")
 
-        logging.info(
-            f"Socket connection to {host}:{socket_port} established successfully"
-        )
+        logging.info(f"Socket connection to {socket_address}:{socket_port} established successfully")
 
     @staticmethod
     def is_connected() -> bool:
         """Sends a simple message to the socket to see if it's connected
 
-            Returns:
-                bool: True if the socket is connected, False otherwise
+        Returns:
+            bool: True if the socket is connected, False otherwise
         """
         if SocketManager.__socket is None:
             return False

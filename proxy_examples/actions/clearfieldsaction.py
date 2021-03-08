@@ -19,5 +19,6 @@ class ClearFieldsAction(ActionProxy):
     def __init__(self):
         super().__init__()
         self.proxydescriptor = ProxyDescriptor(
-            guid="GrQN1LQqTEmuYTnIujiEwA", classname="io.testproject.examples.sdk.actions.ClearFieldsAction",
+            guid="GrQN1LQqTEmuYTnIujiEwA",
+            classname="io.testproject.examples.sdk.actions.ClearFieldsAction",
         )

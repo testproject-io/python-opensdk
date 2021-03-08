@@ -10,6 +10,8 @@ on:
 
 jobs:
   build-test-publish:
+    # Do not run on PRs from forks
+    if: ${{ !(github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository) }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -39,11 +41,7 @@ jobs:
       - name: Install build dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install flake8 wheel importlib-metadata
-      - name: Lint with flake8
-        run: |
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          flake8 . --count --statistics
+          pip install wheel importlib-metadata
       - name: Build
         run: |
           python3 setup.py install
@@ -68,7 +66,7 @@ jobs:
       - name: Wait for Agent to Register
         if: matrix.python-version == '3.9'
         run: |
-          trap 'kill $(jobs -p)' EXIT
+          trap 'kill $(jobs -p)' EXIT ERR
 
           attempt_counter=0
           max_attempts=45
@@ -90,7 +88,7 @@ jobs:
           TP_AGENT_URL: http://localhost:8585
           TP_CLOUD_URL: ${{ secrets.TP_CLOUD_URL }}
         run: |
-          trap 'kill $(jobs -p)' EXIT
+          trap 'kill $(jobs -p)' EXIT ERR
           docker-compose -f docker-compose.yml logs -f --tail=0 >> build/reports/agent/log.txt&
           pytest tests/ci/headless --doctest-modules --junitxml=build/reports/junit/flow-test-results-${{ matrix.python-version }}.xml
       - name: Publish to TestPyPI
@@ -112,7 +110,7 @@ jobs:
           python setup.py clean sdist bdist_wheel
           python -m twine upload --non-interactive dist/*
       - name: Archive reports
-        if: ${{ failure() }}
+        if: ${{ always() }}
         uses: actions/upload-artifact@v1
         with:
           name: reports

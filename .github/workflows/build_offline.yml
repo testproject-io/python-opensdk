@@ -1,0 +1,90 @@
+name: Build (Offline)
+
+on:
+  pull_request:
+    branches: [master]
+
+jobs:
+  build-test-offline:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8, 3.9]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # All history
+      - name: Set SDK version
+        run: |
+          SDK_VERSION=$(git describe --exact-match --tags HEAD || true)
+          if [ -z "${SDK_VERSION}" ]; then
+            GIT_REV_COUNT=$(git rev-list $(git describe --tags --abbrev=0)..HEAD --count)
+            SDK_VERSION=$(echo $(git describe --tags --abbrev=0)$(if [ "${GIT_REV_COUNT}" != "0" ]; then echo .dev${GIT_REV_COUNT}; fi))
+          fi
+          if [ "${SDK_VERSION:0:1}" != "v" ]; then
+            >&2 echo "Git tag does not start with a 'v'!"
+            exit 1;
+          fi
+          SDK_VERSION="${SDK_VERSION:1}"
+          echo "SDK_VERSION=${SDK_VERSION}"
+          echo "TP_SDK_VERSION=${SDK_VERSION}" >> $GITHUB_ENV
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install wheel importlib-metadata
+      - name: Build
+        run: |
+          python3 setup.py install
+      - name: Install test dependencies
+        run: |
+          pip install pytest pytest-mock responses
+      - name: Run unit-tests with pytest
+        run: |
+          pytest tests/ci/unittests --doctest-modules --junitxml=build/reports/junit/unit-test-results-${{ matrix.python-version }}.xml
+      - name: Check distribution package validity
+        if: matrix.python-version == '3.9'
+        run: |
+          pip install twine
+          python -m twine check dist/*
+      - name: Run TestProject Agent (Offline)
+        if: matrix.python-version == '3.9'
+        run: |
+          envsubst < .github/ci/docker-compose.yml > docker-compose.yml
+          docker-compose -f docker-compose.yml up -d          
+      - name: Wait for Agent to Start
+        if: matrix.python-version == '3.9'
+        run: |
+          trap 'kill $(jobs -p)' EXIT ERR
+
+          attempt_counter=0
+          max_attempts=45
+
+          mkdir -p build/reports/agent
+          docker-compose -f docker-compose.yml logs -f | tee build/reports/agent/log.txt&
+          until curl -s http://localhost:8585/api/status | jq '.fsmState == "Ready"' | grep true; do
+            if [ ${attempt_counter} -eq ${max_attempts} ]; then
+              echo "Agent failed to register. Terminating..."
+              exit 1
+            fi
+            attempt_counter=$(($attempt_counter+1))
+            sleep 1
+          done
+      - name: Run flow tests (partial)
+        if: matrix.python-version == '3.9'
+        env:
+          TP_DEV_TOKEN: "DUMMY_TOKEN"
+          TP_AGENT_URL: http://localhost:8585
+        run: |
+          trap 'kill $(jobs -p)' EXIT ERR
+          docker-compose -f docker-compose.yml logs -f --tail=0 >> build/reports/agent/log.txt&
+          pytest tests/ci/headless --doctest-modules --junitxml=build/reports/junit/flow-test-results-${{ matrix.python-version }}.xml
+      - name: Archive reports
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v1
+        with:
+          name: reports
+          path: build/reports

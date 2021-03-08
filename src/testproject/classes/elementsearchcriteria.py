@@ -28,6 +28,7 @@ class ElementSearchCriteria:
         _by_value (str): The associated locator strategy value
         _index (int): An index indicating which occurrence of the element should be used
     """
+
     def __init__(self, find_by_type: FindByType, by_value: str, index: int = -1):
         self._find_by_type = find_by_type
         self._by_value = by_value

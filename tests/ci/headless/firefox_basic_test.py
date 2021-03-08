@@ -23,9 +23,7 @@ from tests.pageobjects.web import LoginPage, ProfilePage
 def driver():
     firefox_options = Options()
     firefox_options.add_argument("-headless")
-    driver = webdriver.Firefox(
-        firefox_options=firefox_options, project_name="CI - Python"
-    )
+    driver = webdriver.Firefox(firefox_options=firefox_options, project_name="CI - Python")
     driver.set_window_size(1920, 1080)
     yield driver
     driver.quit()
@@ -35,6 +33,9 @@ def test_update_profile_expect_success_message_to_be_displayed(driver):
 
     LoginPage(driver).open().login_as("John Smith", "12345")
     ProfilePage(driver).update_profile(
-        country="Australia", address="Main Street 123", email="john@smith.org", phone="+1987654321",
+        country="Australia",
+        address="Main Street 123",
+        email="john@smith.org",
+        phone="+1987654321",
     )
     assert ProfilePage(driver).saved_message_is_displayed()

@@ -28,8 +28,12 @@ class ActionExecutionResponse:
         _message (str): A message returned by the Agent after action execution
         _outputs (dict): Results of the action execution in key-value pairs
     """
+
     def __init__(
-        self, executionresulttype: ExecutionResultType = ExecutionResultType.NoResult, message: str = "", outputs: dict = None,
+        self,
+        executionresulttype: ExecutionResultType = ExecutionResultType.NoResult,
+        message: str = "",
+        outputs: dict = None,
     ):
         self._executionresulttype = executionresulttype
         self._message = message

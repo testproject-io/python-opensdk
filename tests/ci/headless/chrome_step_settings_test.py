@@ -32,8 +32,12 @@ def driver():
 
 
 def test_basic_login_with_step_settings(driver):
-    step_settings = StepSettings(timeout=15000, screenshot_condition=TakeScreenshotConditionType.Success,
-                                 sleep_timing_type=SleepTimingType.Before, sleep_time=1000)
+    step_settings = StepSettings(
+        timeout=15000,
+        screenshot_condition=TakeScreenshotConditionType.Success,
+        sleep_timing_type=SleepTimingType.Before,
+        sleep_time=1000,
+    )
     start_time = time()
     with DriverStepSettings(driver, step_settings):
         LoginPage(driver).open().login_as("John Smith", "12345")  # Has about 7 driver commands.
