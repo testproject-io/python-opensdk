@@ -24,6 +24,7 @@ from src.testproject.helpers.step_helper import StepHelper
 from src.testproject.rest.messages import DriverCommandReport, CustomTestReport
 from src.testproject.sdk.internal.agent import AgentClient
 from src.testproject.sdk.internal.helpers.redact_helper import RedactHelper
+from src.testproject.sdk.internal.reporter import Reporter
 
 
 class ReportingCommandExecutor:
@@ -300,9 +301,9 @@ class ReportingCommandExecutor:
             always_pass=self.settings.always_pass)
 
         # Handle screenshot condition
-        self.report().step(description=f'Pause for {{{{{milliseconds}}}}} ms',
-                           message=step_message,
-                           inputs={"milliseconds": milliseconds},
-                           passed=result,
-                           screenshot=screenshot)
         screenshot = self.step_helper.take_screenshot(self.settings.screenshot_condition, result)
+        Reporter(self._command_executor).step(description=f'Pause for {{{{{milliseconds}}}}} ms',
+                                              message=step_message,
+                                              inputs={"milliseconds": milliseconds},
+                                              passed=result,
+                                              screenshot=screenshot)
