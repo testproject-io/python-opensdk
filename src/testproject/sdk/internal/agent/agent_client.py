@@ -429,7 +429,8 @@ class AgentClient:
                                                              if operation_result.data["resultType"] == "Passed"
                                                              else ExecutionResultType.Failed),
                                       message=operation_result.data["message"],
-                                      fields=[ResultField(**field) for field in operation_result.data['fields']])
+                                      fields=([] if not operation_result.data['fields']
+                                              else [ResultField(**field) for field in operation_result.data['fields']]))
 
     @staticmethod
     def _create_action_proxy_payload(action: ActionProxy) -> dict:
