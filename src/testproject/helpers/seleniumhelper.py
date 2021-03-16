@@ -53,7 +53,7 @@ class SeleniumHelper:
             raise SdkException(f"Did not recognize locator strategy {by}")
 
     @staticmethod
-    def create_addon_locator(by: By, by_value: str):
+    def create_addon_locator(by: By, by_value: str) -> dict:
         """Creates and returns an locator used in an addon based on a locator strategy
 
         Args:
@@ -69,7 +69,7 @@ class SeleniumHelper:
         elif by == By.NAME:
             return {"name": by_value}
         elif by == By.XPATH:
-            return {"xpath", by_value}
+            return {"xpath": by_value}
         elif by == By.CLASS_NAME:
             return {"className": by_value}
         elif by == By.CSS_SELECTOR:
