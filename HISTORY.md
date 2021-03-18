@@ -6,6 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.65.3] - 2021-03-18
+
+### Fixed
+
+- ([#147](https://github.com/testproject-io/python-opensdk/pull/147)) -
+  Fixed a bug where using XPATH as addon element locator would cause the step to fail. 
+- ([#146](https://github.com/testproject-io/python-opensdk/pull/146)) - 
+  Fixed built in driver command "pause".
+- ([#145](https://github.com/testproject-io/python-opensdk/pull/145)) - 
+  Fixed a bug of attempting to iterate a NoneType Object that returned from addon execution response. 
 ## [0.65.2] - 2021-02-14
 
 ### Added
