@@ -389,17 +389,13 @@ class AgentClient:
 
         # Send a final, empty, report to the queue to ensure that
         # the 'running' condition is evaluated one last time
-        self._queue.put(
-            QueueItem(report_as_json=None, url=None, token=self._token), block=False
-        )
+        self._queue.put(QueueItem(report_as_json=None, url=None, token=self._token), block=False)
 
         # Wait until all items have been reported or timeout passes
         self._reporting_thread.join(timeout=self.REPORTS_QUEUE_TIMEOUT)
         if self._reporting_thread.is_alive():
             # Thread is still alive, so there are unreported items
-            logging.warning(
-                f"There are {self._queue.qsize()} unreported items in the queue"
-            )
+            logging.warning(f"There are {self._queue.qsize()} unreported items in the queue")
 
         if not AgentClient.can_reuse_session():
             self._close_socket = True
