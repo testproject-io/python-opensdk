@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0] - 2021-03-29
+
+### Added
+
+- ([#149](https://github.com/testproject-io/python-opensdk/pull/149)) - Allow controlling report type - local / cloud or both.
+
 ## [0.65.3] - 2021-03-18
 
 ### Fixed

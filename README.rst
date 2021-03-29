@@ -413,6 +413,25 @@ Upon calling ``quit()``, the SDK will send all remaining report items to the Age
         def tearDown(self):
             self.driver.quit()
 
+Cloud and Local Report
+----------------------
+By default, the execution report is uploaded to the cloud, and a local report is created, as an HTML file in a temporary folder.
+
+At the end of execution, the report is uploaded to the cloud and SDK outputs to the console/terminal the path for a local report file:
+
+`Execution Report: {temporary_folder}/report.html`
+
+This behavior can be controlled, by requesting only a `LOCAL` or only a `CLOUD` report.
+
+    When the Agent is offline, and only a _cloud_ report is requested, execution will fail with appropriate message.
+
+Via a driver constructor:
+
+.. code-block:: python
+
+    driver = webdriver.Chrome(report_type=ReportType.LOCAL)
+
+
 Logging
 -------
 The TestProject Python SDK uses the ``logging`` framework built into Python.

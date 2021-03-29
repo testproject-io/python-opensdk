@@ -16,8 +16,10 @@ import logging
 import queue
 import threading
 import uuid
+from distutils.util import strtobool
 from enum import Enum, unique
 from http import HTTPStatus
+from typing import Optional
 from urllib.parse import urljoin
 
 import requests
@@ -28,6 +30,7 @@ from requests import HTTPError
 from src.testproject.classes import ActionExecutionResponse
 from src.testproject.classes.resultfield import ResultField
 from src.testproject.enums import ExecutionResultType
+from src.testproject.enums.report_type import ReportType
 from src.testproject.executionresults import OperationResult
 from src.testproject.helpers import ConfigHelper, SeleniumHelper
 from src.testproject.rest import ReportSettings
@@ -63,6 +66,7 @@ class AgentClient:
         _remote_address (str): The Agent endpoint
         _capabilities (dict): Additional options to be applied to the driver instance
         _agent_session (AgentSession): stores properties of the current agent session
+        _agent_response (SessionResponse): Session initialization response.
         _token (str): The development token used to authenticate with the Agent
         _report_settings (ReportSettings): Settings (project name, job name) to be included in the report
         _queue (queue.Queue): queue holding reports to be sent to Agent in separate thread
@@ -73,59 +77,70 @@ class AgentClient:
     # Minimum Agent version number that supports session reuse
     MIN_SESSION_REUSE_CAPABLE_VERSION = "0.64.20"
 
+    # Minimum Agent version that supports local reports.
+    MIN_LOCAL_REPORT_SUPPORTED_VERSION = "2.1.0"
+
     # Class variable containing the current known Agent version
     __agent_version: str = None
 
     def __init__(self, token: str, capabilities: dict, report_settings: ReportSettings):
-        self._remote_address = ConfigHelper.get_agent_service_address()
-        self._capabilities = capabilities
         self._agent_session = None
-        self._token = token
-        self._report_settings = report_settings
-        self._queue = queue.Queue()
-
-        self._running = True
-        self._reporting_thread = threading.Thread(
-            target=self.__report_worker, daemon=True
-        )
+        self._agent_response = None
         self._close_socket = False
+        self._remote_address = ConfigHelper.get_agent_service_address()
+        self._report_settings = report_settings
+        self._capabilities = capabilities
+        self._token = token
+        # Attempt to start the session
+        self.__start_session()
+        # Make sure local reports are supported
+        self.__verify_local_reports_supported(report_settings.report_type)
+        # Running after all is initialized successfully
+        self._running = True
+        # After session started and is running, start the reporting thread
+        self._queue = queue.Queue()
+        self._reporting_thread = threading.Thread(target=self.__report_worker, daemon=True)
         self._reporting_thread.start()
-
-        if not self.__start_session():
-            raise SdkException("Failed to start development mode session")
 
     @property
     def agent_session(self):
         """Getter for the Agent session object"""
         return self._agent_session
 
-    def __start_session(self) -> bool:
-        """Starts a new development session with the Agent
+    def __verify_local_reports_supported(self, report_type: ReportType):
+        """Verify that target Agent supports local reports, otherwise throw an exception.
 
-        Returns:
-            bool: True if the session started successfully, False otherwise
+        Args:
+            report_type (ReportType): Report type requested.
+
+        Raises:
+            AgentConnectException when local reports are not supported.
         """
+        if (report_type is ReportType.LOCAL
+                and version.parse(self.__agent_version) < version.parse(self.MIN_LOCAL_REPORT_SUPPORTED_VERSION)):
+            raise AgentConnectException(f'Target Agent version [{self.__agent_version}] doesn\'t support local reports.'
+                                        f' Upgrade the Agent to the latest version and try again.')
+
+    def __start_session(self):
+        """Starts a new development session with the Agent"""
         sdk_version = ConfigHelper.get_sdk_version()
 
         logging.info(f"SDK version: {sdk_version}")
 
-        start_session_response = self._request_session_from_agent()
+        self._request_session_from_agent()
 
-        AgentClient.__agent_version = start_session_response.agent_version
+        AgentClient.__agent_version = self._agent_response.agent_version
 
         self._agent_session = AgentSession(
-            start_session_response.server_address,
-            start_session_response.session_id,
-            start_session_response.dialect,
-            start_session_response.capabilities,
+            self._agent_response.server_address,
+            self._agent_response.session_id,
+            self._agent_response.dialect,
+            self._agent_response.capabilities,
         )
 
-        SocketManager.instance().open_socket(
-            self._remote_address, start_session_response.dev_socket_port
-        )
+        SocketManager.instance().open_socket(self._remote_address, self._agent_response.dev_socket_port)
 
         logging.info("Development session started...")
-        return True
 
     @staticmethod
     def can_reuse_session() -> bool:
@@ -141,11 +156,10 @@ class AgentClient:
             AgentClient.__agent_version
         ) >= version.parse(AgentClient.MIN_SESSION_REUSE_CAPABLE_VERSION)
 
-    def _request_session_from_agent(self) -> SessionResponse:
+    def _request_session_from_agent(self):
         """Creates and sends a session request object
 
-        Returns:
-            SessionResponse: object containing the response to the session request
+            Sets the SessionResponse: object containing the response to the session request
         """
         session_request = SessionRequest(self._capabilities, self._report_settings)
 
@@ -171,35 +185,23 @@ class AgentClient:
         if not response.passed:
             self.__handle_new_session_error(response)
 
-        # The generic driver returns a partial response, so we have to create some fields ourselves
-        session_id = response.data.get("sessionId", uuid.uuid4())
-
-        dialect = response.data.get("dialect")
-
-        capabilities = response.data.get("capabilities", {})
-
-        agent_version = response.data.get("version")
-
-        # If driver is Generic, supply None as the server address.
-        server_address = response.data.get("serverAddress")
-
-        start_session_response = SessionResponse(
+        self._agent_response = SessionResponse(
             dev_socket_port=response.data["devSocketPort"],
-            server_address=server_address,
-            session_id=session_id,
-            dialect=dialect,
-            capabilities=capabilities,
-            agent_version=agent_version,
+            server_address=response.data.get("serverAddress"),
+            session_id=response.data.get("sessionId", uuid.uuid4()),
+            dialect=response.data.get("dialect"),
+            capabilities=response.data.get("capabilities", {}),
+            agent_version=response.data.get("version"),
+            local_report=response.data.get("localReport")
         )
-        return start_session_response
 
     def update_job_name(self, job_name):
         """Sends HTTP request to Agent to update job name during runtime.
 
-                Args:
-                    job_name (str): new job name to use for the current execution
-                """
-        if os.getenv("TP_UPDATE_JOB_NAME") == "True":
+        Args:
+            job_name (str): new job name to use for the current execution
+        """
+        if strtobool(os.getenv("TP_UPDATE_JOB_NAME")):
             logging.info(f"Updating job name to: {job_name}")
             try:
                 response = self.send_request(
@@ -207,14 +209,10 @@ class AgentClient:
                     urljoin(self._remote_address, Endpoint.DevelopmentSession.value),
                     {"jobName": job_name}
                 )
+                if not response.passed:
+                    logging.error("Failed to update job name")
             except requests.exceptions.RequestException:
-                logging.error(
-                    "Failed to update job name"
-                )
-            if not response.passed:
-                logging.error(
-                    "Failed to update job name"
-                )
+                logging.error("Failed to update job name")
 
     def send_request(self, method, path, body=None, params=None) -> OperationResult:
         """Sends HTTP request to Agent
@@ -389,20 +387,19 @@ class AgentClient:
 
         # Send a final, empty, report to the queue to ensure that
         # the 'running' condition is evaluated one last time
-        self._queue.put(
-            QueueItem(report_as_json=None, url=None, token=self._token), block=False
-        )
+        self._queue.put(QueueItem(report_as_json=None, url=None, token=self._token), block=False)
 
         # Wait until all items have been reported or timeout passes
         self._reporting_thread.join(timeout=self.REPORTS_QUEUE_TIMEOUT)
         if self._reporting_thread.is_alive():
             # Thread is still alive, so there are unreported items
-            logging.warning(
-                f"There are {self._queue.qsize()} unreported items in the queue"
-            )
+            logging.warning(f"There are {self._queue.qsize()} unreported items in the queue")
 
         if not AgentClient.can_reuse_session():
             self._close_socket = True
+
+        if self._agent_response.local_report:
+            logging.info(f'Execution Report: {self._agent_response.local_report}')
 
     def execute_proxy(self, action: ActionProxy) -> AddonExecutionResponse:
         """Sends a custom action to the Agent
@@ -451,7 +448,8 @@ class AgentClient:
             )
         return payload
 
-    def __handle_new_session_error(self, response: OperationResult):
+    @staticmethod
+    def __handle_new_session_error(response: OperationResult):
         """ Handles errors occurring on creation of a new session with the Agent
 
         Args:
@@ -506,12 +504,12 @@ class QueueItem:
         token (str): Token used to authenticate with the Agent
 
     Attributes:
-        _report_as_json (dict): JSON payload representing the item to be reported
-        _url (str): Agent endpoint the payload should be POSTed to
+        _report_as_json (Optional[dict]): JSON payload representing the item to be reported
+        _url (Optional[str]): Agent endpoint the payload should be POSTed to
         _token (str): Token used to authenticate with the Agent
     """
 
-    def __init__(self, report_as_json: dict, url: str, token: str):
+    def __init__(self, report_as_json: Optional[dict], url: Optional[str], token: str):
         self._report_as_json = report_as_json
         self._url = url
         self._token = token

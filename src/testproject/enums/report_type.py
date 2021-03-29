@@ -1,4 +1,4 @@
-# Copyright 2020 TestProject (https://testproject.io)
+# Copyright 2021 TestProject (https://testproject.io)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,13 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from enum import Enum
 
-from enum import Enum, unique
 
-
-@unique
-class ReportNamingElement(Enum):
-    """Enum containing types of report elements that can be inferred"""
-    Project = 1
-    Job = 2
-    Test = 3
+class ReportType(Enum):
+    """Enum specifying the execution's report type."""
+    CLOUD = 0
+    LOCAL = 1
+    CLOUD_AND_LOCAL = 2

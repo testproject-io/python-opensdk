@@ -13,6 +13,7 @@
 # limitations under the License.
 from selenium.webdriver import DesiredCapabilities
 
+from src.testproject.enums.report_type import ReportType
 from src.testproject.sdk.drivers.webdriver.base import BaseDriver
 
 
@@ -25,20 +26,17 @@ class Safari(BaseDriver):
         project_name (str): Project name to report
         job_name (str): Job name to report
         disable_reports (bool): set to True to disable all reporting (no report will be created on TestProject)
+        report_type (ReportType): Type of report to produce - cloud, local or both.
     """
 
-    def __init__(
-        self,
-        desired_capabilities: dict = DesiredCapabilities.SAFARI,
-        token: str = None,
-        project_name: str = None,
-        job_name: str = None,
-        disable_reports: bool = False,
-    ):
+    def __init__(self, desired_capabilities: dict = DesiredCapabilities.SAFARI, token: str = None,
+                 project_name: str = None, job_name: str = None, disable_reports: bool = False,
+                 report_type: ReportType = ReportType.CLOUD_AND_LOCAL):
         super().__init__(
             capabilities=desired_capabilities,
             token=token,
             project_name=project_name,
             job_name=job_name,
             disable_reports=disable_reports,
+            report_type=report_type
         )

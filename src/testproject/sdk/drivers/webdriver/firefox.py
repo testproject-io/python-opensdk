@@ -13,6 +13,8 @@
 # limitations under the License.
 
 from selenium.webdriver import FirefoxOptions
+
+from src.testproject.enums.report_type import ReportType
 from src.testproject.sdk.drivers.webdriver.base import BaseDriver
 
 
@@ -26,17 +28,13 @@ class Firefox(BaseDriver):
         project_name (str): Project name to report
         job_name (str): Job name to report
         disable_reports (bool): set to True to disable all reporting (no report will be created on TestProject)
+        report_type (ReportType): Type of report to produce - cloud, local or both.
     """
 
-    def __init__(
-        self,
-        firefox_options: FirefoxOptions = None,
-        desired_capabilities: dict = None,
-        token: str = None,
-        project_name: str = None,
-        job_name: str = None,
-        disable_reports: bool = False,
-    ):
+    def __init__(self, firefox_options: FirefoxOptions = None, desired_capabilities: dict = None, token: str = None,
+                 project_name: str = None, job_name: str = None, disable_reports: bool = False,
+                 report_type: ReportType = ReportType.CLOUD_AND_LOCAL):
+
         # If no options or capabilities are specified at all, use default FirefoxOptions
         if firefox_options is None and desired_capabilities is None:
             caps = FirefoxOptions().to_capabilities()
@@ -54,4 +52,5 @@ class Firefox(BaseDriver):
             project_name=project_name,
             job_name=job_name,
             disable_reports=disable_reports,
+            report_type=report_type
         )
