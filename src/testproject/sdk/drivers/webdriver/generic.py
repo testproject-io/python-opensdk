@@ -18,6 +18,7 @@ import os
 from packaging import version
 
 from src.testproject.enums import EnvironmentVariable
+from src.testproject.enums.report_type import ReportType
 from src.testproject.helpers import ReportHelper, LoggingHelper, ConfigHelper, AddonHelper
 from src.testproject.rest import ReportSettings
 from src.testproject.rest.messages.agentstatusresponse import AgentStatusResponse
@@ -36,19 +37,15 @@ class Generic:
         project_name (str): Project name to report
         job_name (str): Job name to report
         disable_reports (bool): set to True to disable all reporting (no report will be created on TestProject)
+        report_type (ReportType): Type of report to produce - cloud, local or both.
     """
 
     __instance = None
 
     MIN_GENERIC_DRIVER_SUPPORTED_VERSION = "0.64.40"
 
-    def __init__(
-        self,
-        token: str = None,
-        project_name: str = None,
-        job_name: str = None,
-        disable_reports: bool = False,
-    ):
+    def __init__(self, token: str = None, project_name: str = None, job_name: str = None, disable_reports: bool = False,
+                 report_type: ReportType = ReportType.CLOUD_AND_LOCAL):
         if Generic.__instance is not None:
             raise SdkException("A driver session already exists")
 
@@ -92,7 +89,7 @@ class Generic:
                 # Can update job name at runtime if not specified.
                 os.environ[EnvironmentVariable.TP_UPDATE_JOB_NAME.value] = "True"
 
-        report_settings = ReportSettings(self._project_name, self._job_name)
+        report_settings = ReportSettings(self._project_name, self._job_name, report_type)
 
         capabilities = {"platformName": "ANY"}
 
