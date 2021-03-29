@@ -16,6 +16,7 @@ import logging
 import queue
 import threading
 import uuid
+from distutils.util import strtobool
 from enum import Enum, unique
 from http import HTTPStatus
 from urllib.parse import urljoin
@@ -196,10 +197,10 @@ class AgentClient:
     def update_job_name(self, job_name):
         """Sends HTTP request to Agent to update job name during runtime.
 
-                Args:
-                    job_name (str): new job name to use for the current execution
-                """
-        if os.getenv("TP_UPDATE_JOB_NAME") == "True":
+        Args:
+            job_name (str): new job name to use for the current execution
+        """
+        if strtobool(os.getenv("TP_UPDATE_JOB_NAME")):
             logging.info(f"Updating job name to: {job_name}")
             try:
                 response = self.send_request(
@@ -207,14 +208,10 @@ class AgentClient:
                     urljoin(self._remote_address, Endpoint.DevelopmentSession.value),
                     {"jobName": job_name}
                 )
+                if not response.passed:
+                    logging.error("Failed to update job name")
             except requests.exceptions.RequestException:
-                logging.error(
-                    "Failed to update job name"
-                )
-            if not response.passed:
-                logging.error(
-                    "Failed to update job name"
-                )
+                logging.error("Failed to update job name")
 
     def send_request(self, method, path, body=None, params=None) -> OperationResult:
         """Sends HTTP request to Agent
