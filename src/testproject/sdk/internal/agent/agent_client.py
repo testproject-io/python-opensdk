@@ -444,7 +444,8 @@ class AgentClient:
             )
         return payload
 
-    def __handle_new_session_error(self, response: OperationResult):
+    @staticmethod
+    def __handle_new_session_error(response: OperationResult):
         """ Handles errors occurring on creation of a new session with the Agent
 
         Args:
