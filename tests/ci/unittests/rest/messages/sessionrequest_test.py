@@ -23,8 +23,8 @@ def test_sessionrequest_to_json(mocker):
     ConfigHelper.get_sdk_version.return_value = "1.2.3.4"
 
     capabilities = {"key": "value"}
-    reportsettings = ReportSettings("my_project", "my_job")
-    session_request = SessionRequest(capabilities, reportsettings)
+    report_settings = ReportSettings("my_project", "my_job")
+    session_request = SessionRequest(capabilities, report_settings)
     assert session_request.to_json() == {
         "projectName": "my_project",
         "jobName": "my_job",
