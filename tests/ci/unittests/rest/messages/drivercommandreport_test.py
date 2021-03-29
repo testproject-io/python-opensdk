@@ -71,7 +71,7 @@ def test_to_json(dcr):
         "result": {"result": "value"},
         "passed": True,
         "screenshot": None,
-        "message": None
+        "message": None,
     }
 
 
@@ -82,5 +82,5 @@ def test_to_json_with_screenshot(dcr_with_screenshot):
         "result": {"result": "value"},
         "passed": False,
         "screenshot": "base64_screenshot",
-        "message": None
+        "message": None,
     }

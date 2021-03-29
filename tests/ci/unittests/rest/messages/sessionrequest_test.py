@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 from src.testproject.helpers import ConfigHelper
 from src.testproject.rest import ReportSettings
 from src.testproject.rest.messages import SessionRequest
@@ -31,4 +30,5 @@ def test_sessionrequest_to_json(mocker):
         "capabilities": {"key": "value"},
         "sdkVersion": "1.2.3.4",
         "language": "Python",
+        "reportType": "CLOUD_AND_LOCAL"
     }
