@@ -500,12 +500,12 @@ class QueueItem:
         token (str): Token used to authenticate with the Agent
 
     Attributes:
-        _report_as_json (dict): JSON payload representing the item to be reported
-        _url (str): Agent endpoint the payload should be POSTed to
+        _report_as_json (Optional[dict]): JSON payload representing the item to be reported
+        _url (Optional[str]): Agent endpoint the payload should be POSTed to
         _token (str): Token used to authenticate with the Agent
     """
 
-    def __init__(self, report_as_json: dict, url: str, token: str):
+    def __init__(self, report_as_json: Optional[dict], url: Optional[str], token: str):
         self._report_as_json = report_as_json
         self._url = url
         self._token = token
