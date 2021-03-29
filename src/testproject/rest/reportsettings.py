@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from src.testproject.enums.report_type import ReportType
+
 
 class ReportSettings:
     """Contains settings to be used in the report.
@@ -19,15 +21,18 @@ class ReportSettings:
         Args:
             project_name (str): Project name to report
             job_name (str): Job name to report
+            report_type (Optional[ReportType]): Report type = cloud, local or both.
 
         Attributes:
             _project_name (str): Project name to report
             _job_name (str): Job name to report
+            _report_type (ReportType): Report type = cloud, local or both.
     """
 
-    def __init__(self, project_name: str, job_name: str):
+    def __init__(self, project_name: str, job_name: str, report_type: ReportType = ReportType.CLOUD_AND_LOCAL):
         self._project_name = project_name
         self._job_name = job_name
+        self._report_type = report_type
 
     @property
     def project_name(self) -> str:
@@ -39,13 +44,20 @@ class ReportSettings:
         """Getter for the job name"""
         return self._job_name
 
+    @property
+    def report_type(self) -> ReportType:
+        """Getter for the report type"""
+        return self._report_type
+
     def __eq__(self, other):
         """Custom equality function"""
         if not isinstance(other, ReportSettings):
             return NotImplemented
 
-        return self._project_name == other._project_name and self._job_name == other._job_name
+        return (self.project_name == other.project_name
+                and self.job_name == other.job_name
+                and self.report_type == other.report_type)
 
     def __hash__(self):
         """Implement hash to allow objects to be used in sets and dicts"""
-        return hash((self._project_name, self._job_name))
+        return hash((self._project_name, self._job_name, self._report_type))
