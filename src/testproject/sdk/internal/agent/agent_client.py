@@ -16,11 +16,12 @@ import logging
 import queue
 import threading
 import uuid
+
 from distutils.util import strtobool
 from enum import Enum, unique
 from http import HTTPStatus
 from typing import Optional
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 
 import requests
 import os
@@ -143,7 +144,8 @@ class AgentClient:
         )
 
         SocketManager.instance().open_socket(
-            urlparse(self._remote_address).hostname, self._agent_response.dev_socket_port,
+            urlparse(self._remote_address).hostname,
+            self._agent_response.dev_socket_port,
         )
 
         logging.info("Development session started...")
@@ -158,7 +160,9 @@ class AgentClient:
         if AgentClient.__agent_version is None:
             return False
 
-        return version.parse(AgentClient.__agent_version) >= version.parse(AgentClient.MIN_SESSION_REUSE_CAPABLE_VERSION)
+        return version.parse(AgentClient.__agent_version) >= version.parse(
+            AgentClient.MIN_SESSION_REUSE_CAPABLE_VERSION
+        )
 
     def _request_session_from_agent(self):
         """Creates and sends a session request object
@@ -171,7 +175,9 @@ class AgentClient:
 
         try:
             response = self.send_request(
-                "POST", urljoin(self._remote_address, Endpoint.DevelopmentSession.value), session_request.to_json(),
+                "POST",
+                urljoin(self._remote_address, Endpoint.DevelopmentSession.value),
+                session_request.to_json(),
             )
         except requests.exceptions.ConnectionError:
             logging.error(f"Could not start new session on {self._remote_address}. Is your Agent running?")
@@ -201,7 +207,9 @@ class AgentClient:
             logging.info(f"Updating job name to: {job_name}")
             try:
                 response = self.send_request(
-                    "PUT", urljoin(self._remote_address, Endpoint.DevelopmentSession.value), {"jobName": job_name},
+                    "PUT",
+                    urljoin(self._remote_address, Endpoint.DevelopmentSession.value),
+                    {"jobName": job_name},
                 )
                 if not response.passed:
                     logging.error("Failed to update job name")
@@ -266,13 +274,20 @@ class AgentClient:
         """
 
         response = self.send_request(
-            "POST", urljoin(urljoin(self._remote_address, Endpoint.ActionExecution.value), codeblock_guid,), body,
+            "POST",
+            urljoin(
+                urljoin(self._remote_address, Endpoint.ActionExecution.value),
+                codeblock_guid,
+            ),
+            body,
         )
 
         if not response.passed:
             result = ExecutionResultType.Failed
         else:
-            result = ExecutionResultType.Passed if response.data["resultType"] == "Passed" else ExecutionResultType.Failed
+            result = (
+                ExecutionResultType.Passed if response.data["resultType"] == "Passed" else ExecutionResultType.Failed
+            )
 
         result_data = response.data["outputs"] if response.passed else None
 
@@ -291,7 +306,8 @@ class AgentClient:
 
         with requests.Session() as session:
             response = session.get(
-                urljoin(ConfigHelper.get_agent_service_address(), Endpoint.GetStatus.value), headers={"Authorization": token},
+                urljoin(ConfigHelper.get_agent_service_address(), Endpoint.GetStatus.value),
+                headers={"Authorization": token},
             )
 
         try:
@@ -302,9 +318,13 @@ class AgentClient:
             except ValueError:
                 raise SdkException("Could not parse Agent status response: no JSON response body present")
             except KeyError:
-                raise SdkException("Could not parse Agent status response: element 'tag' not found in JSON response body")
+                raise SdkException(
+                    "Could not parse Agent status response: element 'tag' not found in JSON response body"
+                )
         except HTTPError:
-            raise AgentConnectException(f"Agent returned HTTP {response.status_code} when trying to retrieve Agent status")
+            raise AgentConnectException(
+                f"Agent returned HTTP {response.status_code} when trying to retrieve Agent status"
+            )
 
         return AgentStatusResponse(agent_version)
 
@@ -399,7 +419,9 @@ class AgentClient:
 
         return AddonExecutionResponse(
             execution_result_type=(
-                ExecutionResultType.Passed if operation_result.data["resultType"] == "Passed" else ExecutionResultType.Failed
+                ExecutionResultType.Passed
+                if operation_result.data["resultType"] == "Passed"
+                else ExecutionResultType.Failed
             ),
             message=operation_result.data["message"],
             fields=(
@@ -423,7 +445,9 @@ class AgentClient:
             "parameters": action.proxydescriptor.parameters,
         }
         if action.proxydescriptor.by is not None:
-            payload["by"] = SeleniumHelper.create_addon_locator(action.proxydescriptor.by, action.proxydescriptor.by_value)
+            payload["by"] = SeleniumHelper.create_addon_locator(
+                action.proxydescriptor.by, action.proxydescriptor.by_value
+            )
         return payload
 
     @staticmethod
@@ -450,7 +474,9 @@ class AgentClient:
             raise ObsoleteVersionException(response.message)
         else:
             logging.error("Failed to initialize a session with the Agent")
-            raise AgentConnectException(f"Agent responded with HTTP status {response.status_code}: [{response.message}]")
+            raise AgentConnectException(
+                f"Agent responded with HTTP status {response.status_code}: [{response.message}]"
+            )
 
     def __report_worker(self):
         """Worker method that is polling the queue for items to report"""
@@ -493,7 +519,11 @@ class QueueItem:
             return
 
         with requests.Session() as session:
-            response = session.post(self._url, headers={"Authorization": self._token}, json=self._report_as_json,)
+            response = session.post(
+                self._url,
+                headers={"Authorization": self._token},
+                json=self._report_as_json,
+            )
             try:
                 response.raise_for_status()
             except HTTPError:

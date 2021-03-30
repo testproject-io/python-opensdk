@@ -14,7 +14,6 @@
 
 import logging
 import socket
-from urllib.parse import urlparse
 
 from src.testproject.sdk.exceptions import AgentConnectException
 
@@ -64,11 +63,9 @@ class SocketManager:
             logging.debug("open_socket(): Socket is already connected")
             return
 
-        host = urlparse(socket_address).hostname
-
         SocketManager.__socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         SocketManager.__socket.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
-        SocketManager.__socket.connect((host, socket_port))
+        SocketManager.__socket.connect((socket_address, socket_port))
 
         if not self.is_connected():
             raise AgentConnectException("Failed connecting to Agent socket")
