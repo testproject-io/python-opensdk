@@ -30,6 +30,7 @@ def driver():
     driver.quit()
 
 
+@pytest.mark.skipif("TP_CLOUD_URL" not in os.environ, reason="Cloud URL not set")
 def test_update_profile_expect_success_message_to_be_displayed(driver):
 
     LoginPage(driver).open().login_as("John Smith", "12345")
