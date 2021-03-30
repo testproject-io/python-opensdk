@@ -34,24 +34,30 @@ class Actions:
         _agent_client (AgentClient): client to communicate with the Agent
         _timeout (int): timeout for action execution
     """
+
     def __init__(self, agent_client: AgentClient, timeout: int):
         self._agent_client = agent_client
         self._timeout = timeout
 
     def action_execute(
-        self, action_guid: str, body: dict, by: By = None, by_value: str = "", timeout: int = 10000,
+        self,
+        action_guid: str,
+        body: dict,
+        by: By = None,
+        by_value: str = "",
+        timeout: int = 10000,
     ) -> ActionExecutionResponse:
         """Sends HTTP request to Agent
 
-            Args:
-                action_guid (str): The TestProject action GUID to be executed
-                body (dict): Parameters to be passed to the Agent
-                by (By): The locator strategy to be used to locate the element to perform the action on/with
-                by_value (str): The associated locator strategy value
-                timeout (int): timeout (in seconds) for the action execution
+        Args:
+            action_guid (str): The TestProject action GUID to be executed
+            body (dict): Parameters to be passed to the Agent
+            by (By): The locator strategy to be used to locate the element to perform the action on/with
+            by_value (str): The associated locator strategy value
+            timeout (int): timeout (in seconds) for the action execution
 
-            Returns:
-                ActionExecutionResponse: contains result of the sent execution request
+        Returns:
+            ActionExecutionResponse: contains result of the sent execution request
         """
         body["_timeout"] = timeout
 

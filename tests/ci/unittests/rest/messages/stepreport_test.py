@@ -31,7 +31,7 @@ def test_to_json_without_screenshot(mocker):
         "element": None,
         "inputParameters": None,
         "outputParameters": None,
-        "screenshot": None
+        "screenshot": None,
     }
 
 
@@ -41,7 +41,10 @@ def test_to_json_with_screenshot(mocker):
     uuid.uuid4.return_value = "56-ef-78-gh"
 
     step_report = StepReport(
-        description="another_description", message="another_message", passed=False, screenshot="base64_screenshot_here",
+        description="another_description",
+        message="another_message",
+        passed=False,
+        screenshot="base64_screenshot_here",
     )
     assert step_report.to_json() == {
         "guid": "56-ef-78-gh",

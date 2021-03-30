@@ -17,6 +17,7 @@ from enum import Enum
 
 class SleepTimingType(Enum):
     """Enum that represents step sleep timing type."""
+
     Inherit = 1
     Before = 2
     After = 3

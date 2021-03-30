@@ -31,20 +31,23 @@ class Chrome(BaseDriver):
         report_type (ReportType): Type of report to produce - cloud, local or both.
     """
 
-    def __init__(self, chrome_options: ChromeOptions = None, desired_capabilities: dict = None, token: str = None,
-                 project_name: str = None, job_name: str = None, disable_reports: bool = False,
-                 report_type: ReportType = ReportType.CLOUD_AND_LOCAL):
+    def __init__(
+        self,
+        chrome_options: ChromeOptions = None,
+        desired_capabilities: dict = None,
+        token: str = None,
+        project_name: str = None,
+        job_name: str = None,
+        disable_reports: bool = False,
+        report_type: ReportType = ReportType.CLOUD_AND_LOCAL,
+    ):
 
         # If no options or capabilities are specified at all, use default ChromeOptions
         if chrome_options is None and desired_capabilities is None:
             caps = ChromeOptions().to_capabilities()
         else:
             # Specified ChromeOptions take precedence over desired capabilities but either can be used
-            caps = (
-                chrome_options.to_capabilities()
-                if chrome_options is not None
-                else desired_capabilities
-            )
+            caps = chrome_options.to_capabilities() if chrome_options is not None else desired_capabilities
 
         super().__init__(
             capabilities=caps,
@@ -52,5 +55,5 @@ class Chrome(BaseDriver):
             project_name=project_name,
             job_name=job_name,
             disable_reports=disable_reports,
-            report_type=report_type
+            report_type=report_type,
         )

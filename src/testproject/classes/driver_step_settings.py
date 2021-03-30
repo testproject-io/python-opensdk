@@ -32,6 +32,7 @@ class DriverStepSettings:
             # Some driver command.
 
     """
+
     def __init__(self, driver, step_settings: StepSettings):
         """Initializes the 'with' statement."""
         self.previous_settings = driver.command_executor.settings
@@ -39,8 +40,10 @@ class DriverStepSettings:
         # If inherit take the previous step settings.
         if step_settings.sleep_timing_type and step_settings.sleep_timing_type is SleepTimingType.Inherit:
             step_settings.sleep_timing_type = self.previous_settings.sleep_timing_type
-        if step_settings.screenshot_condition \
-                and step_settings.screenshot_condition is TakeScreenshotConditionType.Inherit:
+        if (
+            step_settings.screenshot_condition
+            and step_settings.screenshot_condition is TakeScreenshotConditionType.Inherit
+        ):
             step_settings.screenshot_condition = self.previous_settings.screenshot_condition
         self.step_settings = step_settings
 

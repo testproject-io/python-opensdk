@@ -39,10 +39,7 @@ def test_get_agent_status_no_response_raises_sdkexception(mocked_agent_address):
 
     with pytest.raises(SdkException) as sdke:
         AgentClient.get_agent_version(token="1234")
-    assert (
-        str(sdke.value)
-        == "Could not parse Agent status response: no JSON response body present"
-    )
+    assert str(sdke.value) == "Could not parse Agent status response: no JSON response body present"
 
 
 @responses.activate
@@ -60,10 +57,7 @@ def test_get_agent_status_response_without_tag_element_raises_sdkexception(
 
     with pytest.raises(SdkException) as sdke:
         AgentClient.get_agent_version(token="1234")
-    assert (
-        str(sdke.value)
-        == "Could not parse Agent status response: element 'tag' not found in JSON response body"
-    )
+    assert str(sdke.value) == "Could not parse Agent status response: element 'tag' not found in JSON response body"
 
 
 @responses.activate
@@ -76,9 +70,7 @@ def test_get_agent_status_response_with_error_http_status_code_raises_agentconne
 
     with pytest.raises(AgentConnectException) as ace:
         AgentClient.get_agent_version(token="1234")
-    assert (
-        str(ace.value) == "Agent returned HTTP 500 when trying to retrieve Agent status"
-    )
+    assert str(ace.value) == "Agent returned HTTP 500 when trying to retrieve Agent status"
 
 
 @responses.activate
@@ -94,9 +86,7 @@ def test_get_agent_status_response_with_tag_element_creates_agentstatusresponse(
         status=200,
     )
 
-    agent_status_response: AgentStatusResponse = AgentClient.get_agent_version(
-        token="1234"
-    )
+    agent_status_response: AgentStatusResponse = AgentClient.get_agent_version(token="1234")
     assert agent_status_response.tag == "1.2.3"
 
 

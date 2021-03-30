@@ -15,4 +15,5 @@
 
 class ObsoleteVersionException(Exception):
     """Custom exception type to be raised when SDK version does not match with Agent version"""
+
     pass

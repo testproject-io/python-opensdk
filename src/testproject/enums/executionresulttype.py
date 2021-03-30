@@ -18,6 +18,7 @@ from enum import Enum, unique
 @unique
 class ExecutionResultType(Enum):
     """Enumeration of possible action execution results"""
+
     NoResult = 0
     Executing = 1
     Skipped = 2

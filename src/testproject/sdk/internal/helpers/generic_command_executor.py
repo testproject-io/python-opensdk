@@ -12,13 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from src.testproject.sdk.exceptions.notimplementedexception import (
-    NotImplementedException,
-)
+from src.testproject.sdk.exceptions.notimplementedexception import NotImplementedException
 from src.testproject.sdk.internal.agent import AgentClient
-from src.testproject.sdk.internal.helpers.reporting_command_executor import (
-    ReportingCommandExecutor,
-)
+from src.testproject.sdk.internal.helpers.reporting_command_executor import ReportingCommandExecutor
 
 
 class GenericCommandExecutor(ReportingCommandExecutor):
@@ -29,8 +25,12 @@ class GenericCommandExecutor(ReportingCommandExecutor):
     """
 
     def __init__(self, agent_client: AgentClient):
-        ReportingCommandExecutor.__init__(self, agent_client=agent_client, command_executor=self,
-                                          remote_connection=None)
+        ReportingCommandExecutor.__init__(
+            self,
+            agent_client=agent_client,
+            command_executor=self,
+            remote_connection=None,
+        )
 
     def execute(self, command: str, params: dict, skip_reporting: bool = False):
         """Not implemented for generic driver objects

@@ -19,7 +19,8 @@ class TypeRandomPhoneAction(ActionProxy):
     def __init__(self, country_code: str, max_digits: int = 10):
         super().__init__()
         self.proxydescriptor = ProxyDescriptor(
-            guid="GrQN1LQqTEmuYTnIujiEwA", classname="io.testproject.examples.sdk.actions.TypeRandomPhoneAction",
+            guid="GrQN1LQqTEmuYTnIujiEwA",
+            classname="io.testproject.examples.sdk.actions.TypeRandomPhoneAction",
         )
         self.countryCode = country_code
         self.maxDigits = max_digits

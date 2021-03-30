@@ -73,16 +73,14 @@ class SocketManager:
         if not self.is_connected():
             raise AgentConnectException("Failed connecting to Agent socket")
 
-        logging.info(
-            f"Socket connection to {host}:{socket_port} established successfully"
-        )
+        logging.info(f"Socket connection to {socket_address}:{socket_port} established successfully")
 
     @staticmethod
     def is_connected() -> bool:
         """Sends a simple message to the socket to see if it's connected
 
-            Returns:
-                bool: True if the socket is connected, False otherwise
+        Returns:
+            bool: True if the socket is connected, False otherwise
         """
         if SocketManager.__socket is None:
             return False

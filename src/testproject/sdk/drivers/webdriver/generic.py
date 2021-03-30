@@ -19,7 +19,12 @@ from packaging import version
 
 from src.testproject.enums import EnvironmentVariable
 from src.testproject.enums.report_type import ReportType
-from src.testproject.helpers import ReportHelper, LoggingHelper, ConfigHelper, AddonHelper
+from src.testproject.helpers import (
+    ReportHelper,
+    LoggingHelper,
+    ConfigHelper,
+    AddonHelper,
+)
 from src.testproject.rest import ReportSettings
 from src.testproject.rest.messages.agentstatusresponse import AgentStatusResponse
 from src.testproject.sdk.exceptions import SdkException, AgentConnectException
@@ -44,8 +49,14 @@ class Generic:
 
     MIN_GENERIC_DRIVER_SUPPORTED_VERSION = "0.64.40"
 
-    def __init__(self, token: str = None, project_name: str = None, job_name: str = None, disable_reports: bool = False,
-                 report_type: ReportType = ReportType.CLOUD_AND_LOCAL):
+    def __init__(
+        self,
+        token: str = None,
+        project_name: str = None,
+        job_name: str = None,
+        disable_reports: bool = False,
+        report_type: ReportType = ReportType.CLOUD_AND_LOCAL,
+    ):
         if Generic.__instance is not None:
             raise SdkException("A driver session already exists")
 
@@ -53,21 +64,15 @@ class Generic:
 
         self._token = token if token is not None else ConfigHelper.get_developer_token()
 
-        agent_status_response: AgentStatusResponse = AgentClient.get_agent_version(
-            self._token
-        )
+        agent_status_response: AgentStatusResponse = AgentClient.get_agent_version(self._token)
 
-        if version.parse(agent_status_response.tag) < version.parse(
-            Generic.MIN_GENERIC_DRIVER_SUPPORTED_VERSION
-        ):
+        if version.parse(agent_status_response.tag) < version.parse(Generic.MIN_GENERIC_DRIVER_SUPPORTED_VERSION):
             raise AgentConnectException(
                 f"Your current Agent version {agent_status_response.tag} does not support the Generic driver. "
                 f"Please upgrade your Agent to the latest version and try again"
             )
         else:
-            logging.info(
-                f"Current Agent version {agent_status_response.tag} does support Generic driver"
-            )
+            logging.info(f"Current Agent version {agent_status_response.tag} does support Generic driver")
 
         self.session_id = None
 
@@ -76,11 +81,7 @@ class Generic:
             self._project_name = ""
             self._job_name = ""
         else:
-            self._project_name = (
-                project_name
-                if project_name is not None
-                else ReportHelper.infer_project_name()
-            )
+            self._project_name = project_name if project_name is not None else ReportHelper.infer_project_name()
 
             if job_name:
                 self._job_name = job_name
@@ -93,8 +94,11 @@ class Generic:
 
         capabilities = {"platformName": "ANY"}
 
-        self._agent_client: AgentClient = AgentClient(token=self._token, capabilities=capabilities,
-                                                      report_settings=report_settings)
+        self._agent_client: AgentClient = AgentClient(
+            token=self._token,
+            capabilities=capabilities,
+            report_settings=report_settings,
+        )
 
         self._agent_session: AgentSession = self._agent_client.agent_session
 

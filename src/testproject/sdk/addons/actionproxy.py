@@ -17,8 +17,8 @@ from src.testproject.classes import ProxyDescriptor
 class ActionProxy:
     """Base class that needs to be extended by custom Actions
 
-        Attributes:
-            _proxydescriptor (ProxyDescriptor): Contains the description of the custom action
+    Attributes:
+        _proxydescriptor (ProxyDescriptor): Contains the description of the custom action
     """
 
     def __init__(self):

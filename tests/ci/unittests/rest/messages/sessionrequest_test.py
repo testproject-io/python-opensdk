@@ -30,5 +30,5 @@ def test_sessionrequest_to_json(mocker):
         "capabilities": {"key": "value"},
         "sdkVersion": "1.2.3.4",
         "language": "Python",
-        "reportType": "CLOUD_AND_LOCAL"
+        "reportType": "CLOUD_AND_LOCAL",
     }

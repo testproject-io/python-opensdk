@@ -32,7 +32,7 @@ def driver():
         "browserName": "chrome",
         "platformName": "Android",
         "unicodeKeyboard": "true",
-        "resetKeyboard": "true"
+        "resetKeyboard": "true",
     }
 
     driver = webdriver.Remote(desired_capabilities=desired_capabilities)

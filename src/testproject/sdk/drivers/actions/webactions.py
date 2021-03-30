@@ -120,7 +120,12 @@ class WebActions(DriverActions):
             bool: True if action was performed successfully, False otherwise
         """
         body = {"value": option_value}
-        response = self.action_execute(web_actions["SELECT_ALL_OPTIONS_BY_VALUE_ID"], body, by, by_value,)
+        response = self.action_execute(
+            web_actions["SELECT_ALL_OPTIONS_BY_VALUE_ID"],
+            body,
+            by,
+            by_value,
+        )
         return response.executionresulttype == ExecutionResultType.Passed
 
     def switch_to_window(self, index: int) -> bool:

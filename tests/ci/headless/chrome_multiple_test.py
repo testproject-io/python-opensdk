@@ -21,7 +21,7 @@ from selenium.webdriver import ChromeOptions
 from tests.pageobjects.web import LoginPage, ProfilePage
 
 if version.parse(ConfigHelper.get_sdk_version()) < version.parse("0.64.0"):
-    pytest.skip('This feature is not supported in SDK versions < 0.64.0', allow_module_level=True)
+    pytest.skip("This feature is not supported in SDK versions < 0.64.0", allow_module_level=True)
 
 
 @pytest.fixture
@@ -37,7 +37,10 @@ def test_update_profile_expect_success_message_to_be_displayed(driver):
 
     LoginPage(driver).open().login_as("John Smith", "12345")
     ProfilePage(driver).update_profile(
-        country="Australia", address="Main Street 123", email="john@smith.org", phone="+1987654321",
+        country="Australia",
+        address="Main Street 123",
+        email="john@smith.org",
+        phone="+1987654321",
     )
     assert ProfilePage(driver).saved_message_is_displayed()
 
@@ -46,6 +49,9 @@ def test_update_profile_again_expect_success_message_to_be_displayed(driver):
 
     LoginPage(driver).open().login_as("Bob Jones", "12345")
     ProfilePage(driver).update_profile(
-        country="Canada", address="Maple Street 456", email="bob@jones.org", phone="+1123456789",
+        country="Canada",
+        address="Maple Street 456",
+        email="bob@jones.org",
+        phone="+1123456789",
     )
     assert ProfilePage(driver).saved_message_is_displayed()
