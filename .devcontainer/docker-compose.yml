@@ -1,0 +1,34 @@
+version: "3.1"
+services:
+  sdk:
+    build:
+        context: ..
+        dockerfile: .devcontainer/Dockerfile
+    volumes:
+        - ..:/workspace
+    links:
+      - testproject-agent
+      - chrome
+      - firefox
+    user: vscode
+    command: sleep infinity
+  testproject-agent:
+    image: testproject/agent:latest
+    restart: unless-stopped
+    depends_on:
+      - chrome
+      - firefox
+    environment:
+      TP_SDK_PORT: "8686"
+      CHROME: "chrome:4444"
+      FIREFOX: "firefox:4444"
+  chrome:
+    image: selenium/standalone-chrome
+    restart: unless-stopped
+    volumes:
+      - /dev/shm:/dev/shm
+  firefox:
+    image: selenium/standalone-firefox
+    restart: unless-stopped
+    volumes:
+      - /dev/shm:/dev/shm

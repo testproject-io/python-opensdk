@@ -2,14 +2,16 @@
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.112.0/containers/python-3
 {
 	"name": "Python 3",
-	"build": {
-		"dockerfile": "Dockerfile",
-		"context": "..",
-		// Update 'VARIANT' to pick a Python version. Rebuild the container 
-		// if it already exists to update. Available variants: 3, 3.6, 3.7, 3.8 
-		"args": {
-			"VARIANT": "3"
-		}
+	"dockerComposeFile": [
+		"docker-compose.yml"
+	],
+	"service": "sdk",
+	"workspaceFolder": "/workspace",
+	"remoteEnv": {
+		"PATH:": "${env:PATH};/usr/local/pip-global/bin",
+		"TP_SDK_VERSION": "0.0.0",
+		"TP_AGENT_URL": "http://testproject-agent:8585",
+		"TP_DEV_TOKEN": "DUMMY_TOKEN"
 	},
 	// Set *default* container specific settings.json values on container create.
 	"settings": {
@@ -31,6 +33,7 @@
 	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
 		"ms-python.python",
+		"ms-python.vscode-pylance",
 		"github.vscode-pull-request-github",
 		"eamodio.gitlens"
 	],
