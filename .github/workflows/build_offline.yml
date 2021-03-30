@@ -1,22 +1,11 @@
-name: Build
+name: Build (Offline)
 
 on:
-  push:
-    branches: [master]
   pull_request:
     branches: [master]
-  release:
-    types: [published]
 
 jobs:
-  build-test-publish:
-    # Do not run on PRs from forks
-    if: |
-      ${{ 
-        (github.event == 'push' && startsWith(github.ref, 'refs/heads/master')) ||
-        (github.event == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)  ||
-        (github.event.release.action == 'published')
-      }}
+  build-test-offline:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -61,14 +50,12 @@ jobs:
         run: |
           pip install twine
           python -m twine check dist/*
-      - name: Run TestProject Agent
+      - name: Run TestProject Agent (Offline)
         if: matrix.python-version == '3.9'
-        env:
-          TP_API_KEY: ${{ secrets.TP_API_KEY }}
         run: |
           envsubst < .github/ci/docker-compose.yml > docker-compose.yml
-          docker-compose -f docker-compose.yml up -d
-      - name: Wait for Agent to Register
+          docker-compose -f docker-compose.yml up -d          
+      - name: Wait for Agent to Start
         if: matrix.python-version == '3.9'
         run: |
           trap 'kill $(jobs -p)' EXIT ERR
@@ -78,7 +65,7 @@ jobs:
 
           mkdir -p build/reports/agent
           docker-compose -f docker-compose.yml logs -f | tee build/reports/agent/log.txt&
-          until curl -s http://localhost:8585/api/status | jq '.registered' | grep true; do
+          until curl -s http://localhost:8585/api/status | jq '.fsmState == "Ready"' | grep true; do
             if [ ${attempt_counter} -eq ${max_attempts} ]; then
               echo "Agent failed to register. Terminating..."
               exit 1
@@ -86,34 +73,15 @@ jobs:
             attempt_counter=$(($attempt_counter+1))
             sleep 1
           done
-      - name: Run flow tests
+      - name: Run flow tests (partial)
         if: matrix.python-version == '3.9'
         env:
-          TP_DEV_TOKEN: ${{ secrets.TP_DEV_TOKEN }}
+          TP_DEV_TOKEN: "DUMMY_TOKEN"
           TP_AGENT_URL: http://localhost:8585
-          TP_CLOUD_URL: ${{ secrets.TP_CLOUD_URL }}
         run: |
           trap 'kill $(jobs -p)' EXIT ERR
           docker-compose -f docker-compose.yml logs -f --tail=0 >> build/reports/agent/log.txt&
           pytest tests/ci/headless --doctest-modules --junitxml=build/reports/junit/flow-test-results-${{ matrix.python-version }}.xml
-      - name: Publish to TestPyPI
-        if: matrix.python-version == '3.9' && startsWith(github.ref, 'refs/heads/master')
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.TWINE_TESTPYPI_PASSWORD }}
-        run: |
-          rm -rf dist
-          python setup.py clean sdist bdist_wheel
-          python -m twine upload --non-interactive --repository testpypi dist/*
-      - name: Publish to PyPI
-        if: matrix.python-version == '3.9' && startsWith(github.ref, 'refs/tags/v')
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.TWINE_PYPI_PASSWORD }}
-        run: |
-          rm -rf dist
-          python setup.py clean sdist bdist_wheel
-          python -m twine upload --non-interactive dist/*
       - name: Archive reports
         if: ${{ always() }}
         uses: actions/upload-artifact@v1
