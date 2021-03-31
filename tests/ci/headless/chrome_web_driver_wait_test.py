@@ -58,9 +58,10 @@ def test_wait_with_ec_invisible(driver, wait):
     # Case 3 - Report with StepSettings
     # Inverting result and taking picture on success.
     # Wait should timeout and report fail which will be inverted to passed and include picture.
-    with DriverStepSettings(driver=wait.driver,
-                            step_settings=StepSettings(invert_result=True,
-                                                       screenshot_condition=TakeScreenshotConditionType.Failure)):
+    with DriverStepSettings(
+        driver=wait.driver,
+        step_settings=StepSettings(invert_result=True, screenshot_condition=TakeScreenshotConditionType.Failure),
+    ):
         try:
             wait.until_not(ec.url_contains("TestProject"))
         except TimeoutException:

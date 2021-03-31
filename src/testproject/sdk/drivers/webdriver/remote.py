@@ -20,7 +20,12 @@ from appium.webdriver.webdriver import WebDriver as AppiumWebDriver
 from src.testproject.classes import StepSettings
 from src.testproject.enums import EnvironmentVariable
 from src.testproject.enums.report_type import ReportType
-from src.testproject.helpers import ReportHelper, LoggingHelper, ConfigHelper, AddonHelper
+from src.testproject.helpers import (
+    ReportHelper,
+    LoggingHelper,
+    ConfigHelper,
+    AddonHelper,
+)
 from src.testproject.rest import ReportSettings
 from src.testproject.sdk.exceptions import SdkException
 from src.testproject.sdk.internal.agent import AgentClient
@@ -50,9 +55,15 @@ class Remote(AppiumWebDriver):
 
     __instance = None
 
-    def __init__(self, desired_capabilities: dict = None, token: str = None, project_name: str = None,
-                 job_name: str = None, disable_reports: bool = False,
-                 report_type: ReportType = ReportType.CLOUD_AND_LOCAL):
+    def __init__(
+        self,
+        desired_capabilities: dict = None,
+        token: str = None,
+        project_name: str = None,
+        job_name: str = None,
+        disable_reports: bool = False,
+        report_type: ReportType = ReportType.CLOUD_AND_LOCAL,
+    ):
         if Remote.__instance is not None:
             raise SdkException("A driver session already exists")
 
@@ -67,11 +78,7 @@ class Remote(AppiumWebDriver):
             self._project_name = ""
             self._job_name = ""
         else:
-            self._project_name = (
-                project_name
-                if project_name is not None
-                else ReportHelper.infer_project_name()
-            )
+            self._project_name = project_name if project_name is not None else ReportHelper.infer_project_name()
 
             if job_name:
                 self._job_name = job_name

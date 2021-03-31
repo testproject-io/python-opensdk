@@ -15,4 +15,5 @@
 
 class InvalidTokenException(Exception):
     """Custom exception type to be raised when invalid token is supplied when connecting to the Agent"""
+
     pass

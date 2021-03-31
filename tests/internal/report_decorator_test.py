@@ -15,4 +15,4 @@ def driver():
 
 @report(test="Report Decorator Test")
 def test_report_decorator(driver):
-    driver.get(url='https://www.google.com')
+    driver.get(url="https://www.google.com")

@@ -57,8 +57,11 @@ class ReportingCommandExecutor:
         self._stashed_command = None
         self._latest_known_test_name = ReportHelper.infer_test_name()
         self._excluded_test_names = list()
-        self._step_helper = StepHelper(remote_connection, agent_client.agent_session.dialect == "W3C",
-                                       agent_client.agent_session.session_id)
+        self._step_helper = StepHelper(
+            remote_connection,
+            agent_client.agent_session.dialect == "W3C",
+            agent_client.agent_session.session_id,
+        )
         self._settings = StepSettings()
 
     @property
@@ -168,12 +171,16 @@ class ReportingCommandExecutor:
                 break
 
         # Handle step result and message.
-        passed, step_message = self.step_helper.handle_step_result(step_result=passed,
-                                                                   invert_result=self.settings.invert_result,
-                                                                   always_pass=self.settings.always_pass)
-        screenshot = (self.create_screenshot()
-                      if self.step_helper.take_screenshot(self.settings.screenshot_condition, passed)
-                      else None)
+        passed, step_message = self.step_helper.handle_step_result(
+            step_result=passed,
+            invert_result=self.settings.invert_result,
+            always_pass=self.settings.always_pass,
+        )
+        screenshot = (
+            self.create_screenshot()
+            if self.step_helper.take_screenshot(self.settings.screenshot_condition, passed)
+            else None
+        )
 
         driver_command_report = DriverCommandReport(command, params, result, passed, screenshot, step_message)
 
@@ -198,10 +205,7 @@ class ReportingCommandExecutor:
         # Actions inside a unittest tearDown or tearDownClass method should be reported as part of the test
         in_unittest_teardown = ReportHelper.find_unittest_teardown()
 
-        if (
-            current_test_name not in [self._latest_known_test_name, "Unnamed Test"]
-            and not in_unittest_teardown
-        ):
+        if current_test_name not in [self._latest_known_test_name, "Unnamed Test"] and not in_unittest_teardown:
             # the name of the test method has changed and we're not inside a unittest teardown method,
             # so we need to report a test
             if not self.disable_auto_test_reports:
@@ -210,8 +214,7 @@ class ReportingCommandExecutor:
             self._latest_known_test_name = current_test_name
 
     def report_test(self):
-        """Sends a test report to the Agent if this option is not explicitly disabled
-        """
+        """Sends a test report to the Agent if this option is not explicitly disabled"""
 
         if not self._latest_known_test_name == "Unnamed Test":
 
@@ -223,14 +226,10 @@ class ReportingCommandExecutor:
 
             if self._latest_known_test_name in self._excluded_test_names:
                 # test has been marked as 'to be excluded, so do not report it
-                logging.debug(
-                    f"Test [{self._latest_known_test_name}] - Reporting skipped (marked as 'To be excluded')"
-                )
+                logging.debug(f"Test [{self._latest_known_test_name}] - Reporting skipped (marked as 'To be excluded')")
                 return
 
-            custom_test_report = CustomTestReport(
-                name=self._latest_known_test_name, passed=True
-            )
+            custom_test_report = CustomTestReport(name=self._latest_known_test_name, passed=True)
             self.agent_client.report_test(custom_test_report)
 
     def create_screenshot(self) -> str:
@@ -239,24 +238,18 @@ class ReportingCommandExecutor:
         Returns:
             str: The base64 encoded screenshot in PNG format (or None if screenshot taking fails)
         """
-        create_screenshot_params = {
-            "sessionId": self.agent_client.agent_session.session_id
-        }
-        create_screenshot_response = self._command_executor.execute(
-            Command.SCREENSHOT, create_screenshot_params, True
-        )
+        create_screenshot_params = {"sessionId": self.agent_client.agent_session.session_id}
+        create_screenshot_response = self._command_executor.execute(Command.SCREENSHOT, create_screenshot_params, True)
         try:
             return create_screenshot_response["value"]
         except KeyError as ke:
             logging.error(f"Error occurred creating a screenshot: {ke}")
-            logging.error(
-                f"Response from RemoteWebDriver: {create_screenshot_response}"
-            )
+            logging.error(f"Response from RemoteWebDriver: {create_screenshot_response}")
             return None
 
     def clear_stash(self):
         """Reports stashed command if there is one left. Should be called when session ends to prevent
-           wait-related commands from not being reported.
+        wait-related commands from not being reported.
         """
         if not self._disable_reports and not self.disable_command_reports:
             if self._stashed_command is not None:
@@ -286,24 +279,31 @@ class ReportingCommandExecutor:
         """
 
         # Handling sleep before execution
-        self.step_helper.handle_sleep(sleep_timing_type=self.settings.sleep_timing_type,
-                                      sleep_time=self.settings.sleep_time)
+        self.step_helper.handle_sleep(
+            sleep_timing_type=self.settings.sleep_timing_type,
+            sleep_time=self.settings.sleep_time,
+        )
         # Sleep for...
         time.sleep(milliseconds / 1000.0)
 
         # Handling sleep after execution
-        self.step_helper.handle_sleep(sleep_timing_type=self.settings.sleep_timing_type,
-                                      sleep_time=self.settings.sleep_time,
-                                      step_executed=True)
+        self.step_helper.handle_sleep(
+            sleep_timing_type=self.settings.sleep_timing_type,
+            sleep_time=self.settings.sleep_time,
+            step_executed=True,
+        )
         result, step_message = self.step_helper.handle_step_result(
             step_result=True,
             invert_result=self.settings.invert_result,
-            always_pass=self.settings.always_pass)
+            always_pass=self.settings.always_pass,
+        )
 
         # Handle screenshot condition
         screenshot = self.step_helper.take_screenshot(self.settings.screenshot_condition, result)
-        Reporter(self._command_executor).step(description=f'Pause for {{{{{milliseconds}}}}} ms',
-                                              message=step_message,
-                                              inputs={"milliseconds": milliseconds},
-                                              passed=result,
-                                              screenshot=screenshot)
+        Reporter(self._command_executor).step(
+            description=f"Pause for {{{{{milliseconds}}}}} ms",
+            message=step_message,
+            inputs={"milliseconds": milliseconds},
+            passed=result,
+            screenshot=screenshot,
+        )

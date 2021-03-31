@@ -20,8 +20,10 @@ from src.testproject.sdk.exceptions import SdkException
 def get_active_driver_instance():
     """Get the current driver instance in use (BaseDriver, Remote or Generic) """
     # Get the first driver instance that exists (not None) in the list of possible driver instances.
-    driver = next((_driver for _driver in [BaseDriver.instance(), Remote.instance(), Generic.instance()] if _driver
-                  is not None), None)
+    driver = next(
+        (_driver for _driver in [BaseDriver.instance(), Remote.instance(), Generic.instance()] if _driver is not None),
+        None,
+    )
     if driver is None:
         raise SdkException("No active driver instance found for reporting")
     return driver

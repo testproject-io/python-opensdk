@@ -16,6 +16,7 @@ from enum import Enum
 
 class ReportType(Enum):
     """Enum specifying the execution's report type."""
+
     CLOUD = 0
     LOCAL = 1
     CLOUD_AND_LOCAL = 2

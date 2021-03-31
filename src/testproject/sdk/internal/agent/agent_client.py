@@ -16,11 +16,12 @@ import logging
 import queue
 import threading
 import uuid
+
 from distutils.util import strtobool
 from enum import Enum, unique
 from http import HTTPStatus
 from typing import Optional
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 
 import requests
 import os
@@ -40,7 +41,8 @@ from src.testproject.rest.messages import (
     DriverCommandReport,
     StepReport,
     CustomTestReport,
-    AddonExecutionResponse)
+    AddonExecutionResponse,
+)
 from src.testproject.rest.messages.agentstatusresponse import AgentStatusResponse
 from src.testproject.sdk.addons import ActionProxy
 from src.testproject.sdk.exceptions import (
@@ -116,10 +118,13 @@ class AgentClient:
         Raises:
             AgentConnectException when local reports are not supported.
         """
-        if (report_type is ReportType.LOCAL
-                and version.parse(self.__agent_version) < version.parse(self.MIN_LOCAL_REPORT_SUPPORTED_VERSION)):
-            raise AgentConnectException(f'Target Agent version [{self.__agent_version}] doesn\'t support local reports.'
-                                        f' Upgrade the Agent to the latest version and try again.')
+        if report_type is ReportType.LOCAL and version.parse(self.__agent_version) < version.parse(
+            self.MIN_LOCAL_REPORT_SUPPORTED_VERSION
+        ):
+            raise AgentConnectException(
+                f"Target Agent version [{self.__agent_version}] doesn't support local reports."
+                f" Upgrade the Agent to the latest version and try again."
+            )
 
     def __start_session(self):
         """Starts a new development session with the Agent"""
@@ -138,7 +143,10 @@ class AgentClient:
             self._agent_response.capabilities,
         )
 
-        SocketManager.instance().open_socket(self._remote_address, self._agent_response.dev_socket_port)
+        SocketManager.instance().open_socket(
+            urlparse(self._remote_address).hostname,
+            self._agent_response.dev_socket_port,
+        )
 
         logging.info("Development session started...")
 
@@ -152,14 +160,14 @@ class AgentClient:
         if AgentClient.__agent_version is None:
             return False
 
-        return version.parse(
-            AgentClient.__agent_version
-        ) >= version.parse(AgentClient.MIN_SESSION_REUSE_CAPABLE_VERSION)
+        return version.parse(AgentClient.__agent_version) >= version.parse(
+            AgentClient.MIN_SESSION_REUSE_CAPABLE_VERSION
+        )
 
     def _request_session_from_agent(self):
         """Creates and sends a session request object
 
-            Sets the SessionResponse: object containing the response to the session request
+        Sets the SessionResponse: object containing the response to the session request
         """
         session_request = SessionRequest(self._capabilities, self._report_settings)
 
@@ -172,15 +180,9 @@ class AgentClient:
                 session_request.to_json(),
             )
         except requests.exceptions.ConnectionError:
-            logging.error(
-                f"Could not start new session on {self._remote_address}. Is your Agent running?"
-            )
-            logging.error(
-                "You can download the TestProject Agent from https://app.testproject.io/#/agents"
-            )
-            raise AgentConnectException(
-                f"Connection error trying to connect to Agent on {self._remote_address}"
-            )
+            logging.error(f"Could not start new session on {self._remote_address}. Is your Agent running?")
+            logging.error("You can download the TestProject Agent from https://app.testproject.io/#/agents")
+            raise AgentConnectException(f"Connection error trying to connect to Agent on {self._remote_address}")
 
         if not response.passed:
             self.__handle_new_session_error(response)
@@ -192,7 +194,7 @@ class AgentClient:
             dialect=response.data.get("dialect"),
             capabilities=response.data.get("capabilities", {}),
             agent_version=response.data.get("version"),
-            local_report=response.data.get("localReport")
+            local_report=response.data.get("localReport"),
         )
 
     def update_job_name(self, job_name):
@@ -207,7 +209,7 @@ class AgentClient:
                 response = self.send_request(
                     "PUT",
                     urljoin(self._remote_address, Endpoint.DevelopmentSession.value),
-                    {"jobName": job_name}
+                    {"jobName": job_name},
                 )
                 if not response.passed:
                     logging.error("Failed to update job name")
@@ -232,17 +234,13 @@ class AgentClient:
             if method == "GET":
                 response = session.get(path, headers={"Authorization": self._token})
             elif method == "POST":
-                response = session.post(
-                    path, headers={"Authorization": self._token}, json=body
-                )
+                response = session.post(path, headers={"Authorization": self._token}, json=body)
             elif method == "DELETE":
                 response = session.delete(path, headers={"Authorization": self._token})
             elif method == "PUT":
                 response = session.put(path, headers={"Authorization": self._token}, json=body)
             else:
-                raise SdkException(
-                    f"Unsupported HTTP method {method} in send_request()"
-                )
+                raise SdkException(f"Unsupported HTTP method {method} in send_request()")
 
         response_json = {}
         # For some successful calls, the response body will be empty
@@ -257,13 +255,14 @@ class AgentClient:
             response.raise_for_status()
             return OperationResult(True, response.status_code, "", response_json)
         except HTTPError as http_error:
-            return OperationResult(False, response.status_code,
-                                   response_json.get('message', str(http_error)),
-                                   response_json if response_json else None)
+            return OperationResult(
+                False,
+                response.status_code,
+                response_json.get("message", str(http_error)),
+                response_json if response_json else None,
+            )
 
-    def send_action_execution_request(
-        self, codeblock_guid: str, body: dict
-    ) -> ActionExecutionResponse:
+    def send_action_execution_request(self, codeblock_guid: str, body: dict) -> ActionExecutionResponse:
         """Sends HTTP request to Agent
 
         Args:
@@ -287,9 +286,7 @@ class AgentClient:
             result = ExecutionResultType.Failed
         else:
             result = (
-                ExecutionResultType.Passed
-                if response.data["resultType"] == "Passed"
-                else ExecutionResultType.Failed
+                ExecutionResultType.Passed if response.data["resultType"] == "Passed" else ExecutionResultType.Failed
             )
 
         result_data = response.data["outputs"] if response.passed else None
@@ -309,9 +306,7 @@ class AgentClient:
 
         with requests.Session() as session:
             response = session.get(
-                urljoin(
-                    ConfigHelper.get_agent_service_address(), Endpoint.GetStatus.value
-                ),
+                urljoin(ConfigHelper.get_agent_service_address(), Endpoint.GetStatus.value),
                 headers={"Authorization": token},
             )
 
@@ -321,9 +316,7 @@ class AgentClient:
                 response_json = response.json()
                 agent_version = response_json["tag"]
             except ValueError:
-                raise SdkException(
-                    "Could not parse Agent status response: no JSON response body present"
-                )
+                raise SdkException("Could not parse Agent status response: no JSON response body present")
             except KeyError:
                 raise SdkException(
                     "Could not parse Agent status response: element 'tag' not found in JSON response body"
@@ -385,6 +378,14 @@ class AgentClient:
         # Send a stop signal to the thread worker
         self._running = False
 
+        # TODO: Add proper session reuse logic.
+        # Reusing a session means using the same Agent Client for multiple tests,
+        # not just reusing the TCP socket connection.
+        # Until this will be implemented correctly, always close the TCP socket.
+
+        # if not AgentClient.can_reuse_session():
+        self._close_socket = True
+
         # Send a final, empty, report to the queue to ensure that
         # the 'running' condition is evaluated one last time
         self._queue.put(QueueItem(report_as_json=None, url=None, token=self._token), block=False)
@@ -395,11 +396,8 @@ class AgentClient:
             # Thread is still alive, so there are unreported items
             logging.warning(f"There are {self._queue.qsize()} unreported items in the queue")
 
-        if not AgentClient.can_reuse_session():
-            self._close_socket = True
-
         if self._agent_response.local_report:
-            logging.info(f'Execution Report: {self._agent_response.local_report}')
+            logging.info(f"Execution Report: {self._agent_response.local_report}")
 
     def execute_proxy(self, action: ActionProxy) -> AddonExecutionResponse:
         """Sends a custom action to the Agent
@@ -414,28 +412,37 @@ class AgentClient:
             "POST",
             urljoin(self._remote_address, Endpoint.AddonExecution.value),
             self._create_action_proxy_payload(action),
-            {"skipReporting": "true"}  # Delegate reporting from Agent to SDK.
+            {"skipReporting": "true"},  # Delegate reporting from Agent to SDK.
         )
 
         if operation_result.status_code == HTTPStatus.NOT_FOUND:
-            logging.error(f'Action [{action.proxydescriptor.classname}] in addon [{action.proxydescriptor.guid}]'
-                          f' is not installed in your account.')
+            logging.error(
+                f"Action [{action.proxydescriptor.classname}] in addon [{action.proxydescriptor.guid}]"
+                f" is not installed in your account."
+            )
             raise AddonNotInstalledException
 
-        return AddonExecutionResponse(execution_result_type=(ExecutionResultType.Passed
-                                                             if operation_result.data["resultType"] == "Passed"
-                                                             else ExecutionResultType.Failed),
-                                      message=operation_result.data["message"],
-                                      fields=([] if not operation_result.data['fields']
-                                              else [ResultField(**field) for field in operation_result.data['fields']]))
+        return AddonExecutionResponse(
+            execution_result_type=(
+                ExecutionResultType.Passed
+                if operation_result.data["resultType"] == "Passed"
+                else ExecutionResultType.Failed
+            ),
+            message=operation_result.data["message"],
+            fields=(
+                []
+                if not operation_result.data["fields"]
+                else [ResultField(**field) for field in operation_result.data["fields"]]
+            ),
+        )
 
     @staticmethod
     def _create_action_proxy_payload(action: ActionProxy) -> dict:
         """Creates a payload dictionary that will be transformed to a action JSON request body
-            Args:
-                action (ActionProxy): The action for which a payload should be created
-            Returns:
-                dict: the payload dictionary used to request execution of an action
+        Args:
+            action (ActionProxy): The action for which a payload should be created
+        Returns:
+            dict: the payload dictionary used to request execution of an action
         """
         payload = {
             "guid": action.proxydescriptor.guid,
@@ -450,15 +457,13 @@ class AgentClient:
 
     @staticmethod
     def __handle_new_session_error(response: OperationResult):
-        """ Handles errors occurring on creation of a new session with the Agent
+        """Handles errors occurring on creation of a new session with the Agent
 
         Args:
             response (OperationResult): response from the Agent
         """
         if response.status_code == HTTPStatus.UNAUTHORIZED:
-            logging.error(
-                "Failed to initialize a session with the Agent - invalid developer token supplied"
-            )
+            logging.error("Failed to initialize a session with the Agent - invalid developer token supplied")
             logging.error(
                 "Get your developer token from https://app.testproject.io/#/integrations/sdk?lang=Python"
                 " and set it in the TP_DEV_TOKEN environment variable"
@@ -486,9 +491,7 @@ class AgentClient:
             if isinstance(item, QueueItem):
                 item.send()
             else:
-                logging.warning(
-                    f"Unknown object of type {type(item)} found on queue, ignoring it.."
-                )
+                logging.warning(f"Unknown object of type {type(item)} found on queue, ignoring it..")
             self._queue.task_done()
         # Close socket only after agent_client is no longer running and all reports in the queue have been sent.
         if self._close_socket:
@@ -529,9 +532,7 @@ class QueueItem:
             try:
                 response.raise_for_status()
             except HTTPError:
-                logging.error(
-                    f"Reporting to TestProject returned an HTTP {response.status_code}"
-                )
+                logging.error(f"Reporting to TestProject returned an HTTP {response.status_code}")
                 logging.error(f"Response from Agent: {response.text}")
 
 

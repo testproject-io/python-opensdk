@@ -55,8 +55,11 @@ class AddonHelper:
         response: AddonExecutionResponse = self._agent_client.execute_proxy(action)
 
         # Handling sleep after execution
-        step_helper.handle_sleep(sleep_timing_type=settings.sleep_timing_type, sleep_time=settings.sleep_time,
-                                 step_executed=True)
+        step_helper.handle_sleep(
+            sleep_timing_type=settings.sleep_timing_type,
+            sleep_time=settings.sleep_time,
+            step_executed=True,
+        )
 
         if response.execution_result_type is not ExecutionResultType.Passed and not settings.invert_result:
             raise SdkException(f"Error occurred during addon action execution: {response.message}")
@@ -78,9 +81,12 @@ class AddonHelper:
 
         # Extract result from response result.
         result = True if response.execution_result_type is ExecutionResultType.Passed else False
-        result, step_message = step_helper.handle_step_result(step_result=result, base_msg=response.message,
-                                                              invert_result=settings.invert_result,
-                                                              always_pass=settings.always_pass)
+        result, step_message = step_helper.handle_step_result(
+            step_result=result,
+            base_msg=response.message,
+            invert_result=settings.invert_result,
+            always_pass=settings.always_pass,
+        )
 
         # Handle screenshot condition
         screenshot = step_helper.take_screenshot(settings.screenshot_condition, result)
@@ -94,18 +100,22 @@ class AddonHelper:
         element = None
         # If proxy descriptor has the by property and the by property is implemented by TestProject's FindByType...
         if action.proxydescriptor.by and FindByType.has_value(action.proxydescriptor.by):
-            element = ElementSearchCriteria(find_by_type=FindByType(action.proxydescriptor.by),
-                                            by_value=action.proxydescriptor.by_value,
-                                            index=-1)
+            element = ElementSearchCriteria(
+                find_by_type=FindByType(action.proxydescriptor.by),
+                by_value=action.proxydescriptor.by_value,
+                index=-1,
+            )
         # Creating input/output fields
         input_fields = {f.name: f.value for f in response.fields if not f.is_output}
         output_fields = {f.name: f.value for f in response.fields if f.is_output}
         # Manually reporting the addon step with all the information.
-        Reporter(command_executor=self._command_executor).step(description=description,
-                                                               message=f'{step_message}{os.linesep}',
-                                                               element=element,
-                                                               inputs=input_fields,
-                                                               outputs=output_fields,
-                                                               passed=result,
-                                                               screenshot=screenshot)
+        Reporter(command_executor=self._command_executor).step(
+            description=description,
+            message=f"{step_message}{os.linesep}",
+            element=element,
+            inputs=input_fields,
+            outputs=output_fields,
+            passed=result,
+            screenshot=screenshot,
+        )
         return action

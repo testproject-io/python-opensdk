@@ -16,9 +16,7 @@ from appium.webdriver.appium_connection import AppiumConnection
 from selenium.webdriver.remote.command import Command
 
 from src.testproject.sdk.internal.agent import AgentClient
-from src.testproject.sdk.internal.helpers.reporting_command_executor import (
-    ReportingCommandExecutor,
-)
+from src.testproject.sdk.internal.helpers.reporting_command_executor import ReportingCommandExecutor
 
 
 class CustomAppiumCommandExecutor(AppiumConnection, ReportingCommandExecutor):
@@ -31,8 +29,12 @@ class CustomAppiumCommandExecutor(AppiumConnection, ReportingCommandExecutor):
 
     def __init__(self, agent_client: AgentClient, remote_server_addr: str):
         AppiumConnection.__init__(self, remote_server_addr=remote_server_addr)
-        ReportingCommandExecutor.__init__(self, agent_client=agent_client, command_executor=self,
-                                          remote_connection=super())
+        ReportingCommandExecutor.__init__(
+            self,
+            agent_client=agent_client,
+            command_executor=self,
+            remote_connection=super(),
+        )
 
     def execute(self, command: str, params: dict, skip_reporting: bool = False):
         """Execute an Appium command

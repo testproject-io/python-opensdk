@@ -17,6 +17,7 @@ from enum import Enum
 
 class TakeScreenshotConditionType(Enum):
     """Enum that represents a condition for taking a screenshot."""
+
     Never = 1
     Success = 2
     Failure = 3

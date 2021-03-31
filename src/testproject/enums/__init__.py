@@ -13,5 +13,5 @@ __all__ = [
     "ReportNamingElement",
     "EnvironmentVariable",
     "SleepTimingType",
-    "TakeScreenshotConditionType"
+    "TakeScreenshotConditionType",
 ]

@@ -20,7 +20,12 @@ from selenium.webdriver.remote.webdriver import WebDriver as RemoteWebDriver
 from src.testproject.classes import StepSettings
 from src.testproject.enums import EnvironmentVariable
 from src.testproject.enums.report_type import ReportType
-from src.testproject.helpers import ReportHelper, LoggingHelper, ConfigHelper, AddonHelper
+from src.testproject.helpers import (
+    ReportHelper,
+    LoggingHelper,
+    ConfigHelper,
+    AddonHelper,
+)
 from src.testproject.rest import ReportSettings
 from src.testproject.sdk.exceptions import SdkException
 from src.testproject.sdk.internal.agent import AgentClient
@@ -51,8 +56,15 @@ class BaseDriver(RemoteWebDriver):
 
     __instance = None
 
-    def __init__(self, capabilities: dict, token: str, project_name: str, job_name: str, disable_reports: bool,
-                 report_type: ReportType):
+    def __init__(
+        self,
+        capabilities: dict,
+        token: str,
+        project_name: str,
+        job_name: str,
+        disable_reports: bool,
+        report_type: ReportType,
+    ):
 
         if BaseDriver.__instance is not None:
             raise SdkException("A driver session already exists")
@@ -69,11 +81,7 @@ class BaseDriver(RemoteWebDriver):
             self._project_name = ""
             self._job_name = ""
         else:
-            self._project_name = (
-                project_name
-                if project_name is not None
-                else ReportHelper.infer_project_name()
-            )
+            self._project_name = project_name if project_name is not None else ReportHelper.infer_project_name()
 
             if job_name:
                 self._job_name = job_name

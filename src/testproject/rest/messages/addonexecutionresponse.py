@@ -24,7 +24,12 @@ class AddonExecutionResponse:
         _fields (list): A potentially updated list of fields
     """
 
-    def __init__(self, execution_result_type: ExecutionResultType = None, message: str = None, fields: list = None):
+    def __init__(
+        self,
+        execution_result_type: ExecutionResultType = None,
+        message: str = None,
+        fields: list = None,
+    ):
         self._execution_result_type = execution_result_type
         self._message = message
         self._fields = fields

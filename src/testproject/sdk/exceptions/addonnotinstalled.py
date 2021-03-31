@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 class AddonNotInstalledException(Exception):
     """Custom exception type to be raised when an Addon is not installed in the account"""
+
     pass

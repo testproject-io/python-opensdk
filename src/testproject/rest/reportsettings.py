@@ -18,18 +18,23 @@ from src.testproject.enums.report_type import ReportType
 class ReportSettings:
     """Contains settings to be used in the report.
 
-        Args:
-            project_name (str): Project name to report
-            job_name (str): Job name to report
-            report_type (Optional[ReportType]): Report type = cloud, local or both.
+    Args:
+        project_name (str): Project name to report
+        job_name (str): Job name to report
+        report_type (Optional[ReportType]): Report type = cloud, local or both.
 
-        Attributes:
-            _project_name (str): Project name to report
-            _job_name (str): Job name to report
-            _report_type (ReportType): Report type = cloud, local or both.
+    Attributes:
+        _project_name (str): Project name to report
+        _job_name (str): Job name to report
+        _report_type (ReportType): Report type = cloud, local or both.
     """
 
-    def __init__(self, project_name: str, job_name: str, report_type: ReportType = ReportType.CLOUD_AND_LOCAL):
+    def __init__(
+        self,
+        project_name: str,
+        job_name: str,
+        report_type: ReportType = ReportType.CLOUD_AND_LOCAL,
+    ):
         self._project_name = project_name
         self._job_name = job_name
         self._report_type = report_type
@@ -54,9 +59,11 @@ class ReportSettings:
         if not isinstance(other, ReportSettings):
             return NotImplemented
 
-        return (self.project_name == other.project_name
-                and self.job_name == other.job_name
-                and self.report_type == other.report_type)
+        return (
+            self.project_name == other.project_name
+            and self.job_name == other.job_name
+            and self.report_type == other.report_type
+        )
 
     def __hash__(self):
         """Implement hash to allow objects to be used in sets and dicts"""

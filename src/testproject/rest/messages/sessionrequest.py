@@ -48,5 +48,5 @@ class SessionRequest:
             "capabilities": self._capabilities,
             "sdkVersion": self._sdk_version,
             "language": self._language,
-            "reportType": self._report_type.name
+            "reportType": self._report_type.name,
         }

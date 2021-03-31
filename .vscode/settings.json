@@ -7,11 +7,19 @@
         "**/__pycache__": true
     },
     "python.formatting.provider": "black",
+    "python.formatting.blackPath": "/usr/local/bin/black",
     "python.formatting.blackArgs": [
-        "--line-length=127"
+        "--line-length=120"
     ],
     "python.linting.flake8Enabled": true,
     "python.linting.flake8Args": [
-        "--max-line-length=127"
-    ]
+        "--max-line-length=120"
+    ],
+    "python.testing.pytestPath": "/usr/local/bin/pytest",
+    "python.testing.pytestArgs": [
+        "${workspaceFolder}/tests/ci/headless"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.nosetestsEnabled": false,
+    "python.testing.pytestEnabled": true
 }

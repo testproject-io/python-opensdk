@@ -29,8 +29,8 @@ def get_sdk_version() -> str:
     version = None
 
     try:
-        sdk_metadata = metadata('testproject-python-sdk')
-        version = sdk_metadata['Version']
+        sdk_metadata = metadata("testproject-python-sdk")
+        version = sdk_metadata["Version"]
     except PackageNotFoundError:
         # This is OK, it just means that there's no previously installed version available
         pass

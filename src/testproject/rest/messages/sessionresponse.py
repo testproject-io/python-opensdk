@@ -33,8 +33,16 @@ class SessionResponse:
         _agent_version (str): Agent version, required to check backwards compatibility
     """
 
-    def __init__(self, dev_socket_port: int, server_address: str, session_id: str, dialect: str, capabilities: dict,
-                 agent_version: str, local_report: str):
+    def __init__(
+        self,
+        dev_socket_port: int,
+        server_address: str,
+        session_id: str,
+        dialect: str,
+        capabilities: dict,
+        agent_version: str,
+        local_report: str,
+    ):
         self._dev_socket_port = dev_socket_port
         self._server_address = server_address
         self._session_id = session_id

@@ -7,5 +7,5 @@ __all__ = [
     "CustomCommandExecutor",
     "CustomAppiumCommandExecutor",
     "ReportingCommandExecutor",
-    "GenericCommandExecutor"
+    "GenericCommandExecutor",
 ]

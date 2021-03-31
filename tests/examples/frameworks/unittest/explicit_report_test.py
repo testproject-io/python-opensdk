@@ -21,7 +21,9 @@ from tests.pageobjects.web import LoginPage, ProfilePage
 
 class TestBasic(unittest.TestCase):
     @report(
-        project="Examples", job="unittest example", test="Basic flow on TestProject demo app",
+        project="Examples",
+        job="unittest example",
+        test="Basic flow on TestProject demo app",
     )
     def test_login_to_testproject_demo_app(self):
         driver = webdriver.Chrome()

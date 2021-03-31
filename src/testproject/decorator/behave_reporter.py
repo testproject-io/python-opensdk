@@ -28,6 +28,7 @@ def behave_reporter(func=None, *, screenshot: bool = False):
             func: Original function wrapped by the annotation.
             screenshot (bool): True if a screenshot should be taken for each step, otherwise (False) only on failure.
     """
+
     def _behave_reporter(_func):
         @wraps(_func)
         def wrapper(*args, **kwargs):
@@ -47,7 +48,7 @@ def behave_reporter(func=None, *, screenshot: bool = False):
                 context = args[0]
                 # Check if the context has a feature attribute which is not None to avoid error when decorator
                 # is used on a method with a different param.
-                if hasattr(context, 'feature') and context.feature and not hasattr(context, 'tp_job_name_updated'):
+                if hasattr(context, "feature") and context.feature and not hasattr(context, "tp_job_name_updated"):
                     # Update the job name
                     driver.update_job_name(context.feature.name)
                     context.tp_job_name_updated = True
@@ -63,6 +64,7 @@ def behave_reporter(func=None, *, screenshot: bool = False):
                     report_test(driver=driver, scenario=scenario)
 
             return _func(*args, **kwargs)
+
         return wrapper
 
     if func:
@@ -74,14 +76,20 @@ def behave_reporter(func=None, *, screenshot: bool = False):
 def report_step(driver, step, screenshot):
     """Report behave step """
     step_description = "{} {}".format(step.keyword, step.name)
-    step_status = True if step.status == 'passed' else False
-    step_message = "{} {}".format(type(step.exception).__name__, str(step.exception)) if not step_status \
-        else step_description
-    driver.report().step(description=step_description, message=step_message, passed=step_status, screenshot=screenshot)
+    step_status = True if step.status == "passed" else False
+    step_message = (
+        "{} {}".format(type(step.exception).__name__, str(step.exception)) if not step_status else step_description
+    )
+    driver.report().step(
+        description=step_description,
+        message=step_message,
+        passed=step_status,
+        screenshot=screenshot,
+    )
 
 
 def report_test(driver, scenario):
     """Report behave scenario """
     test_name = scenario.name
-    test_status = True if scenario.status == 'passed' else False
+    test_status = True if scenario.status == "passed" else False
     driver.report().test(name=test_name, passed=test_status)
