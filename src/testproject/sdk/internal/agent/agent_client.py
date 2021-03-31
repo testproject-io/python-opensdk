@@ -378,6 +378,14 @@ class AgentClient:
         # Send a stop signal to the thread worker
         self._running = False
 
+        # TODO: Add proper session reuse logic.
+        # Reusing a session means using the same Agent Client for multiple tests,
+        # not just reusing the TCP socket connection.
+        # Until this will be implemented correctly, always close the TCP socket.
+
+        # if not AgentClient.can_reuse_session():
+        self._close_socket = True
+
         # Send a final, empty, report to the queue to ensure that
         # the 'running' condition is evaluated one last time
         self._queue.put(QueueItem(report_as_json=None, url=None, token=self._token), block=False)
@@ -387,9 +395,6 @@ class AgentClient:
         if self._reporting_thread.is_alive():
             # Thread is still alive, so there are unreported items
             logging.warning(f"There are {self._queue.qsize()} unreported items in the queue")
-
-        if not AgentClient.can_reuse_session():
-            self._close_socket = True
 
         if self._agent_response.local_report:
             logging.info(f"Execution Report: {self._agent_response.local_report}")
