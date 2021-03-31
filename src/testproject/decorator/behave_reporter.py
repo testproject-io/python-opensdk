@@ -12,13 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from src.testproject.helpers.activesessionhelper import get_active_driver_instance
-
-from functools import wraps
-from src.testproject.enums import EnvironmentVariable
-from src.testproject.sdk.exceptions import SdkException
 import logging
 import os
+from functools import wraps
+
+from src.testproject.helpers.activesessionhelper import get_active_driver_instance
+from src.testproject.sdk.exceptions import SdkException
 
 
 def behave_reporter(func=None, *, screenshot: bool = False):
@@ -33,8 +32,7 @@ def behave_reporter(func=None, *, screenshot: bool = False):
         @wraps(_func)
         def wrapper(*args, **kwargs):
             # Disable automatic test and command reporting.
-            if os.getenv("TP_DISABLE_AUTO_REPORTING") != "True":
-                os.environ[EnvironmentVariable.TP_DISABLE_AUTO_REPORTING.value] = "True"
+            os.environ["TP_DISABLE_AUTO_REPORTING"] = "True"
 
             driver = None
             try:
@@ -59,7 +57,7 @@ def behave_reporter(func=None, *, screenshot: bool = False):
                 if hook_name == "after_step":
                     step = args[1]
                     report_step(driver=driver, step=step, screenshot=screenshot)
-                if hook_name == "after_scenario":
+                elif hook_name == "after_scenario":
                     scenario = args[1]
                     report_test(driver=driver, scenario=scenario)
 
