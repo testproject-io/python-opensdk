@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- ([#152](https://github.com/testproject-io/python-opensdk/pull/152)) - Added IOS locators for mobile addons execution.
+
 ## [1.0] - 2021-03-29
 
 ### Added
