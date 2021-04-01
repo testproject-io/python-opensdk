@@ -11,12 +11,7 @@ on:
 jobs:
   build-test-publish:
     # Do not run on PRs from forks
-    if: |
-      ${{ 
-        (github.event == 'push' && startsWith(github.ref, 'refs/heads/master')) ||
-        (github.event == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)  ||
-        (github.event.release.action == 'published')
-      }}
+    if: ${{ !(github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository) }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
