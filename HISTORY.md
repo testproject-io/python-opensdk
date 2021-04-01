@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - ([#152](https://github.com/testproject-io/python-opensdk/pull/152)) - Added IOS locators for mobile addons execution.
+- ([#154](https://github.com/testproject-io/python-opensdk/pull/152)) - Simplifying Behave Reporter code format to make it more readable.
 
 ## [1.0.0] - 2021-03-29
 
