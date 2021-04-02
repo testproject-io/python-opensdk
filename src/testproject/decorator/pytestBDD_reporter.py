@@ -19,7 +19,6 @@ from src.testproject.enums import EnvironmentVariable
 from decorator import decorator
 
 
-
 @decorator
 def pytestBDD_reporter(func, screenshot: bool = True, *args, **kwargs):
     """Enables automatic logging of Gherkin syntax, including  a screenshot when screenshot argument is True, by default
