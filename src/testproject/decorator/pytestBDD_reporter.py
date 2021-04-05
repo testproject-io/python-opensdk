@@ -25,7 +25,7 @@ def pytestBDD_reporter(func, screenshot: bool = True, *args, **kwargs):
             func: Original function decorated by the annotation.
             screenshot (bool): True if a screenshot should be taken for each step, otherwise (False) only on failure.
     """
-    if os.getenv("TPENABLED") == "False":
+    if os.getenv("TP_DISABLE_REPORTING") == "True":
         return pytestBDD_reporter
 
     os.environ[EnvironmentVariable.TP_DISABLE_AUTO_REPORTING.value] = "True"
