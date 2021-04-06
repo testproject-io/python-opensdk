@@ -52,11 +52,12 @@ from src.testproject.sdk.exceptions import (
     ObsoleteVersionException,
 )
 from src.testproject.sdk.exceptions.addonnotinstalled import AddonNotInstalledException
+from src.testproject.sdk.internal.agent.agent_client_singleton import AgentClientSingleton
 from src.testproject.sdk.internal.session import AgentSession
 from src.testproject.tcp import SocketManager
 
 
-class AgentClient:
+class AgentClient(metaclass=AgentClientSingleton):
     """Client used to communicate with the TestProject Agent process
 
     Args:
@@ -108,6 +109,11 @@ class AgentClient:
     def agent_session(self):
         """Getter for the Agent session object"""
         return self._agent_session
+
+    @property
+    def report_settings(self) -> ReportSettings:
+        """Getter for the ReportSettings object"""
+        return self._report_settings
 
     def __verify_local_reports_supported(self, report_type: ReportType):
         """Verify that target Agent supports local reports, otherwise throw an exception.
@@ -377,14 +383,6 @@ class AgentClient:
         """Send all remaining report items in the queue to TestProject"""
         # Send a stop signal to the thread worker
         self._running = False
-
-        # TODO: Add proper session reuse logic.
-        # Reusing a session means using the same Agent Client for multiple tests,
-        # not just reusing the TCP socket connection.
-        # Until this will be implemented correctly, always close the TCP socket.
-
-        # if not AgentClient.can_reuse_session():
-        self._close_socket = True
 
         # Send a final, empty, report to the queue to ensure that
         # the 'running' condition is evaluated one last time
