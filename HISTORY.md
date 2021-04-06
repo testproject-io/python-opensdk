@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- ([#158](https://github.com/testproject-io/python-opensdk/pull/158)) - 
+  Fix for agent session reuse, tests with the Same Job and Project name will be under the same Report. 
+
 ## [1.0.0] - 2021-04-01
 
 ### Added
