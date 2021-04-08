@@ -111,14 +111,20 @@ class ReportHelper:
         """
         path_to_test_file = pytest_info.split(" ")[0].split("::")[0]
         if element_to_find == ReportNamingElement.Project:
-            # Return the path without base file name parsed as "package".s
-            return path_to_test_file[0 : path_to_test_file.rfind("/")].replace("/", ".")
+            # Return the path without base file name parsed as "package".
+            index = path_to_test_file.rfind("/")
+            if index == -1:
+                index = -3
+            return path_to_test_file[0:index].replace("/", ".")
         elif element_to_find == ReportNamingElement.Job:
             # Return the base file name without '.py' extension.
             head, tail = ntpath.split(path_to_test_file)
             return (tail or ntpath.basename(head)).split(".py")[0]
         elif element_to_find == ReportNamingElement.Test:
-            return pytest_info.rsplit(" ", maxsplit=1)[0].split("::")[1]
+            split_values = pytest_info.rsplit(" ", maxsplit=1)[0].split("::")
+            # Return the last value in the array, as it is the test name
+            index = len(split_values) - 1
+            return split_values[index]
         return None
 
     @classmethod
