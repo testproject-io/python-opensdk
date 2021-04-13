@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- ([#161](https://github.com/testproject-io/python-opensdk/issues/161) -
+  Added an agent_url parameter to the drivers constructors, which controls the remote address of the agent.
 - ([#160](https://github.com/testproject-io/python-opensdk/issues/160) - 
   Fix test reports if tests were in a Class, the Class name was reported instead of the method name.
 - ([#158](https://github.com/testproject-io/python-opensdk/pull/158)) - 
