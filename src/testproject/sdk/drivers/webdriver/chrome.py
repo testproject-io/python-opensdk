@@ -40,6 +40,7 @@ class Chrome(BaseDriver):
         job_name: str = None,
         disable_reports: bool = False,
         report_type: ReportType = ReportType.CLOUD_AND_LOCAL,
+        agent_url: str = None,
     ):
 
         # If no options or capabilities are specified at all, use default ChromeOptions
@@ -56,4 +57,5 @@ class Chrome(BaseDriver):
             job_name=job_name,
             disable_reports=disable_reports,
             report_type=report_type,
+            agent_url=agent_url,
         )

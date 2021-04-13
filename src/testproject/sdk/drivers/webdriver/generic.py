@@ -56,6 +56,7 @@ class Generic:
         job_name: str = None,
         disable_reports: bool = False,
         report_type: ReportType = ReportType.CLOUD_AND_LOCAL,
+        agent_url: str = None,
     ):
         if Generic.__instance is not None:
             raise SdkException("A driver session already exists")
@@ -97,6 +98,7 @@ class Generic:
         self._agent_client: AgentClient = AgentClient(
             token=self._token,
             capabilities=capabilities,
+            agent_url=agent_url,
             report_settings=report_settings,
         )
 

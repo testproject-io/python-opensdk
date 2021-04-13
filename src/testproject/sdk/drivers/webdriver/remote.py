@@ -63,6 +63,7 @@ class Remote(AppiumWebDriver):
         job_name: str = None,
         disable_reports: bool = False,
         report_type: ReportType = ReportType.CLOUD_AND_LOCAL,
+        agent_url: str = None,
     ):
         if Remote.__instance is not None:
             raise SdkException("A driver session already exists")
@@ -92,6 +93,7 @@ class Remote(AppiumWebDriver):
         self._agent_client: AgentClient = AgentClient(
             token=self._token,
             capabilities=self._desired_capabilities,
+            agent_url=agent_url,
             report_settings=report_settings,
         )
         self._agent_session: AgentSession = self._agent_client.agent_session
