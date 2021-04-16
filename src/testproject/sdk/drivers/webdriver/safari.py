@@ -37,6 +37,7 @@ class Safari(BaseDriver):
         job_name: str = None,
         disable_reports: bool = False,
         report_type: ReportType = ReportType.CLOUD_AND_LOCAL,
+        agent_url: str = None,
     ):
         super().__init__(
             capabilities=desired_capabilities,
@@ -45,4 +46,5 @@ class Safari(BaseDriver):
             job_name=job_name,
             disable_reports=disable_reports,
             report_type=report_type,
+            agent_url=agent_url,
         )

@@ -64,6 +64,7 @@ class BaseDriver(RemoteWebDriver):
         job_name: str,
         disable_reports: bool,
         report_type: ReportType,
+        agent_url: str,
     ):
 
         if BaseDriver.__instance is not None:
@@ -93,6 +94,7 @@ class BaseDriver(RemoteWebDriver):
         self._agent_client: AgentClient = AgentClient(
             token=self._token,
             capabilities=capabilities,
+            agent_url=agent_url,
             report_settings=ReportSettings(self._project_name, self._job_name, report_type),
         )
         self._agent_session: AgentSession = self._agent_client.agent_session

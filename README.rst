@@ -119,8 +119,17 @@ Alternatively, you can pass in your developer token as an argument to the driver
 TestProject Agent
 -----------------
 By default, drivers communicate with the local Agent listening on http://localhost:8585.
-This value can be overridden by setting the ``TP_AGENT_URL`` environment variable to the correct Agent address.
+This value can be overridden by setting the ``TP_AGENT_URL`` environment variable to the correct Agent address, or pass it in the driver constructor.
 
+Remote Agent
+-------------
+By default, drivers communicate with the local Agent listening on http://localhost:8585.
+
+Agent URL (host and port), can be also provided explicitly using this constructor using ``agent_url`` parameter:
+
+.. code-block:: python
+
+    driver = webdriver.Chrome(agent_url='http://remote-ip:port')
 
 Remote (Cloud) Driver
 ---------------------

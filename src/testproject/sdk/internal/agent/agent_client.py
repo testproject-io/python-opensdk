@@ -86,11 +86,12 @@ class AgentClient(metaclass=AgentClientSingleton):
     # Class variable containing the current known Agent version
     __agent_version: str = None
 
-    def __init__(self, token: str, capabilities: dict, report_settings: ReportSettings):
+    def __init__(self, token: str, capabilities: dict, agent_url: str, report_settings: ReportSettings):
+        self.agent_url = agent_url
         self._agent_session = None
         self._agent_response = None
         self._close_socket = False
-        self._remote_address = ConfigHelper.get_agent_service_address()
+        self._remote_address = agent_url if agent_url is not None else ConfigHelper.get_agent_service_address()
         self._report_settings = report_settings
         self._capabilities = capabilities
         self._token = token
