@@ -445,6 +445,19 @@ Via a driver constructor:
 
     driver = webdriver.Chrome(report_type=ReportType.LOCAL)
 
+Control Path and Name of Generated Report
+-----------------------------------------
+
+By default, the local reports name is the timestamp of the test execution, and the path is the reports directory in the agent data folder.
+
+The SDK provides a way to override the default values of the generated local reports name and path.
+
+Via driver constructor:
+
+.. code-block:: python
+
+    driver = ChromeDriver(chrome_options=ChromeOptions(), report_name="Python Local report", report_path="/my_executions/reports);
+
 
 Logging
 -------
