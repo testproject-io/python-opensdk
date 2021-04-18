@@ -41,6 +41,8 @@ class Ie(BaseDriver):
         disable_reports: bool = False,
         report_type: ReportType = ReportType.CLOUD_AND_LOCAL,
         agent_url: str = None,
+        report_name: str = None,
+        report_path: str = None,
     ):
         # If no options or capabilities are specified at all, use default Options
         if ie_options is None and desired_capabilities is None:
@@ -57,4 +59,6 @@ class Ie(BaseDriver):
             disable_reports=disable_reports,
             report_type=report_type,
             agent_url=agent_url,
+            report_name=report_name,
+            report_path=report_path,
         )

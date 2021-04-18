@@ -64,6 +64,8 @@ class Remote(AppiumWebDriver):
         disable_reports: bool = False,
         report_type: ReportType = ReportType.CLOUD_AND_LOCAL,
         agent_url: str = None,
+        report_name: str = None,
+        report_path: str = None,
     ):
         if Remote.__instance is not None:
             raise SdkException("A driver session already exists")
@@ -88,7 +90,7 @@ class Remote(AppiumWebDriver):
                 # Can update job name at runtime if not specified.
                 os.environ[EnvironmentVariable.TP_UPDATE_JOB_NAME.value] = "True"
 
-        report_settings = ReportSettings(self._project_name, self._job_name, report_type)
+        report_settings = ReportSettings(self._project_name, self._job_name, report_type, report_name, report_path)
 
         self._agent_client: AgentClient = AgentClient(
             token=self._token,
