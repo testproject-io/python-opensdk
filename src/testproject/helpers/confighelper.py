@@ -36,9 +36,12 @@ class ConfigHelper:
                 "No Agent service address found in TP_AGENT_URL environment variable, "
                 "defaulting to http://127.0.0.1:8585 (localhost)"
             )
-            return "http://127.0.0.1:8585"
-        # Replace 'localhost' with '127.0.0.1' to prevent delays as a result of DNS lookups
-        address = address.replace("localhost", "127.0.0.1")
+            address = "http://127.0.0.1:8585"
+        else:
+            # Replace 'localhost' with '127.0.0.1' to prevent delays as a result of DNS lookups
+            # Since we support remote execution, the address variable does not have to hold localhost or
+            # 127.0.0.1 in it's value
+            address = address.replace("localhost", "127.0.0.1")
         logging.info(f"Using {address} as the Agent URL")
         return address
 
