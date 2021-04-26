@@ -131,6 +131,9 @@ Agent URL (host and port), can be also provided explicitly using this constructo
 
     driver = webdriver.Chrome(agent_url='http://remote-ip:port')
 
+**NOTE:** In order to be able to communicate with a remote agent, it must first start ready for external connectivity.
+For further instructions on starting agent in this manner, please refer to the *External Connectivity* section [here](https://docs.testproject.io/testproject-agents/testproject-agent-cli#start)
+
 Remote (Cloud) Driver
 ---------------------
 
