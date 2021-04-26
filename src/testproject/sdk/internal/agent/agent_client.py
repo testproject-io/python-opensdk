@@ -21,7 +21,7 @@ from distutils.util import strtobool
 from enum import Enum, unique
 from http import HTTPStatus
 from typing import Optional
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urljoin, urlparse, ParseResult
 
 import requests
 import os
@@ -88,10 +88,12 @@ class AgentClient(metaclass=AgentClientSingleton):
 
     def __init__(self, token: str, capabilities: dict, agent_url: str, report_settings: ReportSettings):
         self.agent_url = agent_url
+        self._is_local_execution = True
         self._agent_session = None
         self._agent_response = None
         self._close_socket = False
         self._remote_address = agent_url if agent_url is not None else ConfigHelper.get_agent_service_address()
+        self.__check_local_execution()
         self._report_settings = report_settings
         self._capabilities = capabilities
         self._token = token
@@ -142,6 +144,20 @@ class AgentClient(metaclass=AgentClientSingleton):
         self._request_session_from_agent()
 
         AgentClient.__agent_version = self._agent_response.agent_version
+
+        # Log the report URL is the returned URL is not empty
+        if self._agent_response.local_report_url is not None and self._agent_response.local_report_url:
+            parsed_report_url = urlparse(self._agent_response.local_report_url)
+            report_url = ParseResult(
+                scheme=parsed_report_url.scheme,
+                netloc=f"{urlparse(self._remote_address).hostname}:{parsed_report_url.port}",
+                path=parsed_report_url.path,
+                params=parsed_report_url.params,
+                query=parsed_report_url.query,
+                fragment=parsed_report_url.fragment,
+            ).geturl()
+
+            logging.info("Report URL: " + report_url)
 
         self._agent_session = AgentSession(
             self._agent_response.server_address,
@@ -202,6 +218,7 @@ class AgentClient(metaclass=AgentClientSingleton):
             capabilities=response.data.get("capabilities", {}),
             agent_version=response.data.get("version"),
             local_report=response.data.get("localReport"),
+            local_report_url=response.data.get("localReportUrl"),
         )
 
     def update_job_name(self, job_name):
@@ -395,7 +412,7 @@ class AgentClient(metaclass=AgentClientSingleton):
             # Thread is still alive, so there are unreported items
             logging.warning(f"There are {self._queue.qsize()} unreported items in the queue")
 
-        if self._agent_response.local_report:
+        if self._agent_response.local_report and self._is_local_execution:
             logging.info(f"Execution Report: {self._agent_response.local_report}")
 
     def execute_proxy(self, action: ActionProxy) -> AddonExecutionResponse:
@@ -495,6 +512,12 @@ class AgentClient(metaclass=AgentClientSingleton):
         # Close socket only after agent_client is no longer running and all reports in the queue have been sent.
         if self._close_socket:
             SocketManager.instance().close_socket()
+
+    def __check_local_execution(self):
+        """Helper method which validates if the remote address supplied is local"""
+        valid_hosts = ["127.0.0.1", "localhost", "0.0.0.0"]
+        if urlparse(self._remote_address).hostname in valid_hosts:
+            self._is_local_execution = True
 
 
 class QueueItem:
