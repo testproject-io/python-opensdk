@@ -72,7 +72,7 @@ def behave_reporter(func=None, *, screenshot: bool = False):
 
 
 def report_step(driver, step, screenshot):
-    """Report behave step """
+    """Report behave step"""
     step_description = "{} {}".format(step.keyword, step.name)
     step_status = True if step.status == "passed" else False
     step_message = (
@@ -87,7 +87,7 @@ def report_step(driver, step, screenshot):
 
 
 def report_test(driver, scenario):
-    """Report behave scenario """
+    """Report behave scenario"""
     test_name = scenario.name
     test_status = True if scenario.status == "passed" else False
     driver.report().test(name=test_name, passed=test_status)

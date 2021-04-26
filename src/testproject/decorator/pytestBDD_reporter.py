@@ -60,7 +60,7 @@ def pytestBDD_reporter(func, screenshot: bool = True, *args, **kwargs):
 
 
 def report_step(driver, step, screenshot, message):
-    """Report pytest-bdd  step """
+    """Report pytest-bdd  step"""
     driver.report().disable_reports(False)
     step_description = "{} {}".format(step.keyword, step.name)
     driver.report().step(
@@ -73,7 +73,7 @@ def report_step(driver, step, screenshot, message):
 
 
 def report_test(driver, scenario):
-    """Report pytest-bdd scenario """
+    """Report pytest-bdd scenario"""
     driver.report().disable_reports(False)
     test_name = scenario.name
     driver.report().test(name=test_name, passed=not scenario.failed)
