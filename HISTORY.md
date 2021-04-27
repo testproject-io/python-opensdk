@@ -6,8 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2021-04-27
+
+### Added
+- Added Control for Reports configuration, it is now possible to state the name and path of the generated report.
+- Added Remote Execution Support, it is now possible to execute tests on remote agents in the same network.
 - ([#161](https://github.com/testproject-io/python-opensdk/issues/161) -
   Added an agent_url parameter to the drivers constructors, which controls the remote address of the agent.
+  
+### Fixed
+
 - ([#160](https://github.com/testproject-io/python-opensdk/issues/160) - 
   Fix test reports if tests were in a Class, the Class name was reported instead of the method name.
 - ([#158](https://github.com/testproject-io/python-opensdk/pull/158)) - 
