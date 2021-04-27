@@ -34,10 +34,14 @@ class ReportSettings:
         project_name: str,
         job_name: str,
         report_type: ReportType = ReportType.CLOUD_AND_LOCAL,
+        report_name: str = None,
+        report_path: str = None,
     ):
         self._project_name = project_name
         self._job_name = job_name
         self._report_type = report_type
+        self._report_name = report_name
+        self._report_path = report_path
 
     @property
     def project_name(self) -> str:
@@ -53,6 +57,16 @@ class ReportSettings:
     def report_type(self) -> ReportType:
         """Getter for the report type"""
         return self._report_type
+
+    @property
+    def report_name(self) -> str:
+        """Getter for the report type"""
+        return self._report_name
+
+    @property
+    def report_path(self) -> str:
+        """Getter for the report type"""
+        return self._report_path
 
     def __eq__(self, other):
         """Custom equality function"""

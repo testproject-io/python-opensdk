@@ -30,6 +30,8 @@ class SessionRequest:
         _project_name (str): Project name to report
         _job_name (str): Job name to report
         _report_type (ReportType): Report type = cloud, local or both.
+        _report_name (str): The name of the generated report.
+        _report_path (str): The path of the generated report.
     """
 
     def __init__(self, capabilities: dict, report_settings: ReportSettings):
@@ -39,6 +41,8 @@ class SessionRequest:
         self._project_name = report_settings.project_name
         self._job_name = report_settings.job_name
         self._report_type = report_settings.report_type
+        self._report_name = report_settings.report_name
+        self._report_path = report_settings.report_path
 
     def to_json(self):
         """Returns a JSON representation of the current SessionRequest instance"""
@@ -49,4 +53,6 @@ class SessionRequest:
             "sdkVersion": self._sdk_version,
             "language": self._language,
             "reportType": self._report_type.name,
+            "reportName": self._report_name,
+            "reportPath": self._report_path,
         }

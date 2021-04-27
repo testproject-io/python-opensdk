@@ -65,6 +65,8 @@ class BaseDriver(RemoteWebDriver):
         disable_reports: bool,
         report_type: ReportType,
         agent_url: str,
+        report_name: str,
+        report_path: str,
     ):
 
         if BaseDriver.__instance is not None:
@@ -95,7 +97,7 @@ class BaseDriver(RemoteWebDriver):
             token=self._token,
             capabilities=capabilities,
             agent_url=agent_url,
-            report_settings=ReportSettings(self._project_name, self._job_name, report_type),
+            report_settings=ReportSettings(self._project_name, self._job_name, report_type, report_name, report_path),
         )
         self._agent_session: AgentSession = self._agent_client.agent_session
         self.w3c = True if self._agent_session.dialect == "W3C" else False
