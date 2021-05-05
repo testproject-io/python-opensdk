@@ -112,6 +112,8 @@ class Remote(AppiumWebDriver):
             remote_server_addr=self._agent_session.remote_address,
         )
 
+        self.command_executor.disable_reports = disable_reports
+
         # this ensures that mobile-specific commands are also available for our command executor
         self._addCommands()
 

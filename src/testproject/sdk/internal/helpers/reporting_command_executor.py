@@ -153,10 +153,16 @@ class ReportingCommandExecutor:
             result (dict): The response returned by the Selenium remote WebDriver server
             passed (bool): True if the command execution was successful, False otherwise
         """
+
         if command == Command.QUIT:
             if not self.disable_auto_test_reports:
                 self.report_test()
             return  # This ensures that the actual driver.quit() command is not included in the report
+
+        # Report commands to the agent only if reports are not disabled
+        if self._disable_reports or self.disable_command_reports:
+            logging.debug(f"Command [{command}] - [{'Passed' if passed is True else 'Failed'}]")
+            return
 
         if not self._disable_redaction:
             params = RedactHelper(self).redact_command(command, params)
