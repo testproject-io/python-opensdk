@@ -6,6 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2021-05-10
+
+### Added
+
+- Added a new connection validation to TestProject Agents version 2.3.0 or greater.
+
+### Fixed
+
+- Fixed an issue where disabled test reports were still trying to report steps to the agent.
+
 ## [1.1.0] - 2021-04-27
 
 ### Added
