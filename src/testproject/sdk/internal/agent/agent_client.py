@@ -169,6 +169,8 @@ class AgentClient(metaclass=AgentClientSingleton):
         SocketManager.instance().open_socket(
             urlparse(self._remote_address).hostname,
             self._agent_response.dev_socket_port,
+            self.__agent_version,
+            self._agent_response.uuid,
         )
 
         logging.info("Development session started...")
@@ -219,6 +221,7 @@ class AgentClient(metaclass=AgentClientSingleton):
             agent_version=response.data.get("version"),
             local_report=response.data.get("localReport"),
             local_report_url=response.data.get("localReportUrl"),
+            uuid=response.data.get("uuid"),
         )
 
     def update_job_name(self, job_name):

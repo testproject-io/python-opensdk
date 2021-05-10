@@ -14,8 +14,10 @@
 
 import logging
 import socket
+import select
 
 from src.testproject.sdk.exceptions import AgentConnectException
+from packaging import version
 
 
 class SocketManager:
@@ -28,6 +30,12 @@ class SocketManager:
     __instance = None
 
     __socket = None
+
+    # Timeout for validation between the socket and the Agent in seconds.
+    _SOCKET_VALIDATION_TIMEOUT = 15
+
+    # Minimum Agent version supporting message validation between the SDK and the Agent.
+    _IN_SDK_SOCKET_VALIDATION_VERSION = "2.3.0"
 
     @classmethod
     def instance(cls):
@@ -47,12 +55,14 @@ class SocketManager:
             except socket.error as msg:
                 logging.error(f"Failed to close socket connection to Agent: {msg}")
 
-    def open_socket(self, socket_address: str, socket_port: int):
+    def open_socket(self, socket_address: str, socket_port: int, agent_version: str, uuid: str):
         """Opens a connection to the Agent development socket
 
         Args:
             socket_address (str): The address for the socket
             socket_port (int): The development socket port to connect to
+            agent_version (str): The current agent version in use
+            uuid (str): The returned UUID from the agent
         """
 
         if SocketManager.__socket is not None:
@@ -69,6 +79,27 @@ class SocketManager:
 
         if not self.is_connected():
             raise AgentConnectException("Failed connecting to Agent socket")
+
+        # Validate connection to the Agent by waiting for a message starting from Agent 2.3.0.
+        if version.parse(agent_version) >= version.parse(self._IN_SDK_SOCKET_VALIDATION_VERSION):
+            logging.debug("Validating connection to the Agent...")
+            connected = False
+
+            # Check the agent responded with the correct UUID in both socket and agent response
+            # within the given timeout of 15 seconds
+            ready = select.select([SocketManager.__socket], [], [], self._SOCKET_VALIDATION_TIMEOUT)
+            if ready[0]:
+                # The response is in ASCII, convert it to string
+                # Take only from the 2nd index as the first 2 bytes represent a header
+                message = SocketManager.__socket.recv(36).decode()[2:]
+                if message == uuid:
+                    connected = True
+
+            if not connected:
+                raise AgentConnectException(
+                    f"SDK failed to connect to the Agent via a TCP socket on port {socket_port}.\n"
+                    + "Please check if you have any interfering software installed, and disable it."
+                )
 
         logging.info(f"Socket connection to {socket_address}:{socket_port} established successfully")
 
