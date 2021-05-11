@@ -169,7 +169,6 @@ class AgentClient(metaclass=AgentClientSingleton):
         SocketManager.instance().open_socket(
             urlparse(self._remote_address).hostname,
             self._agent_response.dev_socket_port,
-            self.__agent_version,
             self._agent_response.uuid,
         )
 

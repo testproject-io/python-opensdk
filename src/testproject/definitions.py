@@ -45,4 +45,8 @@ def get_sdk_version() -> str:
 
         logging.debug(f"Version read from environment variable: {version}")
 
+    # Sanitize the agent version to return only x.x.x
+    if "-" in version:
+        version = version.split("-")[0]
+
     return version

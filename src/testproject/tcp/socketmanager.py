@@ -17,7 +17,6 @@ import socket
 import select
 
 from src.testproject.sdk.exceptions import AgentConnectException
-from packaging import version
 
 
 class SocketManager:
@@ -33,9 +32,6 @@ class SocketManager:
 
     # Timeout for validation between the socket and the Agent in seconds.
     _SOCKET_VALIDATION_TIMEOUT = 15
-
-    # Minimum Agent version supporting message validation between the SDK and the Agent.
-    _IN_SDK_SOCKET_VALIDATION_VERSION = "2.3.0"
 
     @classmethod
     def instance(cls):
@@ -55,7 +51,7 @@ class SocketManager:
             except socket.error as msg:
                 logging.error(f"Failed to close socket connection to Agent: {msg}")
 
-    def open_socket(self, socket_address: str, socket_port: int, agent_version: str, uuid: str):
+    def open_socket(self, socket_address: str, socket_port: int, uuid: str):
         """Opens a connection to the Agent development socket
 
         Args:
@@ -81,7 +77,8 @@ class SocketManager:
             raise AgentConnectException("Failed connecting to Agent socket")
 
         # Validate connection to the Agent by waiting for a message starting from Agent 2.3.0.
-        if version.parse(agent_version) >= version.parse(self._IN_SDK_SOCKET_VALIDATION_VERSION):
+        # Only agent 2.3.0 or greater will return a none empty UUID.
+        if uuid:
             logging.debug("Validating connection to the Agent...")
             connected = False
 
