@@ -65,7 +65,10 @@ class Generic:
 
         LoggingHelper.configure_logging()
 
-        self._token = token if token is not None else ConfigHelper.get_developer_token()
+        env_token = ConfigHelper.get_developer_token()
+        if env_token is not None and token is not None:
+            logging.info("Using token from environment variable...")
+        self._token = env_token if env_token is not None else token
 
         agent_status_response: AgentStatusResponse = AgentClient.get_agent_version(self._token)
 

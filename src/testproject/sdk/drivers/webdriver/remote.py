@@ -74,7 +74,10 @@ class Remote(AppiumWebDriver):
 
         self._desired_capabilities = desired_capabilities
 
-        self._token = token if token is not None else ConfigHelper.get_developer_token()
+        env_token = ConfigHelper.get_developer_token()
+        if env_token is not None and token is not None:
+            logging.info("Using token from environment variable...")
+        self._token = env_token if env_token is not None else token
 
         if disable_reports:
             # Setting the project and job name to empty strings will cause the Agent to not initialize a report
