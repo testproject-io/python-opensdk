@@ -116,6 +116,8 @@ Alternatively, you can pass in your developer token as an argument to the driver
         # Your test code goes here
         driver.quit()
 
+> If a token is specified in both the driver constructor and in an environment variable, the token in the environment will be the one used.
+
 TestProject Agent
 -----------------
 By default, drivers communicate with the local Agent listening on http://localhost:8585.
