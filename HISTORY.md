@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- SDK will prefer token specified in environment variable when initializing driver.
+
 ## [1.2.0] - 2021-05-12
 
 ### Added
