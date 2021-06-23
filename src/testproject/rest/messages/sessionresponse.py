@@ -44,6 +44,7 @@ class SessionResponse:
         local_report: str,
         local_report_url: str,
         uuid: str,
+        warnings: list,
     ):
         self._dev_socket_port = dev_socket_port
         self._server_address = server_address
@@ -54,6 +55,7 @@ class SessionResponse:
         self._local_report = local_report
         self._local_report_url = local_report_url
         self._uuid = uuid
+        self._warnings = warnings
 
     @property
     def dev_socket_port(self) -> int:
@@ -99,3 +101,8 @@ class SessionResponse:
     def uuid(self) -> str:
         """Getter for the returned UUID"""
         return self._uuid
+
+    @property
+    def warnings(self) -> list:
+        """Getter for the returned warnings"""
+        return self._warnings
