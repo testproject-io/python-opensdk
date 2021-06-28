@@ -143,6 +143,8 @@ class AgentClient(metaclass=AgentClientSingleton):
 
         self._request_session_from_agent()
 
+        self.log_warnings()
+
         AgentClient.__agent_version = self._agent_response.agent_version
 
         # Log the report URL is the returned URL is not empty
@@ -173,6 +175,12 @@ class AgentClient(metaclass=AgentClientSingleton):
         )
 
         logging.info("Development session started...")
+
+    def log_warnings(self):
+        """Log various warnings which might be returned from the agent"""
+        if self._agent_response.warnings is not None:
+            for warning in self._agent_response.warnings:
+                logging.warning(warning)
 
     @staticmethod
     def can_reuse_session() -> bool:
@@ -221,6 +229,7 @@ class AgentClient(metaclass=AgentClientSingleton):
             local_report=response.data.get("localReport"),
             local_report_url=response.data.get("localReportUrl"),
             uuid=response.data.get("uuid"),
+            warnings=response.data.get("warnings"),
         )
 
     def update_job_name(self, job_name):
