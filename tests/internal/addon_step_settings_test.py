@@ -1,7 +1,7 @@
 import pytest
 from selenium.webdriver.common.by import By
 
-from proxy_examples.actions import TypeRandomPhoneAction
+from tests.examples.proxy_examples.actions import TypeRandomPhoneAction
 from src.testproject.classes import DriverStepSettings, StepSettings
 from src.testproject.decorator import report
 from src.testproject.enums import TakeScreenshotConditionType
