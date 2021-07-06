@@ -17,7 +17,7 @@ import os
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.select import Select
-from proxy_examples.actions import TypeRandomPhoneAction
+from tests.examples.proxy_examples.actions import TypeRandomPhoneAction
 from src.testproject.sdk.drivers import webdriver
 from selenium.webdriver import ChromeOptions
 

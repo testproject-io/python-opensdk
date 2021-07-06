@@ -522,6 +522,40 @@ the behavior to always take a screenshot, pass the screenshot argument as ``True
     def after_step(context, step):
         pass
 
+Addon Proxy
+-----------
+
+One of the greatest features of the TestProject platform is the ability to execute a code written by someone else. 
+It can be your account colleagues, writing actions that you can reuse, or TestProject community users creating addons and solving common automation challenges.
+
+To get started, download a source file with the proxy class for the Action(s) you want to execute. 
+It can be done by navigating to the `Addons page <https://app.testproject.io/#/addons>`__, opening an addon, 
+and clicking on the `Proxy` link at the bottom left corner of the popup.
+
+Now, let's pretend that one of your colleagues coded and uploaded an Addon naming it - `Example Addon`. 
+To use it in your test, download its proxy source file, add it to your project and invoke the actions using the following driver method:
+
+.. code-block:: python
+
+    driver.addons().execute()
+
+That expects an instance of the `ActionProxy` class. For example:
+
+.. code-block:: python
+
+    # Use Addon proxy to invoke 'Clear Fields' Action
+    driver.addons().execute(ClearFieldsAction())
+
+Another example using 'Type Random Phone' Action:
+
+.. code-block:: python
+
+    # Use Addon proxy to invoke 'Type Random Phone' Action
+    # Notice how the action parameters are provided using an action proxy convenience method
+    driver.addons().execute(TypeRandomPhoneAction("1", 10), by=By.CSS_SELECTOR, by_value="#phone")
+
+Refer to the `Addon Proxy Test <https://github.com/testproject-io/python-opensdk/blob/master/tests/examples/proxy_examples/web_example_addon.py>`__ for complete example source.
+
 Examples
 --------
 Here is a list of all examples for the different drivers that are supported by this SDK:
@@ -533,6 +567,7 @@ Here is a list of all examples for the different drivers that are supported by t
 * `Safari test <https://github.com/testproject-io/python-opensdk/blob/master/tests/examples/drivers/web/safari_driver_test.py>`__
 * `Edge test <https://github.com/testproject-io/python-opensdk/blob/master/tests/examples/drivers/web/edge_driver_test.py>`__
 * `Internet Explorer test <https://github.com/testproject-io/python-opensdk/blob/master/tests/examples/drivers/web/ie_driver_test.py>`__
+* `Addon Proxy Test <https://github.com/testproject-io/python-opensdk/blob/master/tests/examples/proxy_examples/web_example_addon.py>`__
 
 *Android*
 
