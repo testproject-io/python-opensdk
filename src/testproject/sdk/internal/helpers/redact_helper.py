@@ -89,7 +89,8 @@ class RedactHelper:
             Command.GET_ELEMENT_ATTRIBUTE, get_attribute_params, True
         )
 
-        return get_attribute_response.get("value").casefold() == "true"
+        response_value = get_attribute_response.get("value")
+        return False if response_value is None else response_value.casefold() == "true"
 
     def _is_secured_element(self, element_id: str) -> bool:
         """Checks if the element is a secured element (an HTML or iOS password element)
