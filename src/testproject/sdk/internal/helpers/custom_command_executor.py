@@ -34,6 +34,7 @@ class CustomCommandExecutor(RemoteConnection, ReportingCommandExecutor):
             command_executor=self,
             remote_connection=super(),
         )
+        self.w3c = self.step_helper.w3c  # Selenium expects the w3c as a class member
 
     def execute(self, command: str, params: dict, skip_reporting: bool = False):
         """Execute a Selenium command
