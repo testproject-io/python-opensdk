@@ -13,6 +13,9 @@
 # limitations under the License.
 
 
+from src.testproject.rest.messages.reportitemtype import ReportItemType
+
+
 class CustomTestReport:
     """Payload object sent to the Agent when reporting a test.
 
@@ -64,4 +67,4 @@ class CustomTestReport:
 
     def to_json(self):
         """Generates a dict containing the JSON representation of the test payload"""
-        return {"name": self._name, "passed": self._passed, "message": self._message}
+        return {"name": self._name, "passed": self._passed, "message": self._message, "type": ReportItemType.Test.value}
