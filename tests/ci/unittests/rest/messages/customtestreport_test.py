@@ -21,4 +21,5 @@ def test_to_json():
         "name": "my_name",
         "passed": True,
         "message": "my_message",
+        "type": "Test",
     }

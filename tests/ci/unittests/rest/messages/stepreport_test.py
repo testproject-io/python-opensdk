@@ -32,6 +32,7 @@ def test_to_json_without_screenshot(mocker):
         "inputParameters": None,
         "outputParameters": None,
         "screenshot": None,
+        "type": "Step",
     }
 
 
@@ -55,4 +56,5 @@ def test_to_json_with_screenshot(mocker):
         "inputParameters": None,
         "outputParameters": None,
         "screenshot": "base64_screenshot_here",
+        "type": "Step",
     }
