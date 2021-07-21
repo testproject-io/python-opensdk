@@ -12,11 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pytest
-
 from urllib.parse import urljoin
 from src.testproject.helpers import ConfigHelper
-from src.testproject.sdk.exceptions import SdkException
 from src.testproject.sdk.internal.agent.agent_client import Endpoint
 
 
@@ -38,11 +35,10 @@ def test_agent_env_with_trailing_slash_is_handled_correctly(monkeypatch):
     assert urljoin(agent_address, Endpoint.DevelopmentSession.value) == "http://127.0.0.1:8585/api/development/session"
 
 
-def test_undefined_token_env_variable_leads_to_exception_raised(monkeypatch):
+def test_undefined_token_env_variable(monkeypatch):
     monkeypatch.delenv("TP_DEV_TOKEN", raising=False)
-    with pytest.raises(SdkException) as sdke:
-        ConfigHelper.get_developer_token()
-    assert str(sdke.value) == "No development token defined in TP_DEV_TOKEN environment variable"
+    token = ConfigHelper.get_developer_token()
+    assert token is None
 
 
 def test_predefined_token_env_variable_resolves_to_specified_value(monkeypatch):
