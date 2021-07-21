@@ -31,7 +31,7 @@ class ReportsQueue:
         self._running = True
         # After session started and is running, start the reporting thread
         self._queue = queue.Queue()
-        self._reporting_thread = threading.Thread(target=self.__report_worker, daemon=True)
+        self._reporting_thread = threading.Thread(target=self._report_worker, daemon=True)
         self._reporting_thread.start()
 
     def submit(self, report_as_json: [dict], url: [str], block: [bool]):
@@ -57,19 +57,21 @@ class ReportsQueue:
             # Thread is still alive, so there are unreported items
             logging.warning(f"There are {self._queue.qsize()} unreported items in the queue")
 
-    def __report_worker(self):
+    def _report_worker(self):
         """Worker method that is polling the queue for items to report"""
         while self._running or self._queue.qsize() > 0:
-
             item = self._queue.get()
             if isinstance(item, QueueItem):
-                item.send()
+                self._handle_report(item)
             else:
                 logging.warning(f"Unknown object of type {type(item)} found on queue, ignoring it..")
             self._queue.task_done()
         # Close socket only after agent_client is no longer running and all reports in the queue have been sent.
         if self._close_socket:
             SocketManager.instance().close_socket()
+
+    def _handle_report(self, item: [object]):
+        item.send()
 
 
 class QueueItem:
@@ -108,3 +110,7 @@ class QueueItem:
             except HTTPError:
                 logging.error(f"Failed to send a report to the Agent with HTTP error code {response.status_code}")
                 logging.error(f"Response from Agent: {response.text}")
+
+    @property
+    def report_as_json(self):
+        return self._report_as_json
