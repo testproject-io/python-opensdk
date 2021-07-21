@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import logging
-import queue
 import uuid
 
 from distutils.util import strtobool
@@ -23,7 +22,6 @@ from urllib.parse import urljoin, urlparse, ParseResult
 
 import requests
 import os
-from packaging import version
 from requests import HTTPError
 
 from src.testproject.classes import ActionExecutionResponse
@@ -52,8 +50,10 @@ from src.testproject.sdk.exceptions import (
 from src.testproject.sdk.exceptions.addonnotinstalled import AddonNotInstalledException
 from src.testproject.sdk.internal.agent.agent_client_singleton import AgentClientSingleton
 from src.testproject.sdk.internal.agent.reports_queue import ReportsQueue
+from src.testproject.sdk.internal.agent.reports_queue_batch import ReportsQueueBatch
 from src.testproject.sdk.internal.session import AgentSession
 from src.testproject.tcp import SocketManager
+from packaging import version
 
 
 class AgentClient(metaclass=AgentClientSingleton):
@@ -80,6 +80,9 @@ class AgentClient(metaclass=AgentClientSingleton):
     # Minimum Agent version that supports local reports.
     MIN_LOCAL_REPORT_SUPPORTED_VERSION = "2.1.0"
 
+    # Minimum Agent version that supports batch reporting.
+    MIN_BATCH_REPORT_SUPPORTED_VERSION = "3.1.0"
+
     # Class variable containing the current known Agent version
     __agent_version: str = None
 
@@ -98,7 +101,11 @@ class AgentClient(metaclass=AgentClientSingleton):
         # Make sure local reports are supported
         self.__verify_local_reports_supported(report_settings.report_type)
         # Create reports queue
-        self._reports_queue = ReportsQueue(token)
+        if version.parse(self.__agent_version) >= version.parse(self.MIN_BATCH_REPORT_SUPPORTED_VERSION):
+            url = urljoin(self._remote_address, Endpoint.ReportBatch.value)
+            self._reports_queue = ReportsQueueBatch(token=token, url=url)
+        else:
+            self._reports_queue = ReportsQueue(token)
 
     @property
     def agent_session(self):
@@ -120,7 +127,7 @@ class AgentClient(metaclass=AgentClientSingleton):
             AgentConnectException when local reports are not supported.
         """
         if report_type is ReportType.LOCAL and version.parse(self.__agent_version) < version.parse(
-                self.MIN_LOCAL_REPORT_SUPPORTED_VERSION
+            self.MIN_LOCAL_REPORT_SUPPORTED_VERSION
         ):
             raise AgentConnectException(
                 f"Target Agent version [{self.__agent_version}] doesn't support local reports."
@@ -361,9 +368,11 @@ class AgentClient(metaclass=AgentClientSingleton):
         Args:
             driver_command_report: object containing the driver command to be reported
         """
-        self._reports_queue.submit(report_as_json=driver_command_report.to_json(),
-                                   url=urljoin(self._remote_address, Endpoint.ReportDriverCommand.value),
-                                   block=False)
+        self._reports_queue.submit(
+            report_as_json=driver_command_report.to_json(),
+            url=urljoin(self._remote_address, Endpoint.ReportDriverCommand.value),
+            block=False,
+        )
 
     def report_step(self, step_report: StepReport):
         """Sends step report to the Agent
@@ -372,9 +381,11 @@ class AgentClient(metaclass=AgentClientSingleton):
             step_report (StepReport): object containing the step to be reported
         """
 
-        self._reports_queue.submit(report_as_json=step_report.to_json(),
-                                   url=urljoin(self._remote_address, Endpoint.ReportStep.value),
-                                   block=False)
+        self._reports_queue.submit(
+            report_as_json=step_report.to_json(),
+            url=urljoin(self._remote_address, Endpoint.ReportStep.value),
+            block=False,
+        )
 
     def report_test(self, test_report: CustomTestReport):
         """Sends test report to the Agent
@@ -383,9 +394,11 @@ class AgentClient(metaclass=AgentClientSingleton):
             test_report (CustomTestReport): object containing the test to be reported
         """
 
-        self._reports_queue.submit(report_as_json=test_report.to_json(),
-                                   url=urljoin(self._remote_address, Endpoint.ReportTest.value),
-                                   block=False)
+        self._reports_queue.submit(
+            report_as_json=test_report.to_json(),
+            url=urljoin(self._remote_address, Endpoint.ReportTest.value),
+            block=False,
+        )
 
     def execute_proxy(self, action: ActionProxy) -> AddonExecutionResponse:
         """Sends a custom action to the Agent
@@ -479,7 +492,7 @@ class AgentClient(metaclass=AgentClientSingleton):
 
     def stop(self):
         self._reports_queue.stop()
-        if self._agent_response.local_report and self._is_local_execution:
+        if self._agent_response and self._agent_response.local_report and self._is_local_execution:
             logging.info(f"Execution Report: {self._agent_response.local_report}")
 
 
