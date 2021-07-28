@@ -73,14 +73,22 @@ class BaseDriver(RemoteWebDriver):
             raise SdkException("A driver session already exists")
 
         LoggingHelper.configure_logging()
-
-        if token is not None:
-            logging.info(f"Token used as specified in constructor: {token}")
-
         env_token = ConfigHelper.get_developer_token()
-        if env_token is not None and token is not None:
-            logging.info("Using token from environment variable...")
-        self._token = env_token if env_token is not None else token
+        if env_token is not None:
+            if token is not None:
+                logging.info(
+                    "Found TP_DEV_TOKEN environment variable. Using its value as the development token "
+                    "instead of the value in the driver constructor"
+                )
+            self._token = env_token
+        elif token is not None:
+            self._token = token
+        else:
+            logging.error("No developer token was found, did you set it in the TP_DEV_TOKEN environment variable?")
+            logging.error(
+                "You can get a developer token from https://app.testproject.io/#/integrations/sdk?lang=Python"
+            )
+            raise SdkException("No development token was provided")
 
         if disable_reports:
             # Setting the project and job name to empty strings will cause the Agent to not initialize a report

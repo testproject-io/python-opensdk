@@ -16,7 +16,6 @@ import os
 import logging
 
 from src.testproject import definitions
-from src.testproject.sdk.exceptions import SdkException
 
 
 class ConfigHelper:
@@ -52,14 +51,7 @@ class ConfigHelper:
         Returns:
             str: the developer token
         """
-        token = os.getenv("TP_DEV_TOKEN")
-        if token is None:
-            logging.error("No developer token was found, did you set it in the TP_DEV_TOKEN environment variable?")
-            logging.error(
-                "You can get a developer token from https://app.testproject.io/#/integrations/sdk?lang=Python"
-            )
-            raise SdkException("No development token defined in TP_DEV_TOKEN environment variable")
-        return token
+        return os.getenv("TP_DEV_TOKEN")
 
     @staticmethod
     def get_sdk_version() -> str:

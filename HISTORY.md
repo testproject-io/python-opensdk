@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- SDK will check if development token was provided in the driver constructor or as environment variable before rasing SdkException.
+
 ## [1.2.1] - 2021-07-08
 
 ### Added
