@@ -490,5 +490,6 @@ class Endpoint(Enum):
     ReportDriverCommand = "/api/development/report/command"
     ReportStep = "/api/development/report/step"
     ReportTest = "/api/development/report/test"
+    ReportBatch = "/api/development/report/batch"
     AddonExecution = "/api/addons/executions"
     GetStatus = "/api/status"
