@@ -1,4 +1,4 @@
-# Copyright 2020 TestProject (https://testproject.io)
+# Copyright 2021 TestProject (https://testproject.io)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,14 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from src.testproject.rest.messages import CustomTestReport
+from enum import Enum
 
 
-def test_to_json():
-    test_result_report = CustomTestReport(name="my_name", passed=True, message="my_message")
-    assert test_result_report.to_json() == {
-        "name": "my_name",
-        "passed": True,
-        "message": "my_message",
-        "type": "Test",
-    }
+class ReportItemType(Enum):
+    Command = "Command"
+    Step = "Step"
+    Test = "Test"

@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from src.testproject.rest.messages.reportitemtype import ReportItemType
 import uuid
 
 from src.testproject.classes import ElementSearchCriteria
@@ -68,6 +69,7 @@ class StepReport:
             "screenshot": self._screenshot,
             "inputParameters": self._input_params,
             "outputParameters": self._output_params,
+            "type": ReportItemType.Step.value,
         }
 
         return json

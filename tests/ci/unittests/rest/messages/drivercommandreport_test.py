@@ -72,6 +72,7 @@ def test_to_json(dcr):
         "passed": True,
         "screenshot": None,
         "message": None,
+        "type": "Command",
     }
 
 
@@ -83,4 +84,5 @@ def test_to_json_with_screenshot(dcr_with_screenshot):
         "passed": False,
         "screenshot": "base64_screenshot",
         "message": None,
+        "type": "Command",
     }

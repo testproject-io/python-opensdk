@@ -13,6 +13,9 @@
 # limitations under the License.
 
 
+from src.testproject.rest.messages.reportitemtype import ReportItemType
+
+
 class DriverCommandReport:
     """Payload object sent to the Agent when reporting a driver command.
 
@@ -102,6 +105,7 @@ class DriverCommandReport:
             "passed": self.passed,
             "message": self.message,
             "screenshot": self.screenshot,
+            "type": ReportItemType.Command.value,
         }
 
         return payload

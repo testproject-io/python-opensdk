@@ -1,7 +1,7 @@
 version: "3.1"
 services:
   testproject-agent:
-    image: testproject/agent:latest
+    image: testproject/agent:3.0.5
     container_name: testproject-agent
     depends_on:
       - chrome

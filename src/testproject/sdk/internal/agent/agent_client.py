@@ -13,19 +13,15 @@
 # limitations under the License.
 
 import logging
-import queue
-import threading
 import uuid
 
 from distutils.util import strtobool
 from enum import Enum, unique
 from http import HTTPStatus
-from typing import Optional
 from urllib.parse import urljoin, urlparse, ParseResult
 
 import requests
 import os
-from packaging import version
 from requests import HTTPError
 
 from src.testproject.classes import ActionExecutionResponse
@@ -53,8 +49,11 @@ from src.testproject.sdk.exceptions import (
 )
 from src.testproject.sdk.exceptions.addonnotinstalled import AddonNotInstalledException
 from src.testproject.sdk.internal.agent.agent_client_singleton import AgentClientSingleton
+from src.testproject.sdk.internal.agent.reports_queue import ReportsQueue
+from src.testproject.sdk.internal.agent.reports_queue_batch import ReportsQueueBatch
 from src.testproject.sdk.internal.session import AgentSession
 from src.testproject.tcp import SocketManager
+from packaging import version
 
 
 class AgentClient(metaclass=AgentClientSingleton):
@@ -75,13 +74,14 @@ class AgentClient(metaclass=AgentClientSingleton):
         _queue (queue.Queue): queue holding reports to be sent to Agent in separate thread
     """
 
-    REPORTS_QUEUE_TIMEOUT = 10
-
     # Minimum Agent version number that supports session reuse
     MIN_SESSION_REUSE_CAPABLE_VERSION = "0.64.20"
 
     # Minimum Agent version that supports local reports.
     MIN_LOCAL_REPORT_SUPPORTED_VERSION = "2.1.0"
+
+    # Minimum Agent version that supports batch reporting.
+    MIN_BATCH_REPORT_SUPPORTED_VERSION = "3.1.0"
 
     # Class variable containing the current known Agent version
     __agent_version: str = None
@@ -91,7 +91,6 @@ class AgentClient(metaclass=AgentClientSingleton):
         self._is_local_execution = True
         self._agent_session = None
         self._agent_response = None
-        self._close_socket = False
         self._remote_address = agent_url if agent_url is not None else ConfigHelper.get_agent_service_address()
         self.__check_local_execution()
         self._report_settings = report_settings
@@ -101,12 +100,12 @@ class AgentClient(metaclass=AgentClientSingleton):
         self.__start_session()
         # Make sure local reports are supported
         self.__verify_local_reports_supported(report_settings.report_type)
-        # Running after all is initialized successfully
-        self._running = True
-        # After session started and is running, start the reporting thread
-        self._queue = queue.Queue()
-        self._reporting_thread = threading.Thread(target=self.__report_worker, daemon=True)
-        self._reporting_thread.start()
+        # Create reports queue
+        if version.parse(self.__agent_version) >= version.parse(self.MIN_BATCH_REPORT_SUPPORTED_VERSION):
+            url = urljoin(self._remote_address, Endpoint.ReportBatch.value)
+            self._reports_queue = ReportsQueueBatch(token=token, url=url)
+        else:
+            self._reports_queue = ReportsQueue(token)
 
     @property
     def agent_session(self):
@@ -369,14 +368,11 @@ class AgentClient(metaclass=AgentClientSingleton):
         Args:
             driver_command_report: object containing the driver command to be reported
         """
-
-        queue_item = QueueItem(
+        self._reports_queue.submit(
             report_as_json=driver_command_report.to_json(),
             url=urljoin(self._remote_address, Endpoint.ReportDriverCommand.value),
-            token=self._token,
+            block=False,
         )
-
-        self._queue.put(queue_item, block=False)
 
     def report_step(self, step_report: StepReport):
         """Sends step report to the Agent
@@ -385,13 +381,11 @@ class AgentClient(metaclass=AgentClientSingleton):
             step_report (StepReport): object containing the step to be reported
         """
 
-        queue_item = QueueItem(
+        self._reports_queue.submit(
             report_as_json=step_report.to_json(),
             url=urljoin(self._remote_address, Endpoint.ReportStep.value),
-            token=self._token,
+            block=False,
         )
-
-        self._queue.put(queue_item, block=False)
 
     def report_test(self, test_report: CustomTestReport):
         """Sends test report to the Agent
@@ -400,31 +394,11 @@ class AgentClient(metaclass=AgentClientSingleton):
             test_report (CustomTestReport): object containing the test to be reported
         """
 
-        queue_item = QueueItem(
+        self._reports_queue.submit(
             report_as_json=test_report.to_json(),
             url=urljoin(self._remote_address, Endpoint.ReportTest.value),
-            token=self._token,
+            block=False,
         )
-
-        self._queue.put(queue_item, block=False)
-
-    def stop(self):
-        """Send all remaining report items in the queue to TestProject"""
-        # Send a stop signal to the thread worker
-        self._running = False
-
-        # Send a final, empty, report to the queue to ensure that
-        # the 'running' condition is evaluated one last time
-        self._queue.put(QueueItem(report_as_json=None, url=None, token=self._token), block=False)
-
-        # Wait until all items have been reported or timeout passes
-        self._reporting_thread.join(timeout=self.REPORTS_QUEUE_TIMEOUT)
-        if self._reporting_thread.is_alive():
-            # Thread is still alive, so there are unreported items
-            logging.warning(f"There are {self._queue.qsize()} unreported items in the queue")
-
-        if self._agent_response.local_report and self._is_local_execution:
-            logging.info(f"Execution Report: {self._agent_response.local_report}")
 
     def execute_proxy(self, action: ActionProxy) -> AddonExecutionResponse:
         """Sends a custom action to the Agent
@@ -510,63 +484,16 @@ class AgentClient(metaclass=AgentClientSingleton):
                 f"Agent responded with HTTP status {response.status_code}: [{response.message}]"
             )
 
-    def __report_worker(self):
-        """Worker method that is polling the queue for items to report"""
-        while self._running or self._queue.qsize() > 0:
-
-            item = self._queue.get()
-            if isinstance(item, QueueItem):
-                item.send()
-            else:
-                logging.warning(f"Unknown object of type {type(item)} found on queue, ignoring it..")
-            self._queue.task_done()
-        # Close socket only after agent_client is no longer running and all reports in the queue have been sent.
-        if self._close_socket:
-            SocketManager.instance().close_socket()
-
     def __check_local_execution(self):
         """Helper method which validates if the remote address supplied is local"""
         valid_hosts = ["127.0.0.1", "localhost", "0.0.0.0"]
         if urlparse(self._remote_address).hostname in valid_hosts:
             self._is_local_execution = True
 
-
-class QueueItem:
-    """Helper class representing an item to be reported
-
-    Args:
-        report_as_json (dict): JSON payload representing the item to be reported
-        url (str): Agent endpoint the payload should be POSTed to
-        token (str): Token used to authenticate with the Agent
-
-    Attributes:
-        _report_as_json (Optional[dict]): JSON payload representing the item to be reported
-        _url (Optional[str]): Agent endpoint the payload should be POSTed to
-        _token (str): Token used to authenticate with the Agent
-    """
-
-    def __init__(self, report_as_json: Optional[dict], url: Optional[str], token: str):
-        self._report_as_json = report_as_json
-        self._url = url
-        self._token = token
-
-    def send(self):
-        """Send a report item to the Agent"""
-        if self._report_as_json is None and self._url is None:
-            # Skip empty queue items put in the queue on stop()
-            return
-
-        with requests.Session() as session:
-            response = session.post(
-                self._url,
-                headers={"Authorization": self._token},
-                json=self._report_as_json,
-            )
-            try:
-                response.raise_for_status()
-            except HTTPError:
-                logging.error(f"Reporting to TestProject returned an HTTP {response.status_code}")
-                logging.error(f"Response from Agent: {response.text}")
+    def stop(self):
+        self._reports_queue.stop()
+        if self._agent_response and self._agent_response.local_report and self._is_local_execution:
+            logging.info(f"Execution Report: {self._agent_response.local_report}")
 
 
 @unique
@@ -576,5 +503,6 @@ class Endpoint(Enum):
     ReportDriverCommand = "/api/development/report/command"
     ReportStep = "/api/development/report/step"
     ReportTest = "/api/development/report/test"
+    ReportBatch = "/api/development/report/batch"
     AddonExecution = "/api/addons/executions"
     GetStatus = "/api/status"
