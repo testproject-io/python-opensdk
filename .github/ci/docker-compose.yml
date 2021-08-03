@@ -18,7 +18,7 @@ services:
     - "8585:8585"
     - "8686:8686"
   chrome:
-    image: selenium/standalone-chrome:latest
+    image: selenium/standalone-chrome:91.0
     volumes:
       - /dev/shm:/dev/shm
     ports:
