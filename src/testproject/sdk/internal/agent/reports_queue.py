@@ -95,21 +95,30 @@ class QueueItem:
 
     def send(self):
         """Send a report item to the Agent"""
+        max_report_failure_attempts = 4
+
         if self._report_as_json is None and self._url is None:
             # Skip empty queue items put in the queue on stop()
             return
 
-        with requests.Session() as session:
-            response = session.post(
-                self._url,
-                headers={"Authorization": self._token},
-                json=self._report_as_json,
-            )
-            try:
-                response.raise_for_status()
-            except HTTPError:
-                logging.error(f"Failed to send a report to the Agent with HTTP error code {response.status_code}")
-                logging.error(f"Response from Agent: {response.text}")
+        for i in range(max_report_failure_attempts):
+            with requests.Session() as session:
+                response = session.post(
+                    self._url,
+                    headers={"Authorization": self._token},
+                    json=self._report_as_json,
+                )
+                try:
+                    response.raise_for_status()
+                    return
+                except HTTPError:
+                    remaining_attempts = max_report_failure_attempts - i - 1
+                    logging.warning(
+                        f"Agent responded with an unexpected status {response.status_code}, "
+                        f"response from Agent: {response.text}"
+                    )
+                    logging.info(f"Failed to send a report to the Agent, {remaining_attempts} attempts remaining...")
+        logging.error(f"All {max_report_failure_attempts} attempts to send report have failed.")
 
     @property
     def report_as_json(self):
