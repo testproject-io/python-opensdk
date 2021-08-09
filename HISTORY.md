@@ -1,3 +1,4 @@
+
 # Changelog
 All notable changes to this project will be documented in this file.
 
@@ -6,9 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.2] - 2021-08-09
+
+### Added
+- [#185](https://github.com/testproject-io/python-opensdk/issues/185) - Attempt several retries sending a report to the Agent in case of network connectivity issues.
+- [#182](https://github.com/testproject-io/python-opensdk/issues/182) - Fix performance transmitting reports to the Agent by reporting in batches to Agents 3.1.0+.
+- [#183](https://github.com/testproject-io/python-opensdk/issues/183) - Fix set_script_timeout calls in W3C sessions.
+
 ### Fixed
 
-- SDK will check if development token was provided in the driver constructor or as environment variable before rasing SdkException.
+- [#184](https://github.com/testproject-io/python-opensdk/issues/184) - SDK will check if development token was provided in the driver constructor or as environment variable before rasing SdkException.
 
 ## [1.2.1] - 2021-07-08
 
