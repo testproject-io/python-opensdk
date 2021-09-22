@@ -43,6 +43,7 @@ class Generic:
         job_name (str): Job name to report
         disable_reports (bool): set to True to disable all reporting (no report will be created on TestProject)
         report_type (ReportType): Type of report to produce - cloud, local or both.
+        socket_session_timeout (int): The connection timeout to the agent in milliseconds.
     """
 
     __instance = None
@@ -59,6 +60,7 @@ class Generic:
         agent_url: str = None,
         report_name: str = None,
         report_path: str = None,
+        socket_session_timeout: int = AgentClient.NEW_SESSION_SOCKET_TIMEOUT_MS,
     ):
         if Generic.__instance is not None:
             raise SdkException("A driver session already exists")
@@ -105,6 +107,7 @@ class Generic:
             capabilities=capabilities,
             agent_url=agent_url,
             report_settings=report_settings,
+            socket_session_timeout=socket_session_timeout,
         )
 
         self._agent_session: AgentSession = self._agent_client.agent_session
