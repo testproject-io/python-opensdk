@@ -63,6 +63,7 @@ class AgentClient(metaclass=AgentClientSingleton):
         token (str): The development token used to communicate with the Agent
         capabilities (dict): Additional options to be applied to the driver instance
         report_settings (ReportSettings): Settings (project name, job name) to be included in the report
+        socket_session_timeout (int): The connection timeout to the agent in milliseconds.
 
     Attributes:
         _remote_address (str): The Agent endpoint
@@ -83,10 +84,20 @@ class AgentClient(metaclass=AgentClientSingleton):
     # Minimum Agent version that supports batch reporting.
     MIN_BATCH_REPORT_SUPPORTED_VERSION = "3.1.0"
 
+    # New Session HTTP connection request timeout in milliseconds.
+    NEW_SESSION_SOCKET_TIMEOUT_MS = 120 * 1000
+
     # Class variable containing the current known Agent version
     __agent_version: str = None
 
-    def __init__(self, token: str, capabilities: dict, agent_url: str, report_settings: ReportSettings):
+    def __init__(
+        self,
+        token: str,
+        capabilities: dict,
+        agent_url: str,
+        report_settings: ReportSettings,
+        socket_session_timeout: int,
+    ):
         self.agent_url = agent_url
         self._is_local_execution = True
         self._agent_session = None
@@ -96,6 +107,7 @@ class AgentClient(metaclass=AgentClientSingleton):
         self._report_settings = report_settings
         self._capabilities = capabilities
         self._token = token
+        self._session_socket_timeout = socket_session_timeout
         # Attempt to start the session
         self.__start_session()
         # Make sure local reports are supported
@@ -209,6 +221,7 @@ class AgentClient(metaclass=AgentClientSingleton):
                 "POST",
                 urljoin(self._remote_address, Endpoint.DevelopmentSession.value),
                 session_request.to_json(),
+                timeout=self._session_socket_timeout,
             )
         except requests.exceptions.ConnectionError:
             logging.error(f"Could not start new session on {self._remote_address}. Is your Agent running?")
@@ -250,10 +263,11 @@ class AgentClient(metaclass=AgentClientSingleton):
             except requests.exceptions.RequestException:
                 logging.error("Failed to update job name")
 
-    def send_request(self, method, path, body=None, params=None) -> OperationResult:
+    def send_request(self, method, path, body=None, params=None, timeout=None) -> OperationResult:
         """Sends HTTP request to Agent
 
         Args:
+            timeout (int): The connection timeout to the agent in milliseconds
             method (str): HTTP method (GET, POST, ...)
             path (str): Relative API route path
             body (dict): Request body
@@ -268,7 +282,7 @@ class AgentClient(metaclass=AgentClientSingleton):
             if method == "GET":
                 response = session.get(path, headers={"Authorization": self._token})
             elif method == "POST":
-                response = session.post(path, headers={"Authorization": self._token}, json=body)
+                response = session.post(path, headers={"Authorization": self._token}, json=body, timeout=timeout)
             elif method == "DELETE":
                 response = session.delete(path, headers={"Authorization": self._token})
             elif method == "PUT":
