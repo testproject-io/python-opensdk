@@ -24,7 +24,7 @@ services:
     ports:
     - "5555:4444"
   firefox:
-    image: selenium/standalone-firefox:latest
+    image: selenium/standalone-firefox:92.0
     volumes:
       - /dev/shm:/dev/shm
     ports:
