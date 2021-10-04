@@ -44,6 +44,7 @@ class BaseDriver(RemoteWebDriver):
         job_name (str): Job name to report
         disable_reports (bool): set to True to disable all reporting (no report will be created on TestProject)
         report_type (ReportType): Type of report to produce - cloud, local or both.
+        socket_session_timeout (int): The connection timeout to the agent in milliseconds.
 
     Attributes:
         _agent_client (AgentClient): client responsible for communicating with the TestProject agent
@@ -67,6 +68,7 @@ class BaseDriver(RemoteWebDriver):
         agent_url: str,
         report_name: str,
         report_path: str,
+        socket_session_timeout: int,
     ):
 
         if BaseDriver.__instance is not None:
@@ -109,6 +111,7 @@ class BaseDriver(RemoteWebDriver):
             capabilities=capabilities,
             agent_url=agent_url,
             report_settings=ReportSettings(self._project_name, self._job_name, report_type, report_name, report_path),
+            socket_session_timeout=socket_session_timeout,
         )
         self._agent_session: AgentSession = self._agent_client.agent_session
         self.w3c = True if self._agent_session.dialect == "W3C" else False

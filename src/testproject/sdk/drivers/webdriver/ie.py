@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from selenium.webdriver.ie.options import Options
+from src.testproject.sdk.internal.agent import AgentClient
 
 from src.testproject.enums.report_type import ReportType
 from src.testproject.sdk.drivers.webdriver.base import BaseDriver
@@ -29,6 +30,7 @@ class Ie(BaseDriver):
         job_name (str): Job name to report
         disable_reports (bool): set to True to disable all reporting (no report will be created on TestProject)
         report_type (ReportType): Type of report to produce - cloud, local or both.
+        socket_session_timeout (int): The connection timeout to the agent in milliseconds.
     """
 
     def __init__(
@@ -43,6 +45,7 @@ class Ie(BaseDriver):
         agent_url: str = None,
         report_name: str = None,
         report_path: str = None,
+        socket_session_timeout: int = AgentClient.NEW_SESSION_SOCKET_TIMEOUT_MS,
     ):
         # If no options or capabilities are specified at all, use default Options
         if ie_options is None and desired_capabilities is None:
@@ -61,4 +64,5 @@ class Ie(BaseDriver):
             agent_url=agent_url,
             report_name=report_name,
             report_path=report_path,
+            socket_session_timeout=socket_session_timeout,
         )

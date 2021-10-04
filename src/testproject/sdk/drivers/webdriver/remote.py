@@ -43,6 +43,7 @@ class Remote(AppiumWebDriver):
         project_name (str): Project name to report
         job_name (str): Job name to report
         disable_reports (bool): set to True to disable all reporting (no report will be created on TestProject)
+        socket_session_timeout (int): The connection timeout to the agent in milliseconds.
 
     Attributes:
         _desired_capabilities (dict): Automation session desired capabilities and options
@@ -66,6 +67,7 @@ class Remote(AppiumWebDriver):
         agent_url: str = None,
         report_name: str = None,
         report_path: str = None,
+        socket_session_timeout: int = AgentClient.NEW_SESSION_SOCKET_TIMEOUT_MS,
     ):
         if Remote.__instance is not None:
             raise SdkException("A driver session already exists")
@@ -100,6 +102,7 @@ class Remote(AppiumWebDriver):
             capabilities=self._desired_capabilities,
             agent_url=agent_url,
             report_settings=report_settings,
+            socket_session_timeout=socket_session_timeout,
         )
         self._agent_session: AgentSession = self._agent_client.agent_session
         self.w3c = True if self._agent_session.dialect == "W3C" else False
