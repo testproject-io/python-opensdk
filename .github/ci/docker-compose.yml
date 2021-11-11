@@ -1,7 +1,7 @@
 version: "3.1"
 services:
   testproject-agent:
-    image: testproject/agent:3.0.5
+    image: testproject/agent
     container_name: testproject-agent
     depends_on:
       - chrome
@@ -18,13 +18,13 @@ services:
     - "8585:8585"
     - "8686:8686"
   chrome:
-    image: selenium/standalone-chrome:91.0
+    image: selenium/standalone-chrome
     volumes:
       - /dev/shm:/dev/shm
     ports:
     - "5555:4444"
   firefox:
-    image: selenium/standalone-firefox:92.0
+    image: selenium/standalone-firefox
     volumes:
       - /dev/shm:/dev/shm
     ports:
