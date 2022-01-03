@@ -9,7 +9,7 @@ pytest-mock = "==3.1.1"
 responses = "==0.10.14"
 
 [packages]
-selenium = "==3.141.0"
-appium-python-client = "==1.0.1"
+selenium = "==4.0.0"
+appium-python-client = "==2.1.2"
 decorator = "==4.4.2"
 requests = "==2.24.0"

@@ -22,8 +22,8 @@ setuptools.setup(
     ],
     python_requires=">=3.6",
     install_requires=[
-        "selenium==3.141.0",
-        "Appium-Python-Client>=1.0.1,<=1.0.2",
+        "selenium==4.0.0",
+        "Appium-Python-Client==2.1.2",
         "decorator>=4.4.2",
         "requests>=2.24.0",
         "importlib-metadata>=1.7.0",
